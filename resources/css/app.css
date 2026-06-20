@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@source "../../app/Views/**/*.php";
+
+@theme {
+    --font-display: "Plus Jakarta Sans", sans-serif;
+    --font-body: "Inter", sans-serif;
+
+    --color-primary: #7C3AED;
+    --color-primary-soft: #A78BFA;
+    --color-secondary: #FACC15;
+    --color-accent: #22D3EE;
+
+    --color-background: #020617;
+    --color-surface: #0F172A;
+
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+}
+
+.font-display {
+    font-family: var(--font-display);
+}
