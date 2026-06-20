@@ -252,7 +252,9 @@ Tabel utama dari migration:
 - `payment_methods`
 - `orders`
 
-Kolom legacy seperti `games.provider`, `product.provider`, `orders.game_provider`, dan `orders.payment_provider` masih ada di migration/database, tetapi jangan jadikan itu alasan membuat ulang folder `Providers`. Untuk sekarang anggap kolom itu data legacy/opsional.
+Kolom legacy seperti `games.provider` dan `product.provider` masih ada di migration/database, tetapi jangan jadikan itu alasan membuat ulang folder `Providers`. Untuk sekarang anggap kolom itu data legacy/opsional.
+
+Kolom `orders.game_provider` dan `orders.payment_provider` sudah dihapus dari create migration dan ada migration khusus untuk drop dari database existing. Jangan pakai ulang dua kolom itu untuk fitur baru.
 
 Order memakai `payment_token` yang dibuat otomatis di `OrderModel::insert()` dengan `bin2hex(random_bytes(16))`.
 
@@ -327,4 +329,3 @@ Untuk fitur backend baru, ikuti urutan ini:
 8. Return response konsisten.
 9. Test manual route utama.
 10. Jalankan syntax check PHP untuk file yang berubah.
-

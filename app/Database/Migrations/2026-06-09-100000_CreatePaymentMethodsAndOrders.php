@@ -103,16 +103,6 @@ class CreatePaymentMethodsAndOrders extends Migration
                 'constraint' => 50,
                 'null'       => true,
             ],
-            'game_provider' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 50,
-                'null'       => true,
-            ],
-            'payment_provider' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 50,
-                'null'       => true,
-            ],
             'product_name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 200,
