@@ -23,21 +23,34 @@ class HomeService extends BaseService
     public function getFlashsale(): array
     {
         $flashsale = $this->homeModel->getFlashsale();
-
         if (empty($flashsale)) {
-            return [
-                'data'     => [],
-                'products' => [],
-            ];
+            return [];
         }
-
-        $products = $this->homeModel->getFlashsaleProducts(8);
-        $products = $this->formatProducts($products);
-
-        return [
-            'data'     => $flashsale,
-            'products' => $products,
+        $remaining = max(
+            0,
+            strtotime($flashsale['date_end']) - time()
+        );
+        $products = $this->homeModel->getFlashsaleProducts($flashsale['id']);
+        $flashsale['remaining_seconds'] = $remaining;
+        $flashsale['countdown'] = [
+            'days'    => floor($remaining / 86400),
+            'hours'   => floor(($remaining % 86400) / 3600),
+            'minutes' => floor(($remaining % 3600) / 60),
+            'seconds' => $remaining % 60,
         ];
+        $flashsale['products'] = $products;
+        $flashsale['progress'] = $this->calculateFlashsaleProgress($products);
+        return $flashsale;
+    }
+
+    protected function calculateFlashsaleProgress(array $items): int
+    {
+        $stock = array_sum(array_column($items, 'stock'));
+        $sold  = array_sum(array_column($items, 'sold'));
+        if ($stock <= 0) {
+            return 0;
+        }
+        return (int) round(($sold / $stock) * 100);
     }
 
     public function getPopularGames(): array

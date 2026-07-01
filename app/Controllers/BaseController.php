@@ -30,8 +30,35 @@ abstract class BaseController extends Controller
         $this->userModel       = model(UserModel::class);
 
         $web = $this->setting_service->get_public_utilities();
+        $menus = [
+            [
+                'title' => 'Home',
+                'url'   => base_url('/'),
+                'icon'  => 'bi-house-door-fill',
+                'match' => '',
+            ],
+            [
+                'title' => 'Games',
+                'url'   => base_url('games'),
+                'icon'  => 'bi-joystick',
+                'match' => 'games',
+            ],
+            [
+                'title' => 'Promo',
+                'url'   => base_url('promo'),
+                'icon'  => 'bi-ticket-perforated-fill',
+                'match' => 'promo',
+            ],
+            [
+                'title' => 'Bantuan',
+                'url'   => base_url('help'),
+                'icon'  => 'bi-question-circle-fill',
+                'match' => 'help',
+            ],
+        ];
 
         $this->base_data = [
+            'menus' => $menus,
             'meta' => [
                 'title'       => $web['web_title'] ?? 'RRQ & Evos Bersahabat',
                 'subtitle'    => $web['web_subtitle'] ?? '',
@@ -51,42 +78,44 @@ abstract class BaseController extends Controller
             ],
             'user'  => $this->_get_current_user(),
             'alert' => $this->_get_alert(),
+            'page_assets' => [
+                'css' => [],
+                'js'  => [],
+            ],
         ];
     }
 
     protected function _get_current_user(): ?array
     {
-        $user_id = $this->session->get('user_id');
-
-        if (! $user_id) {
+        $userId = $this->session->get('user_id');
+        if (! $userId) {
             helper('cookie');
-
-            $cookieToken = get_cookie('remember_me');
-
-            if ($cookieToken) {
-                $user = $this->userModel->where('remember_token', $cookieToken)->first();
-
+            $rememberToken = get_cookie('remember_me');
+            if ($rememberToken) {
+                $user = $this->userModel
+                    ->where('remember_token', $rememberToken)
+                    ->first();
                 if ($user && $user['status'] === 'On') {
                     $this->session->set('user_id', $user['id']);
-
-                    unset($user['password'], $user['remember_token'], $user['reset_token']);
-
-                    return $user;
+                } else {
+                    return null;
                 }
+            } else {
+                return null;
             }
-
-            return null;
         }
-
-        $user = $this->userModel->find($user_id);
-
+        $user = $this->userModel->find($this->session->get('user_id'));
         if (! $user || $user['status'] !== 'On') {
             return null;
         }
-
-        unset($user['password'], $user['remember_token'], $user['reset_token']);
-
-        return $user;
+        return [
+            'id'       => (int) $user['id'],
+            'username' => $user['username'],
+            'email'    => $user['email'],
+            'phone'    => $user['phone'],
+            'balance'  => (float) $user['balance'],
+            'level'    => $user['level'],
+        ];
     }
 
     protected function _get_alert(): ?array

@@ -9,19 +9,17 @@ class Home extends BaseController
     public function index()
     {
         $service   = $this->_service();
-        $banners   = $service->getBanners();
-        $flashsale = $service->getFlashsale();
-
+        
         $data = [
-            'banners'            => $banners,
-            'hero_banner'        => $banners[0] ?? [],
-            'flashsale'          => $flashsale['data'] ?? [],
-            'flashsale_products' => $flashsale['products'] ?? [],
+            'banners'            => $service->getBanners(),
+            'flashsale'          => $service->getFlashsale(),
             'popular_games'      => $service->getPopularGames(12),
             'category_sections'  => $service->getCategorySections(),
         ];
-
-        return $this->renderView('Home/Index', $data);
+        $this->base_data['page_assets']['css'][] = 'resources/css/pages/home.css';
+        $this->base_data['page_assets']['js'][] = 'resources/js/pages/home.js';
+       
+        return $this->renderView('Pages/Home', $data);
     }
 
     protected function _service(): HomeService

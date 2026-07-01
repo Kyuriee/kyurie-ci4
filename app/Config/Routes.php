@@ -10,6 +10,8 @@ $routes->get('search/games', 'Search::games');
 
 $routes->match(['get', 'post'], 'auth/login', 'Auth::login');
 $routes->match(['get', 'post'], 'auth/register', 'Auth::register');
+$routes->match(['get', 'post'], 'auth/forgot', 'Auth::forgot');
+$routes->match(['get', 'post'], 'auth/reset/(:any)', 'Auth::reset/$1');
 $routes->get('auth/logout', 'Auth::logout');
 
 $routes->get('user/profile', 'User::profile');

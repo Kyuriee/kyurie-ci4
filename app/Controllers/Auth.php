@@ -79,6 +79,7 @@ class Auth extends BaseController
         }
 
         $data = ['meta' => ['title' => 'Login']];
+        $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
         return $this->renderView('Auth/login', $data);
     }
 
@@ -164,6 +165,7 @@ class Auth extends BaseController
         }
 
         $data = ['meta' => ['title' => 'Daftar']];
+        $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
         return $this->renderView('Auth/register', $data);
     }
 
@@ -208,6 +210,7 @@ class Auth extends BaseController
         }
 
         $data = ['meta' => ['title' => 'Lupa Password']];
+        $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
         return $this->renderView('Auth/forgot', $data);
     }
 
@@ -252,6 +255,7 @@ class Auth extends BaseController
             'meta'  => ['title' => 'Reset Password'],
             'token' => $token
         ];
+        $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
         return $this->renderView('Auth/reset', $data);
     }
 

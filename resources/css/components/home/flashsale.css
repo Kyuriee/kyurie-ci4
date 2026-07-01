@@ -1,0 +1,145 @@
+.section-title {
+    @apply mb-6 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between;
+}
+
+.section-title h2 {
+    @apply text-2xl font-extrabold text-heading lg:text-3xl;
+}
+
+.section-title p {
+    @apply mt-1 text-sm text-muted;
+}
+
+/* ==========================================================================
+   Countdown
+   ========================================================================== */
+
+.flashsale-countdown {
+    @apply flex flex-wrap gap-2 lg:gap-3;
+}
+
+.countdown-box {
+    @apply flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-slate-900 text-white lg:h-16 lg:w-16 lg:rounded-2xl;
+}
+
+.countdown-box span {
+    @apply text-lg font-extrabold leading-none;
+}
+
+.countdown-box small {
+    @apply mt-1 text-[9px] uppercase tracking-wide;
+}
+
+/* ==========================================================================
+   Swiper
+   ========================================================================== */
+
+.flashsale-swiper {
+    @apply overflow-hidden pb-10;
+}
+
+.flashsale-swiper .swiper-slide {
+    @apply h-auto;
+}
+
+/* ==========================================================================
+   Card
+   ========================================================================== */
+
+.flashsale-card {
+    @apply block overflow-hidden rounded-2xl border border-border bg-white transition-all duration-300;
+}
+
+.flashsale-card:hover {
+    @apply -translate-y-1 border-primary;
+    box-shadow: 0 10px 30px rgb(15 23 42 / .08);
+}
+
+.flashsale-card:hover .flashsale-image img {
+    @apply scale-105;
+}
+
+/* ==========================================================================
+   Image
+   ========================================================================== */
+
+.flashsale-image {
+    @apply relative overflow-hidden;
+    aspect-ratio: 1;
+}
+
+.flashsale-image img {
+    @apply h-full w-full object-cover transition-transform duration-300;
+}
+
+/* ==========================================================================
+   Badge
+   ========================================================================== */
+
+.discount-badge {
+    @apply absolute left-3 top-3 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-white shadow;
+}
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
+
+.flashsale-body {
+    @apply flex flex-col gap-2 p-3 lg:p-4;
+}
+
+.flashsale-body h3 {
+    @apply line-clamp-1 text-[15px] font-bold text-heading;
+}
+
+.flashsale-body p {
+    @apply line-clamp-1 text-xs text-muted;
+}
+
+/* ==========================================================================
+   Price
+   ========================================================================== */
+
+.flashsale-price {
+    @apply pt-1;
+}
+
+.flashsale-price strong {
+    @apply text-lg lg:text-xl font-extrabold text-primary;
+}
+
+.flashsale-price del {
+    @apply text-xs text-slate-400;
+}
+
+/* ==========================================================================
+   Progress
+   ========================================================================== */
+
+.flashsale-progress {
+    @apply h-1.5 rounded-full bg-slate-200;
+}
+
+.flashsale-progress-bar {
+    @apply h-full rounded-full bg-primary transition-all duration-500;
+}
+
+.flashsale-sold {
+    @apply text-[11px] text-muted;
+}
+
+/* ==========================================================================
+   Pagination
+   ========================================================================== */
+
+.flashsale-pagination {
+    @apply mt-6;
+}
+
+.flashsale-pagination .swiper-pagination-bullet {
+    @apply h-2 w-2 bg-slate-300 opacity-100 transition-all;
+}
+
+.flashsale-pagination .swiper-pagination-bullet-active {
+    @apply w-6 rounded-full bg-primary;
+}

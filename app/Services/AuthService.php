@@ -143,6 +143,7 @@ class AuthService extends baseService
             'password'         => password_hash($newPassword, PASSWORD_DEFAULT),
             'reset_token'      => null,
             'reset_expires_at' => null,
+            'remember_token'   => null,
         ]);
 
         return ['success' => true];

@@ -10,18 +10,8 @@ class HomeModel extends Model
 
     public function getBanners(): array
     {
-        $now = date('Y-m-d H:i:s');
-
         return $this->db->table('banner')
             ->where('status', 'On')
-            ->groupStart()
-                ->where('date_start', null)
-                ->orWhere('date_start <=', $now)
-            ->groupEnd()
-            ->groupStart()
-                ->where('date_end', null)
-                ->orWhere('date_end >=', $now)
-            ->groupEnd()
             ->orderBy('sort', 'ASC')
             ->get()
             ->getResultArray();
@@ -29,17 +19,44 @@ class HomeModel extends Model
 
     public function getFlashsale(): array
     {
-        $now = date('Y-m-d H:i:s');
+        return $this->db->table('flashsale')
+        ->where('status', 'On')
+        ->orderBy('id', 'DESC')
+        ->get()
+        ->getFirstRow('array') ?? [];
+    }
 
-        $data = $this->db->table('flashsale')
-            ->where('status', 'On')
-            ->where('date_start <=', $now)
-            ->where('date_end >=', $now)
-            ->orderBy('id', 'DESC')
+    public function getFlashsaleProducts(int $flashsaleId): array
+    {
+        return $this->db->table('flashsale_items fi')
+            ->select("
+                fi.*,
+
+                p.id,
+                p.product,
+                p.provider,
+                p.price,
+                p.raw_price,
+
+                g.id AS game_id,
+                g.games AS game_name,
+                g.slug,
+                g.image AS game_image,
+                g.banner,
+
+                CASE
+                    WHEN fi.discount_type = 'fixed'
+                        THEN p.price - fi.discount_value
+                    ELSE
+                        p.price - (p.price * fi.discount_value / 100)
+                END AS sale_price
+            ")
+            ->join('product p', 'p.id = fi.product_id')
+            ->join('games g', 'g.id = p.games_id')
+            ->where('fi.flashsale_id', $flashsaleId)
+            ->orderBy('fi.sort_order', 'ASC')
             ->get()
-            ->getFirstRow('array');
-
-        return $data ?? [];
+            ->getResultArray();
     }
 
     public function getActiveCategories(): array
@@ -70,26 +87,6 @@ class HomeModel extends Model
             ->where('status', 'On')
             ->where('game_category_id', $categoryId)
             ->orderBy('sort', 'ASC')
-            ->get()
-            ->getResultArray();
-    }
-
-    public function getFlashsaleProducts(int $limit = 8): array
-    {
-        $now = date('Y-m-d H:i:s');
-
-        return $this->db->table('product')
-            ->select('product.*, games.games, games.slug, games.image, flashsale.title as flashsale_title, flashsale.date_end')
-            ->join('games', 'games.id = product.games_id', 'left')
-            ->join('flashsale', 'flashsale.id = product.flashsale_id', 'left')
-            ->where('product.status', 'On')
-            ->where('games.status', 'On')
-            ->where('flashsale.status', 'On')
-            ->where('flashsale.date_start <=', $now)
-            ->where('flashsale.date_end >=', $now)
-            ->where('product.flashsale_price >', 0)
-            ->orderBy('product.sort', 'ASC')
-            ->limit($limit)
             ->get()
             ->getResultArray();
     }
