@@ -51,20 +51,16 @@ class GameService extends baseService
     public function searchGames(string $keyword, int $limit = 8): array
     {
         $keyword = trim($keyword);
-
         if (strlen($keyword) < 2) {
             return [];
         }
-
         $games = $this->gameModel->searchGames($keyword, $limit);
-
         foreach ($games as &$game) {
             $game['url']       = base_url('games/' . $game['slug']);
             $game['image_url'] = ! empty($game['image'])
-                ? base_url('uploads/games/' . $game['image'])
+                ? base_url('assets/images/games/icons/' . $game['image'])
                 : '';
         }
-
         return $games;
     }
 }

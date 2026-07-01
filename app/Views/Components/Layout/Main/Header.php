@@ -31,26 +31,13 @@ $current = service('uri')->getSegment(1);
                 <?php endforeach; ?>
             </nav>
 
-            <!-- Search -->
-           <div class="hidden flex-1 justify-center lg:flex">
-                <form
-                    class="relative w-full max-w-md"
-                    @submit.prevent="submitSearch"
-                >
-                    <input
-                        x-model="searchKeyword"
-                        type="search"
-                        placeholder="Cari game atau produk"
-                        class="input rounded-full bg-slate-50 pr-12"
-                    >
-                    <button
-                        type="submit"
-                        class="absolute right-4 top-1/2 -translate-y-1/2 text-muted transition hover:text-primary"
-                    >
-                        <i class="bi bi-search"></i>
-                    </button>
-                </form>
+            <!-- Search (desktop) -->
+            <div class="hidden flex-1 justify-center lg:flex">
+                <div class="w-full max-w-md">
+                    <?= view('Components/Layout/Main/SearchBar') ?>
+                </div>
             </div>
+
             <!-- Right -->
             <?php if ($user): ?>
                 <div class="hidden items-center gap-3 lg:flex">
@@ -98,13 +85,33 @@ $current = service('uri')->getSegment(1);
                     </a>
                 </div>
             <?php endif; ?>
-            <!-- Mobile -->
-            <button
-                @click="mobileMenu = true"
-                class="flex lg:hidden mobile-menu-button"
-            >
-                <i class="bi bi-list"></i>
-            </button>
+
+            <!-- Mobile triggers -->
+            <div class="flex items-center gap-2 lg:hidden">
+                <button
+                    @click="mobileSearch = !mobileSearch"
+                    class="mobile-menu-button"
+                >
+                    <i class="bi" :class="mobileSearch ? 'bi-x-lg' : 'bi-search'"></i>
+                </button>
+
+                <button
+                    @click="mobileMenu = true"
+                    class="mobile-menu-button"
+                >
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search (mobile) -->
+        <div
+            x-show="mobileSearch"
+            x-cloak
+            x-transition
+            class="border-t border-slate-100 py-3 lg:hidden"
+        >
+            <?= view('Components/Layout/Main/SearchBar') ?>
         </div>
     </div>
 </header>

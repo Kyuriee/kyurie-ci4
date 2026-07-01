@@ -291,3 +291,36 @@ h6 {
     @apply mt-1 text-sm;
     color: var(--color-muted);
 }
+
+/* ==========================================================================
+   Search Dropdown
+   ========================================================================== */
+
+.search-dropdown {
+    @apply absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-2xl border border-border bg-white p-2;
+    box-shadow: 0 10px 30px rgb(15 23 42 / .12);
+}
+
+.search-dropdown-state {
+    @apply flex items-center justify-center gap-2 py-8 text-sm text-muted;
+}
+
+.search-result-item {
+    @apply flex items-center gap-3 rounded-xl p-2 transition-colors;
+}
+
+.search-result-item:hover {
+    background: rgb(59 130 246 / .06);
+}
+
+.search-result-item img {
+    @apply h-11 w-11 shrink-0 rounded-lg object-cover;
+}
+
+.search-result-body h4 {
+    @apply line-clamp-1 text-sm font-semibold text-heading;
+}
+
+.search-result-body p {
+    @apply line-clamp-1 text-xs text-muted;
+}
