@@ -1,0 +1,72 @@
+.popular-games-grid {
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+/* ==========================================================================
+   Card
+   ========================================================================== */
+
+.popular-game-card {
+    @apply relative flex items-center gap-3 overflow-hidden rounded-2xl border border-border bg-white p-3 transition-all duration-300;
+}
+
+.popular-game-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+    background-size: 10px 10px;
+    -webkit-mask-image: linear-gradient(to right, transparent 55%, black 100%);
+    mask-image: linear-gradient(to right, transparent 55%, black 100%);
+    opacity: .5;
+    pointer-events: none;
+}
+
+.popular-game-card:hover {
+    @apply border-primary;
+    box-shadow: 0 10px 30px rgb(15 23 42 / .08);
+}
+
+.popular-game-card:hover .popular-game-image img {
+    @apply scale-105;
+}
+
+/* ==========================================================================
+   Image
+   ========================================================================== */
+
+.popular-game-image {
+    @apply relative z-10 h-14 w-14 shrink-0 overflow-hidden rounded-xl lg:h-16 lg:w-16;
+}
+
+.popular-game-image img {
+    @apply h-full w-full object-cover transition-transform duration-300;
+}
+
+/* ==========================================================================
+   Body
+   ========================================================================== */
+
+.popular-game-body {
+    @apply relative z-10 flex min-w-0 flex-col gap-0.5;
+}
+
+.popular-game-body h3 {
+    @apply line-clamp-1 text-sm font-bold text-heading lg:text-[15px];
+}
+
+.popular-game-body p {
+    @apply line-clamp-1 text-xs text-muted;
+}
+
+/* ==========================================================================
+   Section Link
+   ========================================================================== */
+
+.popular-games-link {
+    @apply flex shrink-0 items-center gap-1 text-sm font-semibold text-primary transition-colors;
+}
+
+.popular-games-link:hover {
+    color: var(--color-primary-600);
+}

@@ -16,6 +16,7 @@ class GameModel extends Model
         'slug',
         'code',
         'provider',
+        'publisher',
         'image',
         'banner',
         'description',
@@ -57,7 +58,7 @@ class GameModel extends Model
 
     public function searchGames(string $keyword, int $limit = 8): array
     {
-        return $this->select('games.id, games.games, games.slug, games.image, games.target, game_categories.category')
+        return $this->select('games.id, games.games, games.slug, games.image, games.publisher, games.target, game_categories.category')
             ->join('game_categories', 'game_categories.id = games.game_category_id', 'left')
             ->where('games.status', 'On')
             ->groupStart()
@@ -69,5 +70,5 @@ class GameModel extends Model
             ->orderBy('games.sort', 'ASC')
             ->limit($limit)
             ->findAll();
-    }
+    }   
 }

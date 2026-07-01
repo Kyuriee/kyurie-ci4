@@ -7,4 +7,7 @@
 <?= view('Components/Pages/Home/Flashsale', [
     'flashsale' => $flashsale,
 ]) ?>
+<?= view('Components/Pages/Home/PopularGames', [
+    'popular_games' => $popular_games,
+]) ?>
 <?= $this->endSection(); ?>
