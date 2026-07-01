@@ -46,8 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     new Swiper('.flashsale-swiper', {
         modules: [Pagination, Autoplay],
 
-        slidesPerView: 2.2,
-        spaceBetween: 12,
+        slidesPerView: 2.4,
+        spaceBetween: 10,
 
         pagination: {
             el: '.flashsale-pagination',

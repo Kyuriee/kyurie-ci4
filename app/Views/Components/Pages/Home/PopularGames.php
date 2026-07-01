@@ -30,8 +30,8 @@
                             : 'https://placehold.co/300x300';
                     ?>
                     <a
-                        href="<?= base_url('games/' . $game['slug']) ?>"
-                        class="popular-game-card card card-hover"
+                            href="<?= base_url('games/' . $game['slug']) ?>"
+                        class="popular-game-card"
                     >
                         <div class="popular-game-image">
                             <img
@@ -39,16 +39,17 @@
                                 alt="<?= esc($game['games']) ?>"
                                 loading="lazy"
                             >
-                        </div>
-                        <div class="popular-game-body">
-                            <h3>
-                                <?= esc($game['games']) ?>
-                            </h3>
-                            <?php if (!empty($game['publisher'])) : ?>
-                                <p>
-                                    <?= esc($game['publisher']) ?>
-                                </p>
-                            <?php endif ?>
+                            <div class="popular-game-overlay">
+                                <h3>
+                                    <?= esc($game['games']) ?>
+                                </h3>
+
+                                <?php if (!empty($game['publisher'])) : ?>
+                                    <p>
+                                        <?= esc($game['publisher']) ?>
+                                    </p>
+                                <?php endif ?>
+                            </div>
                         </div>
                     </a>
                 <?php endforeach ?>

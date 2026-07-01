@@ -62,10 +62,9 @@
 /* ==========================================================================
    Image
    ========================================================================== */
-
 .flashsale-image {
     @apply relative overflow-hidden;
-    aspect-ratio: 1;
+    aspect-ratio: 4 / 5;
 }
 
 .flashsale-image img {
@@ -85,15 +84,15 @@
    ========================================================================== */
 
 .flashsale-body {
-    @apply flex flex-col gap-2 p-3 lg:p-4;
+    @apply flex flex-col gap-1.5 p-2.5 sm:gap-2 lg:gap-2 lg:p-4;
 }
 
 .flashsale-body h3 {
-    @apply line-clamp-1 text-[15px] font-bold text-heading;
+    @apply line-clamp-1 text-[13px] font-bold text-heading sm:text-[15px];
 }
 
 .flashsale-body p {
-    @apply line-clamp-1 text-xs text-muted;
+    @apply line-clamp-1 text-[11px] text-muted sm:text-xs;
 }
 
 /* ==========================================================================
@@ -105,11 +104,11 @@
 }
 
 .flashsale-price strong {
-    @apply text-lg lg:text-xl font-extrabold text-primary;
+    @apply text-base lg:text-xl font-extrabold text-primary;
 }
 
 .flashsale-price del {
-    @apply text-xs text-slate-400;
+    @apply text-[10px] text-slate-400 sm:text-xs;
 }
 
 /* ==========================================================================
@@ -125,7 +124,7 @@
 }
 
 .flashsale-sold {
-    @apply text-[11px] text-muted;
+    @apply text-[10px] text-muted sm:text-[11px];
 }
 
 /* ==========================================================================

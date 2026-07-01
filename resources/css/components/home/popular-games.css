@@ -1,5 +1,5 @@
 .popular-games-grid {
-    @apply grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-3;
+    @apply grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6;
 }
 
 /* ==========================================================================
@@ -7,24 +7,12 @@
    ========================================================================== */
 
 .popular-game-card {
-    @apply relative flex items-center gap-2.5 overflow-hidden rounded-2xl border border-border bg-white p-2.5 transition-all duration-300 sm:gap-3 sm:p-3;
-}
-
-.popular-game-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
-    background-size: 10px 10px;
-    -webkit-mask-image: linear-gradient(to right, transparent 55%, black 100%);
-    mask-image: linear-gradient(to right, transparent 55%, black 100%);
-    opacity: .5;
-    pointer-events: none;
+    @apply block overflow-hidden rounded-2xl transition-all duration-300;
 }
 
 .popular-game-card:hover {
-    @apply border-primary;
-    box-shadow: 0 10px 30px rgb(15 23 42 / .08);
+    @apply -translate-y-1;
+    box-shadow: 0 10px 30px rgb(15 23 42 / .12);
 }
 
 .popular-game-card:hover .popular-game-image img {
@@ -36,7 +24,8 @@
    ========================================================================== */
 
 .popular-game-image {
-    @apply relative z-10 h-12 w-12 shrink-0 overflow-hidden rounded-lg sm:h-14 sm:w-14 sm:rounded-xl lg:h-16 lg:w-16;
+    @apply relative overflow-hidden rounded-2xl;
+    aspect-ratio: 3 / 4;
 }
 
 .popular-game-image img {
@@ -44,29 +33,18 @@
 }
 
 /* ==========================================================================
-   Body
+   Overlay
    ========================================================================== */
 
-.popular-game-body {
-    @apply relative z-10 flex min-w-0 flex-col gap-0.5;
+.popular-game-overlay {
+    @apply absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-2.5 sm:p-3;
+    background: linear-gradient(to top, rgb(15 23 42 / .85) 0%, rgb(15 23 42 / .35) 65%, transparent 100%);
 }
 
-.popular-game-body h3 {
-    @apply line-clamp-1 text-[13px] font-bold text-heading sm:text-sm lg:text-[15px];
+.popular-game-overlay h3 {
+    @apply line-clamp-1 text-[12px] font-bold text-white sm:text-sm;
 }
 
-.popular-game-body p {
-    @apply line-clamp-1 text-[11px] text-muted sm:text-xs;
-}
-
-/* ==========================================================================
-   Section Link
-   ========================================================================== */
-
-.popular-games-link {
-    @apply flex shrink-0 items-center gap-1 text-sm font-semibold text-primary transition-colors;
-}
-
-.popular-games-link:hover {
-    color: var(--color-primary-600);
+.popular-game-overlay p {
+    @apply line-clamp-1 text-[10px] text-white/70 sm:text-xs;
 }
