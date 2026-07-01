@@ -1,5 +1,5 @@
 .popular-games-grid {
-    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3;
+    @apply grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-3;
 }
 
 /* ==========================================================================
@@ -7,7 +7,7 @@
    ========================================================================== */
 
 .popular-game-card {
-    @apply relative flex items-center gap-3 overflow-hidden rounded-2xl border border-border bg-white p-3 transition-all duration-300;
+    @apply relative flex items-center gap-2.5 overflow-hidden rounded-2xl border border-border bg-white p-2.5 transition-all duration-300 sm:gap-3 sm:p-3;
 }
 
 .popular-game-card::before {
@@ -36,7 +36,7 @@
    ========================================================================== */
 
 .popular-game-image {
-    @apply relative z-10 h-14 w-14 shrink-0 overflow-hidden rounded-xl lg:h-16 lg:w-16;
+    @apply relative z-10 h-12 w-12 shrink-0 overflow-hidden rounded-lg sm:h-14 sm:w-14 sm:rounded-xl lg:h-16 lg:w-16;
 }
 
 .popular-game-image img {
@@ -52,11 +52,11 @@
 }
 
 .popular-game-body h3 {
-    @apply line-clamp-1 text-sm font-bold text-heading lg:text-[15px];
+    @apply line-clamp-1 text-[13px] font-bold text-heading sm:text-sm lg:text-[15px];
 }
 
 .popular-game-body p {
-    @apply line-clamp-1 text-xs text-muted;
+    @apply line-clamp-1 text-[11px] text-muted sm:text-xs;
 }
 
 /* ==========================================================================
