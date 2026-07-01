@@ -1,50 +1,7 @@
-.popular-games-grid {
-    @apply grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6;
+.popular-games-link {
+    @apply flex shrink-0 items-center gap-1 text-sm font-semibold text-primary transition-colors;
 }
 
-/* ==========================================================================
-   Card
-   ========================================================================== */
-
-.popular-game-card {
-    @apply block overflow-hidden rounded-2xl transition-all duration-300;
-}
-
-.popular-game-card:hover {
-    @apply -translate-y-1;
-    box-shadow: 0 10px 30px rgb(15 23 42 / .12);
-}
-
-.popular-game-card:hover .popular-game-image img {
-    @apply scale-105;
-}
-
-/* ==========================================================================
-   Image
-   ========================================================================== */
-
-.popular-game-image {
-    @apply relative overflow-hidden rounded-2xl;
-    aspect-ratio: 3 / 4;
-}
-
-.popular-game-image img {
-    @apply h-full w-full object-cover transition-transform duration-300;
-}
-
-/* ==========================================================================
-   Overlay
-   ========================================================================== */
-
-.popular-game-overlay {
-    @apply absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-2.5 sm:p-3;
-    background: linear-gradient(to top, rgb(15 23 42 / .85) 0%, rgb(15 23 42 / .35) 65%, transparent 100%);
-}
-
-.popular-game-overlay h3 {
-    @apply line-clamp-1 text-[12px] font-bold text-white sm:text-sm;
-}
-
-.popular-game-overlay p {
-    @apply line-clamp-1 text-[10px] text-white/70 sm:text-xs;
+.popular-games-link:hover {
+    color: var(--color-primary-600);
 }

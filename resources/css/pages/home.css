@@ -3,4 +3,6 @@
 @import "swiper/css/pagination";
 @import "../components/home/banner.css";
 @import "../components/home/flashsale.css";
+@import "../components/home/game-card.css";
 @import "../components/home/popular-games.css";
+@import "../components/home/category-games.css";

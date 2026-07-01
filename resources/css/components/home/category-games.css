@@ -1,0 +1,26 @@
+.category-tabs {
+    @apply mb-6 flex gap-2 overflow-x-auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.category-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.category-tab {
+    @apply flex shrink-0 items-center gap-2 rounded-full border border-border bg-white px-4 py-2.5 text-sm font-semibold text-body transition-all duration-300;
+}
+
+.category-tab img {
+    @apply h-5 w-5 rounded-full object-cover;
+}
+
+.category-tab:hover {
+    @apply border-primary text-primary;
+}
+
+.category-tab.is-active {
+    @apply border-primary bg-primary text-white;
+    box-shadow: 0 6px 16px rgb(59 130 246 / .25);
+}

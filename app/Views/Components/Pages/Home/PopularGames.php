@@ -22,24 +22,25 @@
                 </a>
             </div>
 
-            <div class="popular-games-grid">
+            <div class="games-grid">
                 <?php foreach ($popular_games as $game) : ?>
                     <?php
                         $image = !empty($game['image'])
                             ? base_url('assets/images/games/icons/' . $game['image'])
-                            : 'https://placehold.co/300x300';
+                            : 'https://placehold.co/300x400';
                     ?>
                     <a
-                            href="<?= base_url('games/' . $game['slug']) ?>"
-                        class="popular-game-card"
+                        href="<?= base_url('games/' . $game['slug']) ?>"
+                        class="game-card"
                     >
-                        <div class="popular-game-image">
+                        <div class="game-image">
                             <img
                                 src="<?= esc($image) ?>"
                                 alt="<?= esc($game['games']) ?>"
                                 loading="lazy"
                             >
-                            <div class="popular-game-overlay">
+
+                            <div class="game-overlay">
                                 <h3>
                                     <?= esc($game['games']) ?>
                                 </h3>

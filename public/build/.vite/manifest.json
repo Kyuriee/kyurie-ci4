@@ -25,7 +25,7 @@
     ]
   },
   "resources/css/pages/home.css": {
-    "file": "assets/home_css-qBHhZt_M.css",
+    "file": "assets/home_css-77NhUGkI.css",
     "name": "home_css",
     "names": [
       "home_css.css"
@@ -46,7 +46,7 @@
     ]
   },
   "resources/js/pages/home.js": {
-    "file": "assets/home_js-BXkAJeZC.js",
+    "file": "assets/home_js-PG652VRg.js",
     "name": "home_js",
     "src": "resources/js/pages/home.js",
     "isEntry": true,

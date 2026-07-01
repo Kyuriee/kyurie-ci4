@@ -1,0 +1,38 @@
+.games-grid {
+    @apply grid grid-cols-3 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6;
+}
+
+.game-card {
+    @apply block overflow-hidden rounded-2xl transition-all duration-300;
+}
+
+.game-card:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 10px 30px rgb(15 23 42 / .12);
+}
+
+.game-card:hover .game-image img {
+    @apply scale-105;
+}
+
+.game-image {
+    @apply relative overflow-hidden rounded-2xl;
+    aspect-ratio: 3 / 4;
+}
+
+.game-image img {
+    @apply h-full w-full object-cover transition-transform duration-300;
+}
+
+.game-overlay {
+    @apply absolute inset-x-0 bottom-0 flex flex-col gap-0.5 p-2.5 sm:p-3;
+    background: linear-gradient(to top, rgb(15 23 42 / .85) 0%, rgb(15 23 42 / .35) 65%, transparent 100%);
+}
+
+.game-overlay h3 {
+    @apply line-clamp-1 text-[12px] font-bold text-white sm:text-sm;
+}
+
+.game-overlay p {
+    @apply line-clamp-1 text-[10px] text-white/70 sm:text-xs;
+}

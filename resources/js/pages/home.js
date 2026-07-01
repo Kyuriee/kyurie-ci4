@@ -6,4 +6,4 @@ document.addEventListener('alpine:init', () => {
 });
 import '../components/home/banner';
 import '../components/home/flashsale';
-
+import '../components/home/category-games';
