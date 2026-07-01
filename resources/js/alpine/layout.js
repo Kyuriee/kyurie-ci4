@@ -3,7 +3,7 @@ import axios from 'axios';
 export default () => ({
     mobileMenu: false,
     mobileSearch: false,
-    profileMenu: false,
+    userMenu: false,
 
     searchKeyword: '',
     searchResults: [],
@@ -82,6 +82,6 @@ export default () => ({
     },
 
     toggleProfile() {
-        this.profileMenu = !this.profileMenu;
+        this.userMenu = !this.userMenu;
     },
 });

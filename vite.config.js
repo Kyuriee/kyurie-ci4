@@ -19,9 +19,13 @@ export default defineConfig({
                 /* ========= Global ========= */
                 app_css: 'resources/css/app.css',
                 app_js: 'resources/js/app.js',
+                /* ========= Layout Auth (Independent) ========= */
+                auth_css: 'resources/css/auth.css',
+                auth_js: 'resources/js/auth.js',
                 /* ========= Pages ========= */
                 home_css: 'resources/css/pages/home.css',
                 home_js: 'resources/js/pages/home.js',
+
                 // login_css: 'resources/css/pages/login.css',
                 // login_js: 'resources/js/pages/login.js',
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<?= esc($meta['lang'] ?? 'id') ?>">
     <head>
-        <?= view('Components/Layout/Main/Head') ?>
+        <?= view('Components/Layouts/Main/Head') ?>
     </head>
     <body
         x-data="layoutApp()"
@@ -9,16 +9,16 @@
         class="min-h-screen bg-background text-body antialiased"
     >
         <!-- Header -->
-        <?= view('Components/Layout/Main/Header') ?>
+        <?= view('Components/Layouts/Main/Header') ?>
         <!-- Mobile Menu -->
-        <?= view('Components/Layout/Main/MobileMenu') ?>
+        <?= view('Components/Layouts/Main/MobileMenu') ?>
         <!-- Main Content -->
         <main class="min-h-screen">
             <?= $this->renderSection('content') ?>
         </main>
         <!-- Footer -->
-        <?= view('Components/Layout/Main/Footer') ?>
+        <?= view('Components/Layouts/Main/Footer') ?>
         <!-- Scripts -->
-        <?= view('Components/Layout/Main/Scripts') ?>
+        <?= view('Components/Layouts/Main/Scripts') ?>
     </body>
 </html>

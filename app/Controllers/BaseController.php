@@ -38,12 +38,6 @@ abstract class BaseController extends Controller
                 'match' => '',
             ],
             [
-                'title' => 'Games',
-                'url'   => base_url('games'),
-                'icon'  => 'bi-joystick',
-                'match' => 'games',
-            ],
-            [
                 'title' => 'Promo',
                 'url'   => base_url('promo'),
                 'icon'  => 'bi-ticket-perforated-fill',

@@ -80,7 +80,7 @@ class Auth extends BaseController
 
         $data = ['meta' => ['title' => 'Login']];
         $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
-        return $this->renderView('Auth/login', $data);
+        return $this->renderView('Pages/Auth/Login', $data);
     }
 
     public function register()
@@ -90,7 +90,6 @@ class Auth extends BaseController
         }
 
         if ($this->request->is('post')) {
-            // Validasi Input Pendaftaran Wajib Standar Production
             $rules = [
                 'username' => [
                     'rules'  => 'required|alpha_numeric|min_length[4]|max_length[100]|is_unique[users.username]',
@@ -135,10 +134,7 @@ class Auth extends BaseController
 
             if (! $this->validate($rules)) {
                 $errors = $this->validator->getErrors();
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => implode('<br>', $errors),
-                ]);
+                $this->session->setFlashdata('error', implode('<br>', $errors));
                 return redirect()->back()->withInput();
             }
 
@@ -150,23 +146,16 @@ class Auth extends BaseController
             ]);
 
             if ($result['success']) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'success',
-                    'message' => 'Pendaftaran berhasil, silakan login!',
-                ]);
-                return redirect()->to('auth/login');
+                $this->session->setFlashdata('success', 'Pendaftaran berhasil, silakan login!');
+                return redirect()->to('auth');
             }
 
-            $this->session->setFlashdata('alert', [
-                'type'    => 'error',
-                'message' => $result['message'],
-            ]);
-            return redirect()->back();
+            $this->session->setFlashdata('error', $result['message']);
+            return redirect()->back()->withInput();
         }
 
-        $data = ['meta' => ['title' => 'Daftar']];
-        $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
-        return $this->renderView('Auth/register', $data);
+        $data = ['meta' => ['title' => 'Daftar Akun']];
+        return $this->renderView('Pages/Auth/register', $data); 
     }
 
     public function logout()
@@ -211,7 +200,7 @@ class Auth extends BaseController
 
         $data = ['meta' => ['title' => 'Lupa Password']];
         $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
-        return $this->renderView('Auth/forgot', $data);
+        return $this->renderView('Pages/Auth/Forgot', $data);
     }
 
     public function reset(string $token)
@@ -241,7 +230,7 @@ class Auth extends BaseController
                     'type'    => 'success',
                     'message' => 'Password berhasil diubah. Silakan login dengan password baru.',
                 ]);
-                return redirect()->to('auth/login');
+                return redirect()->to('Auth/Login');
             }
 
             $this->session->setFlashdata('alert', [
@@ -256,11 +245,15 @@ class Auth extends BaseController
             'token' => $token
         ];
         $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
-        return $this->renderView('Auth/reset', $data);
+        return $this->renderView('Pages/Auth/Reset', $data);
     }
 
-    protected function _service(): AuthService
+   protected function _service(): \App\Services\AuthService
     {
-        return single_service(AuthService::class);
+        if (! isset($this->authService)) {
+            $this->authService = new \App\Services\AuthService();
+        }
+        
+        return $this->authService;
     }
 }

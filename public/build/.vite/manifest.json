@@ -12,12 +12,25 @@
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app_css-CNVsgldU.css",
+    "file": "assets/app_css-vzudINvz.css",
     "name": "app_css",
     "names": [
       "app_css.css"
     ],
     "src": "resources/css/app.css",
+    "isEntry": true,
+    "assets": [
+      "assets/bootstrap-icons-mSm7cUeB.woff2",
+      "assets/bootstrap-icons-BeopsB42.woff"
+    ]
+  },
+  "resources/css/auth.css": {
+    "file": "assets/auth_css-CpvYgllf.css",
+    "name": "auth_css",
+    "names": [
+      "auth_css.css"
+    ],
+    "src": "resources/css/auth.css",
     "isEntry": true,
     "assets": [
       "assets/bootstrap-icons-mSm7cUeB.woff2",
@@ -34,7 +47,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app_js-CguXZzJi.js",
+    "file": "assets/app_js-Cbz3hfo5.js",
     "name": "app_js",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -43,6 +56,15 @@
     ],
     "css": [
       "assets/app_js-DmHed3W8.css"
+    ]
+  },
+  "resources/js/auth.js": {
+    "file": "assets/auth_js-Z5I1JZeL.js",
+    "name": "auth_js",
+    "src": "resources/js/auth.js",
+    "isEntry": true,
+    "imports": [
+      "_module.esm-CWk4R-Yb.js"
     ]
   },
   "resources/js/pages/home.js": {
