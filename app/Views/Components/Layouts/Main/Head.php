@@ -33,18 +33,9 @@ $twitterCard  = $seo['twitter_card'] ?? 'summary_large_image';
 ?>
 
 <meta charset="utf-8">
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
->
-<meta
-    name="theme-color"
-    content="#4F46E5"
->
-<meta
-    name="robots"
-    content="<?= esc($robots) ?>"
->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#3B82F6">
+<meta name="robots" content="<?= esc($robots) ?>">
 <title><?= esc($title) ?></title>
 <?php if ($description): ?>
 <meta

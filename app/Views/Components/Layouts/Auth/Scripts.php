@@ -3,6 +3,9 @@ $page_assets ??= [];
 $page_assets['js'] ??= [];
 ?>
 
+<!-- Global Alert Bridge -->
+<?= view('Components/Alert', ['alert' => $alert ?? null]) ?>
+
 <!-- Global Auth JS (Independent) -->
 <?= vite_js('resources/js/auth.js') ?>
 

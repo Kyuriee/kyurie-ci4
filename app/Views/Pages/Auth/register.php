@@ -1,24 +1,25 @@
 <?= $this->extend('Layouts/Auth') ?>
 
 <?= $this->section('content') ?>
-<!-- Card Wrapper Berwarna Surface dengan font heading -->
-<div 
-    x-data="{ showPassword: false, showConfirmPassword: false }" 
-    class="bg-surface py-8 px-4 shadow-xl rounded-2xl border border-border/60 sm:px-10"
->
+<!-- Card Wrapper -->
+<div
+    x-data="{
+        showPassword: false,
+        showConfirmPassword: false,
+        password: '',
+        passwordConfirm: '',
+    }"
+    >
     <!-- Header Title -->
     <div class="mb-6 text-center">
-        <h2 class="text-2xl font-bold font-display tracking-tight text-heading">Buat Akun Baru</h2>
-        <p class="mt-1 text-sm text-muted">Bergabunglah dan mulai petualanganmu</p>
-    </div>
+        <h2 class="text-2xl font-bold tracking-tight text-heading">
+            Buat Akun Baru
+        </h2>
 
-    <!-- Validasi Error Flashdata (Jika Ada) -->
-    <?php if (session()->getFlashdata('error')): ?>
-        <div class="mb-4 flex items-center gap-2 rounded-xl bg-danger/10 p-4 text-sm text-danger border border-danger/20">
-            <i class="bi bi-exclamation-triangle-fill text-base shrink-0"></i>
-            <span><?= session()->getFlashdata('error') ?></span>
-        </div>
-    <?php endif; ?>
+        <p class="mt-1 text-sm text-muted">
+            Bergabunglah dan mulai petualanganmu
+        </p>
+    </div>
 
     <!-- Form Register -->
     <form action="<?= base_url('auth/register') ?>" method="POST" class="space-y-4">
@@ -26,139 +27,172 @@
 
         <!-- Input Username -->
         <div>
-            <label for="username" class="block text-sm font-semibold text-heading mb-1">Username</label>
-            <div class="relative rounded-xl">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
-                    <i class="bi bi-person text-base"></i>
+            <label for="username" class="mb-1 block text-sm font-semibold text-heading">
+                Username
+            </label>
+
+            <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted">
+                    <i class="bi bi-person"></i>
                 </div>
-                <input 
-                    type="text" 
-                    name="username" 
-                    id="username" 
-                    value="<?= old('username') ?>"
-                    required 
+
+                <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    value="<?= esc(old('username') ?? '') ?>"
+                    required
                     placeholder="Masukkan username unik"
-                    class="block w-full rounded-xl border border-border bg-white pl-10 pr-3.5 py-2 text-heading placeholder-muted focus:border-primary focus:outline-hidden focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                    class="input input-icon"
                 >
             </div>
         </div>
 
         <!-- Input Email -->
         <div>
-            <label for="email" class="block text-sm font-semibold text-heading mb-1">Alamat Email</label>
-            <div class="relative rounded-xl">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
-                    <i class="bi bi-envelope text-base"></i>
+            <label for="email" class="mb-1 block text-sm font-semibold text-heading">
+                Alamat Email
+            </label>
+
+            <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted">
+                    <i class="bi bi-envelope"></i>
                 </div>
-                <input 
-                    type="email" 
-                    name="email" 
-                    id="email" 
-                    value="<?= old('email') ?>"
-                    required 
+
+                <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value="<?= esc(old('email') ?? '') ?>"
+                    required
                     placeholder="nama@email.com"
-                    class="block w-full rounded-xl border border-border bg-white pl-10 pr-3.5 py-2 text-heading placeholder-muted focus:border-primary focus:outline-hidden focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                    class="input input-icon"
                 >
             </div>
         </div>
 
-        <!-- Input Nomor Telepon (Phone) -->
+        <!-- Input Nomor Telepon -->
         <div>
-            <label for="phone" class="block text-sm font-semibold text-heading mb-1">Nomor Telepon</label>
-            <div class="relative rounded-xl">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
-                    <i class="bi bi-telephone text-base"></i>
+            <label for="phone" class="mb-1 block text-sm font-semibold text-heading">
+                Nomor Telepon
+            </label>
+
+            <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted">
+                    <i class="bi bi-telephone"></i>
                 </div>
-                <input 
-                    type="tel" 
-                    name="phone" 
-                    id="phone" 
-                    value="<?= old('phone') ?>"
+
+                <input
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    value="<?= esc(old('phone') ?? '') ?>"
                     placeholder="0812xxxxxxxx"
-                    class="block w-full rounded-xl border border-border bg-white pl-10 pr-3.5 py-2 text-heading placeholder-muted focus:border-primary focus:outline-hidden focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                    class="input input-icon"
                 >
             </div>
         </div>
 
         <!-- Input Password -->
         <div>
-            <label for="password" class="block text-sm font-semibold text-heading mb-1">Password</label>
-            <div class="relative rounded-xl">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
-                    <i class="bi bi-lock text-base"></i>
+            <label for="password" class="mb-1 block text-sm font-semibold text-heading">
+                Password
+            </label>
+
+            <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted">
+                    <i class="bi bi-lock"></i>
                 </div>
-                <input 
-                    :type="showPassword ? 'text' : 'password'" 
-                    name="password" 
-                    id="password" 
-                    required 
+
+                <input
+                    x-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    name="password"
+                    id="password"
+                    required
                     placeholder="Minimal 8 karakter"
-                    class="block w-full rounded-xl border border-border bg-white pl-10 pr-10 py-2 text-heading placeholder-muted focus:border-primary focus:outline-hidden focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                    class="input input-icon pr-10"
                 >
-                <button 
-                    type="button" 
+
+                <button
+                    type="button"
                     @click="showPassword = !showPassword"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-muted hover:text-body transition-colors"
+                    :aria-pressed="showPassword"
+                    aria-label="Tampilkan atau sembunyikan password"
+                    class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-muted transition-colors hover:text-body"
                 >
-                    <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'" class="text-base"></i>
+                    <i :class="showPassword ? 'bi-eye-slash' : 'bi-eye'" class="bi"></i>
                 </button>
             </div>
         </div>
 
         <!-- Input Konfirmasi Password -->
         <div>
-            <label for="password_confirm" class="block text-sm font-semibold text-heading mb-1">Konfirmasi Password</label>
-            <div class="relative rounded-xl">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-muted">
-                    <i class="bi bi-shield-lock text-base"></i>
+            <label for="password_confirm" class="mb-1 block text-sm font-semibold text-heading">
+                Konfirmasi Password
+            </label>
+
+            <div class="relative">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-muted">
+                    <i class="bi bi-shield-lock"></i>
                 </div>
-                <input 
-                    :type="showConfirmPassword ? 'text' : 'password'" 
-                    name="password_confirm" 
-                    id="password_confirm" 
-                    required 
+
+                <input
+                    x-model="passwordConfirm"
+                    :type="showConfirmPassword ? 'text' : 'password'"
+                    name="password_confirm"
+                    id="password_confirm"
+                    required
                     placeholder="Ulangi password Anda"
-                    class="block w-full rounded-xl border border-border bg-white pl-10 pr-10 py-2 text-heading placeholder-muted focus:border-primary focus:outline-hidden focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                    class="input input-icon pr-10"
                 >
-                <button 
-                    type="button" 
+
+                <button
+                    type="button"
                     @click="showConfirmPassword = !showConfirmPassword"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-muted hover:text-body transition-colors"
+                    :aria-pressed="showConfirmPassword"
+                    aria-label="Tampilkan atau sembunyikan konfirmasi password"
+                    class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-muted transition-colors hover:text-body"
                 >
-                    <i :class="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'" class="text-base"></i>
+                    <i :class="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'" class="bi"></i>
                 </button>
             </div>
+
+            <p
+                x-show="passwordConfirm.length > 0 && password !== passwordConfirm"
+                x-cloak
+                class="mt-1.5 flex items-center gap-1 text-xs text-danger"
+            >
+                <i class="bi bi-exclamation-circle"></i>
+                Password tidak sama
+            </p>
         </div>
 
-        <!-- Terms and Condition Minimalis -->
+        <!-- Terms and Condition -->
         <div class="flex items-start py-1">
-            <input 
-                id="terms" 
-                name="terms" 
-                type="checkbox" 
+            <input
+                id="terms"
+                name="terms"
+                type="checkbox"
                 required
                 class="mt-1 h-4 w-4 rounded-sm border-border text-primary focus:ring-primary"
             >
-            <label for="terms" class="ml-2 block text-xs text-body select-none">
-                Saya menyetujui <a href="#" class="text-primary font-medium hover:underline">Ketentuan Layanan</a> dan <a href="#" class="text-primary font-medium hover:underline">Kebijakan Privasi</a> game.
+
+            <label for="terms" class="ml-2 block select-none text-xs text-body">
+                Saya menyetujui <a href="#" class="font-medium text-primary hover:underline">Ketentuan Layanan</a> dan <a href="#" class="font-medium text-primary hover:underline">Kebijakan Privasi</a> game.
             </label>
         </div>
 
         <!-- Submit Button -->
-        <div class="pt-2">
-            <button 
-                type="submit" 
-                class="flex w-full justify-center rounded-xl bg-primary px-4 py-2.5 text-sm font-bold font-display text-white shadow-md shadow-primary/10 hover:bg-primary-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all cursor-pointer"
-            >
-                Daftar Akun Sekarang
-            </button>
-        </div>
+        <button type="submit" class="btn btn-primary w-full">
+            Daftar Akun Sekarang
+        </button>
     </form>
 
     <!-- Login Link Footer -->
-    <p class="mt-6 text-center text-sm text-body">
-        Sudah punya ID? 
-        <a href="<?= base_url('auth/login') ?>" class="font-bold text-primary hover:text-primary-600 transition-colors">
+    <p class="mt-6 text-center text-sm text-muted">
+        Sudah punya akun?
+        <a href="<?= base_url('auth/login') ?>" class="font-semibold text-primary hover:text-primary-600 transition-colors">
             Login di sini
         </a>
     </p>

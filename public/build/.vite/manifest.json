@@ -3,6 +3,17 @@
     "file": "assets/module.esm-CWk4R-Yb.js",
     "name": "module.esm"
   },
+  "_sweetalert2-DmHed3W8.css": {
+    "file": "assets/sweetalert2-DmHed3W8.css",
+    "src": "_sweetalert2-DmHed3W8.css"
+  },
+  "_sweetalert2.min-CU9395XG.js": {
+    "file": "assets/sweetalert2.min-CU9395XG.js",
+    "name": "sweetalert2.min",
+    "css": [
+      "assets/sweetalert2-DmHed3W8.css"
+    ]
+  },
   "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff": {
     "file": "assets/bootstrap-icons-BeopsB42.woff",
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff"
@@ -12,7 +23,7 @@
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app_css-vzudINvz.css",
+    "file": "assets/app_css-DN9_1Kuc.css",
     "name": "app_css",
     "names": [
       "app_css.css"
@@ -25,7 +36,7 @@
     ]
   },
   "resources/css/auth.css": {
-    "file": "assets/auth_css-CpvYgllf.css",
+    "file": "assets/auth_css-DxG696YL.css",
     "name": "auth_css",
     "names": [
       "auth_css.css"
@@ -47,23 +58,22 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app_js-Cbz3hfo5.js",
+    "file": "assets/app_js-CVEokWwz.js",
     "name": "app_js",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
+      "_sweetalert2.min-CU9395XG.js",
       "_module.esm-CWk4R-Yb.js"
-    ],
-    "css": [
-      "assets/app_js-DmHed3W8.css"
     ]
   },
   "resources/js/auth.js": {
-    "file": "assets/auth_js-Z5I1JZeL.js",
+    "file": "assets/auth_js-CJwgL564.js",
     "name": "auth_js",
     "src": "resources/js/auth.js",
     "isEntry": true,
     "imports": [
+      "_sweetalert2.min-CU9395XG.js",
       "_module.esm-CWk4R-Yb.js"
     ]
   },

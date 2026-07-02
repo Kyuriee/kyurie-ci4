@@ -46,15 +46,27 @@ document.addEventListener('alpine:init', () => {
 
 /*
 |--------------------------------------------------------------------------
-| Global Alert
+| Global Toast (Flash Alert dari BaseController)
 |--------------------------------------------------------------------------
 */
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (el) => {
+        el.onmouseenter = Swal.stopTimer;
+        el.onmouseleave = Swal.resumeTimer;
+    },
+});
+window.Toast = Toast;
+
 window.addEventListener('DOMContentLoaded', () => {
     if (!window.__APP_ALERT__) return;
-    Swal.fire({
+
+    Toast.fire({
         icon: window.__APP_ALERT__.type ?? 'info',
-        title: window.__APP_ALERT__.title ?? '',
-        text: window.__APP_ALERT__.message ?? '',
-        confirmButtonText: 'Oke',
+        title: window.__APP_ALERT__.message ?? window.__APP_ALERT__.title ?? '',
     });
 });

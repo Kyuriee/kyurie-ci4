@@ -1,39 +1,51 @@
-@import "tailwindcss";
-@import 'bootstrap-icons/font/bootstrap-icons.css';
-@source "../../app/Views/**/*.php";
+@import "./app.css";
 
-@theme {
-    --font-display: "Plus Jakarta Sans", sans-serif;
-    --font-body: "Inter", sans-serif;
+/* ==========================================================================
+   Brand Panel
+   ========================================================================== */
 
-    --color-primary: #3B82F6;
-    --color-primary-600: #2563EB;
-    --color-primary-100: #DBEAFE;
-    --color-secondary: #F59E0B;
-
-    --color-background: #F8FAFC;
-    --color-surface: #FFFFFF;
-    --color-surface-soft: #F9FAFB;
-
-    --color-heading: #0F172A;
-    --color-body: #475569;
-    --color-muted: #94A3B8;
-
-    --color-border: #E2E8F0;
-
-    --color-success: #22C55E;
-    --color-danger: #EF4444;
-    --color-warning: #F59E0B;
+.bg-auth-panel {
+    background: linear-gradient(160deg, #0B1220 0%, #111C33 55%, #0B1220 100%);
 }
 
-/* Custom ambient gaming minimalist background pattern */
-.bg-game-ambient {
-    background-color: var(--color-background);
-    /* Menggunakan overlay gradient semi-transparent (92%) di atas gambar wallpaper gaming minimalis */
-    background-image:
-        linear-gradient(to bottom, rgba(248, 250, 252, 0.92), rgba(248, 250, 252, 0.96)),
-        url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+.auth-glow {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    opacity: .35;
+    pointer-events: none;
+}
+
+.auth-glow-primary {
+    top: -80px;
+    right: -80px;
+    height: 320px;
+    width: 320px;
+    background: var(--color-primary);
+}
+
+.auth-glow-secondary {
+    bottom: -100px;
+    left: -60px;
+    height: 280px;
+    width: 280px;
+    background: var(--color-secondary);
+}
+
+.auth-dot-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px);
+    background-size: 22px 22px;
+    -webkit-mask-image: radial-gradient(circle at 30% 40%, black, transparent 70%);
+    mask-image: radial-gradient(circle at 30% 40%, black, transparent 70%);
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Form
+   ========================================================================== */
+
+.input-icon {
+    @apply pl-10;
 }

@@ -28,11 +28,11 @@ class Auth extends BaseController
             // 2. Validasi Input dengan Custom Error Messages
             $rules = [
                 'username' => [
-                    'rules'  => 'required|alpha_numeric|min_length[3]|max_length[100]',
+                    'rules'  => 'required|min_length[3]|max_length[100]',
                     'errors' => [
-                        'required'      => 'Username wajib diisi.',
-                        'alpha_numeric' => 'Username hanya boleh berisi huruf dan angka.',
-                        'min_length'    => 'Username minimal 3 karakter.',
+                        'required'   => 'Username atau email wajib diisi.',
+                        'min_length' => 'Minimal 3 karakter.',
+                        'max_length' => 'Maksimal 100 karakter.',
                     ],
                 ],
                 'password' => [
@@ -79,7 +79,7 @@ class Auth extends BaseController
         }
 
         $data = ['meta' => ['title' => 'Login']];
-        $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
+        
         return $this->renderView('Pages/Auth/Login', $data);
     }
 
@@ -90,6 +90,14 @@ class Auth extends BaseController
         }
 
         if ($this->request->is('post')) {
+            $throttler = service('throttler');
+            if ($throttler->check('register_' . $this->request->getIPAddress(), 5, MINUTE) === false) {
+                $this->session->setFlashdata('alert', [
+                    'type'    => 'error',
+                    'message' => 'Terlalu banyak percobaan. Silakan coba lagi sebentar.',
+                ]);
+                return redirect()->back();
+            }
             $rules = [
                 'username' => [
                     'rules'  => 'required|alpha_numeric|min_length[4]|max_length[100]|is_unique[users.username]',
@@ -134,7 +142,10 @@ class Auth extends BaseController
 
             if (! $this->validate($rules)) {
                 $errors = $this->validator->getErrors();
-                $this->session->setFlashdata('error', implode('<br>', $errors));
+                $this->session->setFlashdata('alert', [
+                    'type'    => 'error',
+                    'message' => implode('<br>', $errors),
+                ]);
                 return redirect()->back()->withInput();
             }
 
@@ -146,16 +157,22 @@ class Auth extends BaseController
             ]);
 
             if ($result['success']) {
-                $this->session->setFlashdata('success', 'Pendaftaran berhasil, silakan login!');
-                return redirect()->to('auth');
+                $this->session->setFlashdata('alert', [
+                    'type'    => 'success',
+                    'message' => 'Pendaftaran berhasil, silakan login!',
+                ]);
+                return redirect()->to('auth/login');
             }
 
-            $this->session->setFlashdata('error', $result['message']);
+            $this->session->setFlashdata('alert', [
+                'type'    => 'error',
+                'message' => $result['message'],
+            ]);
             return redirect()->back()->withInput();
         }
 
         $data = ['meta' => ['title' => 'Daftar Akun']];
-        return $this->renderView('Pages/Auth/register', $data); 
+        return $this->renderView('Pages/Auth/Register', $data); 
     }
 
     public function logout()
@@ -176,6 +193,14 @@ class Auth extends BaseController
         }
 
         if ($this->request->is('post')) {
+            $throttler = service('throttler');
+            if ($throttler->check('forgot_' . $this->request->getIPAddress(), 3, MINUTE) === false) {
+                $this->session->setFlashdata('alert', [
+                    'type'    => 'error',
+                    'message' => 'Terlalu banyak percobaan. Silakan coba lagi sebentar.',
+                ]);
+                return redirect()->back();
+            }
             $rules = [
                 'email' => 'required|valid_email'
             ];
@@ -199,7 +224,6 @@ class Auth extends BaseController
         }
 
         $data = ['meta' => ['title' => 'Lupa Password']];
-        $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
         return $this->renderView('Pages/Auth/Forgot', $data);
     }
 
@@ -230,7 +254,7 @@ class Auth extends BaseController
                     'type'    => 'success',
                     'message' => 'Password berhasil diubah. Silakan login dengan password baru.',
                 ]);
-                return redirect()->to('Auth/Login');
+                return redirect()->to('auth/login');
             }
 
             $this->session->setFlashdata('alert', [
@@ -244,7 +268,6 @@ class Auth extends BaseController
             'meta'  => ['title' => 'Reset Password'],
             'token' => $token
         ];
-        $this->base_data['page_assets']['js'][] = 'resources/js/auth.js';
         return $this->renderView('Pages/Auth/Reset', $data);
     }
 

@@ -11,10 +11,13 @@ class AuthModel extends Model
     protected $returnType    = 'array';
     protected $protectFields = false;
 
-    public function verifyLogin(string $username, string $password): array
+    public function verifyLogin(string $identifier, string $password): array
     {
-        $user = $this->where('username', $username)
-            ->where('status', 'On')
+        $user = $this->where('status', 'On')
+            ->groupStart()
+                ->where('username', $identifier)
+                ->orWhere('email', $identifier)
+            ->groupEnd()
             ->first();
 
         if (! $user || ! password_verify($password, $user['password'])) {
