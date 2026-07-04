@@ -1,15 +1,29 @@
 {
+  "_axios-Ud-dKlLg.js": {
+    "file": "assets/axios-Ud-dKlLg.js",
+    "name": "axios",
+    "imports": [
+      "_rolldown-runtime-QTnfLwEv.js"
+    ]
+  },
   "_module.esm-CWk4R-Yb.js": {
     "file": "assets/module.esm-CWk4R-Yb.js",
     "name": "module.esm"
+  },
+  "_rolldown-runtime-QTnfLwEv.js": {
+    "file": "assets/rolldown-runtime-QTnfLwEv.js",
+    "name": "rolldown-runtime"
   },
   "_sweetalert2-DmHed3W8.css": {
     "file": "assets/sweetalert2-DmHed3W8.css",
     "src": "_sweetalert2-DmHed3W8.css"
   },
-  "_sweetalert2.min-CU9395XG.js": {
-    "file": "assets/sweetalert2.min-CU9395XG.js",
+  "_sweetalert2.min--2A83f0C.js": {
+    "file": "assets/sweetalert2.min--2A83f0C.js",
     "name": "sweetalert2.min",
+    "imports": [
+      "_rolldown-runtime-QTnfLwEv.js"
+    ],
     "css": [
       "assets/sweetalert2-DmHed3W8.css"
     ]
@@ -23,7 +37,7 @@
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app_css-DN9_1Kuc.css",
+    "file": "assets/app_css-S_te1ve-.css",
     "name": "app_css",
     "names": [
       "app_css.css"
@@ -36,7 +50,7 @@
     ]
   },
   "resources/css/auth.css": {
-    "file": "assets/auth_css-DxG696YL.css",
+    "file": "assets/auth_css-BEoaFrRa.css",
     "name": "auth_css",
     "names": [
       "auth_css.css"
@@ -48,6 +62,15 @@
       "assets/bootstrap-icons-BeopsB42.woff"
     ]
   },
+  "resources/css/pages/game.css": {
+    "file": "assets/game_css-CckFepRm.css",
+    "name": "game_css",
+    "names": [
+      "game_css.css"
+    ],
+    "src": "resources/css/pages/game.css",
+    "isEntry": true
+  },
   "resources/css/pages/home.css": {
     "file": "assets/home_css-77NhUGkI.css",
     "name": "home_css",
@@ -58,23 +81,36 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app_js-CVEokWwz.js",
+    "file": "assets/app_js-hQYfDFke.js",
     "name": "app_js",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_sweetalert2.min-CU9395XG.js",
-      "_module.esm-CWk4R-Yb.js"
+      "_rolldown-runtime-QTnfLwEv.js",
+      "_module.esm-CWk4R-Yb.js",
+      "_axios-Ud-dKlLg.js",
+      "_sweetalert2.min--2A83f0C.js"
     ]
   },
   "resources/js/auth.js": {
-    "file": "assets/auth_js-CJwgL564.js",
+    "file": "assets/auth_js-Cq185mZO.js",
     "name": "auth_js",
     "src": "resources/js/auth.js",
     "isEntry": true,
     "imports": [
-      "_sweetalert2.min-CU9395XG.js",
-      "_module.esm-CWk4R-Yb.js"
+      "_rolldown-runtime-QTnfLwEv.js",
+      "_module.esm-CWk4R-Yb.js",
+      "_sweetalert2.min--2A83f0C.js"
+    ]
+  },
+  "resources/js/pages/game.js": {
+    "file": "assets/game_js-CUiTKjKS.js",
+    "name": "game_js",
+    "src": "resources/js/pages/game.js",
+    "isEntry": true,
+    "imports": [
+      "_module.esm-CWk4R-Yb.js",
+      "_axios-Ud-dKlLg.js"
     ]
   },
   "resources/js/pages/home.js": {

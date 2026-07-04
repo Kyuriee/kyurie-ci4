@@ -52,6 +52,6 @@ class Payment extends baseController
 
     protected function _service(): PaymentService
     {
-        return single_service(PaymentService::class);
+        return single_service('paymentService');
     }
 }

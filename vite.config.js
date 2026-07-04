@@ -25,6 +25,8 @@ export default defineConfig({
                 /* ========= Pages ========= */
                 home_css: 'resources/css/pages/home.css',
                 home_js: 'resources/js/pages/home.js',
+                game_css: 'resources/css/pages/game.css',
+                game_js: 'resources/js/pages/game.js',
 
                 // login_css: 'resources/css/pages/login.css',
                 // login_js: 'resources/js/pages/login.js',

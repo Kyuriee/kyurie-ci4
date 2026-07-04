@@ -46,6 +46,6 @@ class User extends baseController
 
     protected function _service(): UserService
     {
-        return single_service(UserService::class);
+        return single_service('userService');
     }
 }

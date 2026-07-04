@@ -1,0 +1,162 @@
+@reference "../app.css";
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+
+.game-hero {
+    @apply relative overflow-hidden rounded-2xl lg:rounded-3xl;
+    aspect-ratio: 21 / 9;
+}
+
+.game-hero img {
+    @apply h-full w-full object-cover;
+}
+
+.game-hero-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(11 18 32 / .92) 0%, rgb(11 18 32 / .35) 55%, transparent 100%);
+}
+
+.game-hero-content {
+    @apply absolute inset-x-0 bottom-0 flex items-end gap-4 p-4 sm:p-6 lg:p-8;
+}
+
+.game-hero-icon {
+    @apply h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 border-white/20 shadow-lg sm:h-20 sm:w-20 lg:h-24 lg:w-24 lg:rounded-2xl;
+}
+
+.game-hero-icon img {
+    @apply h-full w-full object-cover;
+}
+
+.game-hero-title h1 {
+    @apply font-display text-xl font-extrabold leading-tight text-white sm:text-2xl lg:text-3xl;
+}
+
+.game-hero-title p {
+    @apply mt-1 text-xs text-white/70 sm:text-sm;
+}
+
+/* ==========================================================================
+   Denomination Grid
+   ========================================================================== */
+
+.denom-grid {
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3;
+}
+
+.denom-tile {
+    @apply relative flex flex-col items-start gap-1 rounded-xl border-2 border-border bg-white p-3.5 text-left transition-all duration-200;
+}
+
+.denom-tile:hover {
+    @apply border-primary/40;
+}
+
+.denom-tile.is-selected {
+    @apply border-primary bg-primary/[.04];
+    box-shadow: 0 0 0 3px rgb(59 130 246 / .12);
+}
+
+.denom-tile-check {
+    @apply absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] text-white;
+}
+
+.denom-tile-name {
+    @apply text-sm font-semibold text-heading;
+}
+
+.denom-tile-price {
+    @apply mt-1 text-base font-extrabold text-primary;
+}
+
+.denom-tile-price-normal {
+    @apply text-xs font-medium text-slate-400 line-through;
+}
+
+.denom-tile-badge {
+    @apply absolute -top-2 left-2.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-2 py-0.5 text-[10px] font-bold text-white;
+}
+
+/* ==========================================================================
+   Target ID Inputs
+   ========================================================================== */
+
+.target-input-grid {
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2;
+}
+
+/* ==========================================================================
+   Payment Method Grid
+   ========================================================================== */
+
+.payment-grid {
+    @apply grid grid-cols-1 gap-2.5 sm:grid-cols-2;
+}
+
+.payment-tile {
+    @apply flex items-center gap-3 rounded-xl border-2 border-border bg-white p-3 text-left transition-all duration-200;
+}
+
+.payment-tile:hover {
+    @apply border-primary/40;
+}
+
+.payment-tile.is-selected {
+    @apply border-primary bg-primary/[.04];
+}
+
+.payment-tile img {
+    @apply h-8 w-8 shrink-0 rounded-md object-contain;
+}
+
+.payment-tile-name {
+    @apply text-sm font-semibold text-heading;
+}
+
+/* ==========================================================================
+   Order Summary (sticky "receipt")
+   ========================================================================== */
+
+.order-summary {
+    @apply relative rounded-2xl border border-border bg-white p-5;
+    box-shadow: 0 10px 30px rgb(15 23 42 / .06);
+}
+
+.order-summary-divider {
+    @apply relative my-4 border-t-2 border-dashed border-border;
+}
+
+.order-summary-divider::before,
+.order-summary-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background: var(--color-background);
+    transform: translateY(-50%);
+}
+
+.order-summary-divider::before {
+    left: -1.25rem;
+}
+
+.order-summary-divider::after {
+    right: -1.25rem;
+}
+
+.order-summary-row {
+    @apply flex items-center justify-between text-sm;
+}
+
+.order-summary-row+.order-summary-row {
+    @apply mt-2;
+}
+
+.order-summary-total {
+    @apply flex items-center justify-between text-lg font-extrabold text-heading;
+}
