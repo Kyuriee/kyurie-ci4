@@ -23,7 +23,8 @@ class ProductModel extends Model
 
     public function getProductsByGame(int $gameId): array
     {
-        return $this->where('games_id', $gameId)
+        return $this->select('id, product, price')
+            ->where('games_id', $gameId)
             ->where('status', 'On')
             ->orderBy('sort', 'ASC')
             ->findAll();

@@ -13,7 +13,8 @@ class PaymentMethodModel extends Model
 
     public function getActive(): array
     {
-        return $this->where('status', 'On')
+        return $this->select('id, name, image')
+            ->where('status', 'On')
             ->orderBy('sort', 'ASC')
             ->findAll();
     }

@@ -73,8 +73,6 @@ class CheckoutService extends baseService
             if (empty($payment_method) || $payment_method['status'] !== 'On') {
                 return $this->fail('Metode pembayaran tidak tersedia');
             }
-        } else {
-            $payment_method = [];
         }
 
         $final_price = $this->priceService->getFinalPrice($product, $flashsale_item ?: null);
@@ -83,14 +81,7 @@ class CheckoutService extends baseService
             'success' => true,
             'message' => 'Pesanan siap',
             'data'    => [
-                'game'              => $game,
-                'product'           => $product,
-                'payment_method'    => $payment_method,
-                'customer_id'       => $customer_id,
-                'zone_id'           => $zone_id,
-                'flashsale_item_id' => $flashsale_item['id'] ?? null,
-                'final_price'       => $final_price,
-                'price_formatted'   => $this->priceService->formatPrice($final_price),
+                'price_formatted' => $this->priceService->formatPrice($final_price),
             ],
         ];
     }

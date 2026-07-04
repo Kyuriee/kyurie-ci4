@@ -38,23 +38,14 @@ class GameService extends baseService
             $flashsale_item = $this->flashsaleItemModel->getActiveForProduct((int) $product['id']);
             $final_price    = $this->priceService->getFinalPrice($product, $flashsale_item ?: null);
 
-            $product['is_flashsale']           = ! empty($flashsale_item);
-            $product['final_price']            = $final_price;
-            $product['final_price_formatted']  = $this->priceService->formatPrice($final_price);
-            $product['price_formatted']        = $this->priceService->formatPrice((float) ($product['price'] ?? 0));
-
-            if (! empty($flashsale_item)) {
-                $product['flashsale_item_id'] = (int) $flashsale_item['id'];
-                $product['flashsale_stock']   = (int) $flashsale_item['stock'];
-                $product['flashsale_sold']    = (int) $flashsale_item['sold'];
-                $product['flashsale_left']    = max(0, (int) $flashsale_item['stock'] - (int) $flashsale_item['sold']);
-            }
+            $product = $this->mapPublicProduct($product, $final_price, ! empty($flashsale_item));
         }
+        unset($product);
 
         $payment_methods = $this->paymentMethodModel->getActive();
 
         return [
-            'game'            => $game,
+            'game'            => $this->mapPublicGame($game),
             'products'        => $products,
             'payment_methods' => $payment_methods,
         ];
@@ -78,5 +69,29 @@ class GameService extends baseService
         }
 
         return $games;
+    }
+
+    protected function mapPublicGame(array $game): array
+    {
+        return [
+            'games'     => $game['games'],
+            'slug'      => $game['slug'],
+            'publisher' => $game['publisher'] ?? '',
+            'category'  => $game['category'] ?? '',
+            'image'     => $game['image'] ?? '',
+            'banner'    => $game['banner'] ?? '',
+            'target'    => $game['target'] ?? 'default',
+        ];
+    }
+
+    protected function mapPublicProduct(array $product, float $final_price, bool $is_flashsale): array
+    {
+        return [
+            'id'                    => (int) $product['id'],
+            'product'               => $product['product'],
+            'is_flashsale'          => $is_flashsale,
+            'final_price_formatted' => $this->priceService->formatPrice($final_price),
+            'price_formatted'       => $this->priceService->formatPrice((float) ($product['price'] ?? 0)),
+        ];
     }
 }
