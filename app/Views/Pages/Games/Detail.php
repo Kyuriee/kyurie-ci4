@@ -2,7 +2,7 @@
 
 <?= $this->section('content'); ?>
 <div
-    x-data="gameDetail('<?= esc($game['slug'], 'js') ?>', <?= json_encode($products) ?>)"
+    x-data="gameDetail('<?= esc($game['slug'], 'js') ?>', <?= esc(json_encode($products), 'attr') ?>)"
     class="section"
 >
     <div class="container-app">
