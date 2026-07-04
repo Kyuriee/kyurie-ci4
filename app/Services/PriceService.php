@@ -9,17 +9,19 @@ class PriceService extends baseService
         return ceil(($rawPrice * (100 + $marginPercent) / 100) + $marginNominal);
     }
 
-    public function getFinalPrice(array $product): float
+    public function getFinalPrice(array $product, ?array $flashsaleItem = null): float
     {
-        if (! empty($product['flashsale_price']) && (float) $product['flashsale_price'] > 0) {
-            return (float) $product['flashsale_price'];
+        $price = (float) ($product['price'] ?? 0);
+
+        if (empty($flashsaleItem)) {
+            return $price;
         }
 
-        if (! empty($product['discount_price']) && (float) $product['discount_price'] > 0) {
-            return (float) $product['discount_price'];
+        if ($flashsaleItem['discount_type'] === 'percent') {
+            return max(0, $price - ($price * (float) $flashsaleItem['discount_value'] / 100));
         }
 
-        return (float) ($product['price'] ?? 0);
+        return max(0, $price - (float) $flashsaleItem['discount_value']);
     }
 
     public function formatPrice(float $price): string

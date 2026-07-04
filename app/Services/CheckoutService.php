@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\FlashsaleItemModel;
 use App\Models\GameModel;
 use App\Models\PaymentMethodModel;
 use App\Models\ProductModel;
@@ -11,6 +12,7 @@ class CheckoutService extends baseService
     protected $gameModel;
     protected $productModel;
     protected $paymentMethodModel;
+    protected $flashsaleItemModel;
     protected $priceService;
 
     public function __construct()
@@ -18,6 +20,7 @@ class CheckoutService extends baseService
         $this->gameModel          = model(GameModel::class);
         $this->productModel       = model(ProductModel::class);
         $this->paymentMethodModel = model(PaymentMethodModel::class);
+        $this->flashsaleItemModel = model(FlashsaleItemModel::class);
         $this->priceService       = new PriceService();
     }
 
@@ -53,8 +56,11 @@ class CheckoutService extends baseService
             return $this->fail('Produk tidak sesuai dengan game');
         }
 
-        if ($product['stock'] <= 0) {
-            return $this->fail('Stok produk habis');
+        // Produk reguler unlimited stock. Kalau lagi flashsale, cek stok flashsale_items.
+        $flashsale_item = $this->flashsaleItemModel->getActiveForProduct($product_id);
+
+        if (! empty($flashsale_item) && (int) $flashsale_item['sold'] >= (int) $flashsale_item['stock']) {
+            return $this->fail('Stok flash sale untuk produk ini sudah habis');
         }
 
         if ($customer_id === '') {
@@ -71,19 +77,20 @@ class CheckoutService extends baseService
             $payment_method = [];
         }
 
-        $final_price = $this->priceService->getFinalPrice($product);
+        $final_price = $this->priceService->getFinalPrice($product, $flashsale_item ?: null);
 
         return [
             'success' => true,
             'message' => 'Pesanan siap',
             'data'    => [
-                'game'            => $game,
-                'product'         => $product,
-                'payment_method'  => $payment_method,
-                'customer_id'     => $customer_id,
-                'zone_id'         => $zone_id,
-                'final_price'     => $final_price,
-                'price_formatted' => $this->priceService->formatPrice($final_price),
+                'game'              => $game,
+                'product'           => $product,
+                'payment_method'    => $payment_method,
+                'customer_id'       => $customer_id,
+                'zone_id'           => $zone_id,
+                'flashsale_item_id' => $flashsale_item['id'] ?? null,
+                'final_price'       => $final_price,
+                'price_formatted'   => $this->priceService->formatPrice($final_price),
             ],
         ];
     }

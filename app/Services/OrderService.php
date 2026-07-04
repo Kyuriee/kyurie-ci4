@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\FlashsaleItemModel;
 use App\Models\GameModel;
 use App\Models\OrderModel;
 use App\Models\PaymentMethodModel;
@@ -13,6 +14,7 @@ class OrderService extends baseService
     protected $productModel;
     protected $orderModel;
     protected $paymentMethodModel;
+    protected $flashsaleItemModel;
     protected $priceService;
 
     public function __construct()
@@ -21,15 +23,16 @@ class OrderService extends baseService
         $this->productModel       = model(ProductModel::class);
         $this->orderModel         = model(OrderModel::class);
         $this->paymentMethodModel = model(PaymentMethodModel::class);
+        $this->flashsaleItemModel = model(FlashsaleItemModel::class);
         $this->priceService       = new PriceService();
     }
 
     public function create(array $payload): array
     {
-        $user_id         = (int) ($payload['user_id'] ?? 0);
-        $product_id      = (int) ($payload['product_id'] ?? 0);
-        $customer_id     = trim($payload['customer_id'] ?? '');
-        $zone_id         = trim($payload['zone_id'] ?? '');
+        $user_id           = (int) ($payload['user_id'] ?? 0);
+        $product_id        = (int) ($payload['product_id'] ?? 0);
+        $customer_id       = trim($payload['customer_id'] ?? '');
+        $zone_id           = trim($payload['zone_id'] ?? '');
         $payment_method_id = (int) ($payload['payment_method_id'] ?? 0);
 
         if ($user_id <= 0) {
@@ -56,8 +59,14 @@ class OrderService extends baseService
             return ['success' => false, 'message' => 'Game tidak ditemukan'];
         }
 
+        $flashsale_item = $this->flashsaleItemModel->getActiveForProduct($product_id);
+
+        if (! empty($flashsale_item) && (int) $flashsale_item['sold'] >= (int) $flashsale_item['stock']) {
+            return ['success' => false, 'message' => 'Stok flash sale untuk produk ini sudah habis'];
+        }
+
         $payment_method = $this->paymentMethodModel->find($payment_method_id);
-        $final_price    = $this->priceService->getFinalPrice($product);
+        $final_price    = $this->priceService->getFinalPrice($product, $flashsale_item ?: null);
 
         $invoice = $this->orderModel->generateInvoice();
 
@@ -65,6 +74,7 @@ class OrderService extends baseService
             'invoice'           => $invoice,
             'user_id'           => $user_id,
             'product_id'        => $product_id,
+            'flashsale_item_id' => $flashsale_item['id'] ?? null,
             'payment_method_id' => $payment_method_id ?: null,
             'customer_id'       => $customer_id,
             'zone_id'           => $zone_id ?: null,
@@ -89,6 +99,30 @@ class OrderService extends baseService
                 'payment'       => $payment_method,
             ],
         ];
+    }
+
+    /**
+     * Ganti status order. Kalau jadi 'success' dan order ini terikat ke
+     * flashsale item, otomatis nambah `sold` dan auto-off kalau stok habis.
+     *
+     * Belum ada yang manggil method ini — nunggu webhook/confirm-payment
+     * dibangun pas kita masuk ke Checkout & Payment flow.
+     */
+    public function markStatus(int $orderId, string $status, array $extra = []): bool
+    {
+        $order = $this->orderModel->find($orderId);
+
+        if (empty($order)) {
+            return false;
+        }
+
+        $updated = $this->orderModel->updateStatus($orderId, $status, $extra);
+
+        if ($updated && $status === 'success' && ! empty($order['flashsale_item_id'])) {
+            $this->flashsaleItemModel->incrementSold((int) $order['flashsale_item_id']);
+        }
+
+        return $updated;
     }
 
     public function getByToken(string $token): array
