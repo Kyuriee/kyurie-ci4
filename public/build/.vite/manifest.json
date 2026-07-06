@@ -81,7 +81,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app_js-hQYfDFke.js",
+    "file": "assets/app_js-D9TPzOx5.js",
     "name": "app_js",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -104,7 +104,7 @@
     ]
   },
   "resources/js/pages/game.js": {
-    "file": "assets/game_js-CUiTKjKS.js",
+    "file": "assets/game_js-Dh08Hssz.js",
     "name": "game_js",
     "src": "resources/js/pages/game.js",
     "isEntry": true,

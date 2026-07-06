@@ -121,7 +121,21 @@ class OrderService extends baseService
         $updated = $this->orderModel->updateStatus($orderId, $status, $extra);
 
         if ($updated && $status === 'success' && ! empty($order['flashsale_item_id'])) {
-            $this->flashsaleService->incrementSold((int) $order['flashsale_item_id']);
+            $stockOk = $this->flashsaleService->incrementSold((int) $order['flashsale_item_id']);
+
+            // incrementSold sekarang atomic (UPDATE ... WHERE sold < stock), jadi
+            // false di sini artinya stok flashsale-nya emang udah abis pas order
+            // ini confirm — bukan error fatal, tapi worth di-log biar ketauan
+            // ada order yang sukses dibayar tapi stok promo-nya udah kehabisan
+            // duluan (butuh follow up manual/CS ke customer).
+            if (! $stockOk) {
+                $this->logWarning(sprintf(
+                    'Order #%d (invoice %s) sukses tapi flashsale_item_id %d gagal increment — stok kemungkinan sudah habis.',
+                    $orderId,
+                    $order['invoice'] ?? '-',
+                    (int) $order['flashsale_item_id']
+                ));
+            }
         }
 
         return $updated;

@@ -127,9 +127,15 @@ abstract class BaseController extends Controller
     protected function responseJson(bool $success, string $message, $data = null)
     {
         return $this->response->setJSON([
-            'success' => $success,
-            'message' => $message,
-            'data'    => $data,
+            'success'   => $success,
+            'message'   => $message,
+            'data'      => $data,
+            // Config\Security::$regenerate = true bikin token CSRF rotate tiap
+            // kali verify() sukses. Tanpa ini, client (axios interceptor di
+            // app.js) gak pernah tau token-nya udah basi, dan request
+            // berikutnya (preview harga, submit order, dst) bakal kena
+            // "The action you requested is not allowed."
+            'csrf_hash' => function_exists('csrf_hash') ? csrf_hash() : null,
         ]);
     }
 }

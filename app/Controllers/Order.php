@@ -19,7 +19,7 @@ class Order extends baseController
 
         $result = $this->_checkout_service()->prepareOrder($payload);
 
-        return $this->response->setJSON($result);
+        return $this->responseJson($result['success'], $result['message'], $result['data'] ?? null);
     }
 
     public function create()

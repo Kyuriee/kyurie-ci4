@@ -9,6 +9,7 @@ class OrderModel extends Model
     protected $table         = 'orders';
     protected $primaryKey    = 'id';
     protected $returnType    = 'array';
+    protected $useTimestamps = true;
     protected $protectFields = false;
 
     public function insert($data = null, bool $returnID = true)

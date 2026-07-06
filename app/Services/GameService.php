@@ -56,8 +56,8 @@ class GameService extends baseService
     public function mapPublicGame(array $game): array
     {
         return [
-            'games'     => $game['games'],
-            'slug'      => $game['slug'],
+            'games'     => $game['games'] ?? '',
+            'slug'      => $game['slug'] ?? '',
             'publisher' => $game['publisher'] ?? '',
             'category'  => $game['category'] ?? '',
             'image'     => $game['image'] ?? '',

@@ -17,11 +17,14 @@ class PriceService extends baseService
             return $price;
         }
 
-        if ($flashsaleItem['discount_type'] === 'percent') {
-            return max(0, $price - ($price * (float) $flashsaleItem['discount_value'] / 100));
+        $discountType  = $flashsaleItem['discount_type'] ?? '';
+        $discountValue = (float) ($flashsaleItem['discount_value'] ?? 0);
+
+        if ($discountType === 'percent') {
+            return max(0, $price - ($price * $discountValue / 100));
         }
 
-        return max(0, $price - (float) $flashsaleItem['discount_value']);
+        return max(0, $price - $discountValue);
     }
 
     public function formatPrice(float $price): string

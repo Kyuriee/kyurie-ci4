@@ -17,14 +17,38 @@ window.Swal = Swal;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 const csrfToken = document.querySelector('meta[name="csrf-token"]');
 const csrfHeader = document.querySelector('meta[name="csrf-header"]');
+const csrfTokenName = document.querySelector('meta[name="csrf-token-name"]');
+
 if (csrfToken && csrfHeader) {
     axios.defaults.headers.common[csrfHeader.content] = csrfToken.content;
 }
+
 window.updateCsrf = (hash) => {
-    if (!hash || !csrfToken || !csrfHeader) return;
-    csrfToken.content = hash;
-    axios.defaults.headers.common[csrfHeader.content] = hash;
+    if (!hash) return;
+
+    if (csrfToken) {
+        csrfToken.content = hash;
+    }
+
+    if (csrfHeader) {
+        axios.defaults.headers.common[csrfHeader.content] = hash;
+    }
+
+    // Config\Security::$regenerate = true bikin hash rotate tiap request yang
+    // lolos CSRF check. Meta tag & axios header doang gak cukup — form asli
+    // (misal form "Buat Pesanan" di halaman detail game) submit native pake
+    // hidden input yang di-render sekali pas page load. Kalau input itu gak
+    // ikut disinkronin, dia bakal expired begitu ada request lain (misal
+    // preview harga) yang duluan regenerate token-nya.
+    if (csrfTokenName?.content) {
+        document
+            .querySelectorAll(`input[name="${csrfTokenName.content}"]`)
+            .forEach((input) => {
+                input.value = hash;
+            });
+    }
 };
+
 axios.interceptors.response.use(
     (response) => {
         if (response.data?.csrf_hash) {
@@ -32,7 +56,14 @@ axios.interceptors.response.use(
         }
         return response;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        // Body error (misal validasi gagal, bukan CSRF) tetep bisa bawa
+        // csrf_hash terbaru kalau lewat responseJson() — jangan dilewatin.
+        if (error.response?.data?.csrf_hash) {
+            window.updateCsrf(error.response.data.csrf_hash);
+        }
+        return Promise.reject(error);
+    }
 );
 
 /*

@@ -34,9 +34,18 @@ class ProductService extends baseService
 
         $products = $this->productModel->getProductsByGame($gameId);
 
+        if (empty($products)) {
+            return [];
+        }
+
+        // Ambil semua flashsale item aktif dalam 1 query (bukan query per produk
+        // di dalam loop) biar gak N+1 kalau produk per game jumlahnya banyak.
+        $productIds     = array_map(static fn (array $p) => (int) $p['id'], $products);
+        $flashsaleItems = $this->flashsaleService->getActiveItemsForProducts($productIds);
+
         foreach ($products as &$product) {
-            $flashsaleItem = $this->flashsaleService->getActiveItemForProduct((int) $product['id']);
-            $finalPrice    = $this->priceService->getFinalPrice($product, $flashsaleItem ?: null);
+            $flashsaleItem = $flashsaleItems[(int) $product['id']] ?? null;
+            $finalPrice    = $this->priceService->getFinalPrice($product, $flashsaleItem);
 
             $product = $this->mapPublicProduct($product, $finalPrice, ! empty($flashsaleItem));
         }

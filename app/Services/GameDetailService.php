@@ -19,17 +19,19 @@ class GameDetailService extends baseService
 
     public function getDetailPage(string $slug): array
     {
-        $game = $this->gameService->getActiveBySlug($slug);
+        return $this->safeCall(function () use ($slug) {
+            $game = $this->gameService->getActiveBySlug($slug);
 
-        if (empty($game)) {
-            return [];
-        }
+            if (empty($game)) {
+                return [];
+            }
 
-        return [
-            'game'            => $this->gameService->mapPublicGame($game),
-            'target_form'     => $this->targetService->getFormConfig($game['target'] ?? 'default', $game['input_custom'] ?? null),
-            'products'        => $this->productService->getPublicProductsByGame((int) $game['id']),
-            'payment_methods' => $this->paymentService->getActiveMethods(),
-        ];
+            return [
+                'game'            => $this->gameService->mapPublicGame($game),
+                'target_form'     => $this->targetService->getFormConfig($game['target'] ?? 'default', $game['input_custom'] ?? null),
+                'products'        => $this->productService->getPublicProductsByGame((int) $game['id']),
+                'payment_methods' => $this->paymentService->getActiveMethods(),
+            ];
+        }, []);
     }
 }
