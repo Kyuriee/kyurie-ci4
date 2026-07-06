@@ -21,11 +21,9 @@ class GameDetailService extends baseService
     {
         return $this->safeCall(function () use ($slug) {
             $game = $this->gameService->getActiveBySlug($slug);
-
             if (empty($game)) {
                 return [];
             }
-
             return [
                 'game'            => $this->gameService->mapPublicGame($game),
                 'target_form'     => $this->targetService->getFormConfig($game['target'] ?? 'default', $game['input_custom'] ?? null),

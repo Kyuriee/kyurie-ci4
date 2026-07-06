@@ -1,0 +1,43 @@
+@reference "../app.css";
+
+.payment-page {
+    @apply min-h-[70vh];
+}
+
+.payment-shell {
+    @apply mx-auto max-w-5xl;
+}
+
+.payment-heading {
+    @apply mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between;
+}
+
+.payment-actions {
+    @apply flex flex-col gap-2 sm:flex-row;
+}
+
+.payment-card {
+    @apply p-5 sm:p-6;
+}
+
+.payment-method-box {
+    @apply mt-4 flex items-center gap-4 rounded-xl border border-border bg-background p-4;
+}
+
+.payment-receipt {
+    @apply sticky top-24 rounded-2xl border border-border bg-white p-5 shadow-soft;
+}
+
+.payment-check-shell {
+    @apply mx-auto max-w-xl;
+}
+
+.payment-check-heading {
+    @apply mb-6 text-center;
+}
+
+@media (max-width: 1023px) {
+    .payment-receipt {
+        @apply static;
+    }
+}

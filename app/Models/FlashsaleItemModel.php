@@ -37,6 +37,40 @@ class FlashsaleItemModel extends Model
         return $data ?? [];
     }
 
+    public function getActiveForProducts(array $productIds): array
+    {
+        $productIds = array_values(array_unique(array_filter(array_map('intval', $productIds))));
+
+        if (empty($productIds)) {
+            return [];
+        }
+
+        $now = date('Y-m-d H:i:s');
+
+        $rows = $this->select('flashsale_items.*, flashsale.date_start, flashsale.date_end')
+            ->join('flashsale', 'flashsale.id = flashsale_items.flashsale_id')
+            ->whereIn('flashsale_items.product_id', $productIds)
+            ->where('flashsale_items.status', 'On')
+            ->where('flashsale.status', 'On')
+            ->where('flashsale.date_start <=', $now)
+            ->where('flashsale.date_end >=', $now)
+            ->orderBy('flashsale_items.product_id', 'ASC')
+            ->orderBy('flashsale_items.sort_order', 'ASC')
+            ->findAll();
+
+        $items = [];
+
+        foreach ($rows as $row) {
+            $productId = (int) ($row['product_id'] ?? 0);
+
+            if ($productId > 0 && ! isset($items[$productId])) {
+                $items[$productId] = $row;
+            }
+        }
+
+        return $items;
+    }
+
     public function consumeStock(int $id): bool
     {
         $this->builder()

@@ -6,10 +6,6 @@ class TargetService extends baseService
 {
     protected const MAX_ZONE_INPUTS = 6;
 
-    // Karakter yang diizinkan buat value account_id/zone_id: huruf, angka, - dan _.
-    // Cukup longgar buat nampung kebanyakan format ID game, tapi tetep nolak simbol aneh/whitespace.
-    protected const VALUE_PATTERN = '/^[A-Za-z0-9_-]{1,50}$/';
-
     public function getFormConfig(?string $target, $inputCustom = null): array
     {
         $target = strtolower(trim((string) $target));
@@ -18,22 +14,12 @@ class TargetService extends baseService
             $target = 'default';
         }
 
-        if ($target === 'custom') {
-            $customInputs = $this->decodeCustomInputs($inputCustom);
+        $customInputs = $target === 'custom'
+            ? $this->decodeCustomInputs($inputCustom)
+            : [];
 
-            if (! empty($customInputs)) {
-                return $this->buildConfig('custom', $customInputs);
-            }
-
-            // Fallback ke default kejadian kalau input_custom kosong/invalid.
-            // Ini ditandain sebagai warning karena artinya game ini SEHARUSNYA
-            // punya form custom (misal butuh Zone ID) tapi malah jatuh ke form
-            // polos customer_id doang — user bisa checkout tanpa isi data yang
-            // sebenernya wajib buat top up di provider.
-            $this->logWarning(sprintf(
-                'Target custom fallback ke default karena input_custom kosong/invalid. Raw: %s',
-                is_string($inputCustom) ? $inputCustom : json_encode($inputCustom)
-            ));
+        if ($target === 'custom' && ! empty($customInputs)) {
+            return $this->buildConfig('custom', $customInputs);
         }
 
         return $this->buildConfig('default', [
@@ -62,20 +48,6 @@ class TargetService extends baseService
                 return [
                     'success' => false,
                     'message' => $input['label'] . ' tidak valid',
-                    'data'    => $this->buildTargetData($config, $values),
-                ];
-            }
-
-            // Validasi format buat input text di role account/zone (customer_id, zone_id, dst),
-            // biar gak ada karakter aneh/whitespace yang lolos ke request top up ke provider.
-            if (($input['type'] ?? 'text') === 'text'
-                && in_array($input['role'] ?? '', ['account', 'zone'], true)
-                && $value !== ''
-                && ! preg_match(self::VALUE_PATTERN, $value)
-            ) {
-                return [
-                    'success' => false,
-                    'message' => $input['label'] . ' hanya boleh berisi huruf, angka, - dan _',
                     'data'    => $this->buildTargetData($config, $values),
                 ];
             }
@@ -137,26 +109,17 @@ class TargetService extends baseService
 
     protected function inputFromArray(array $rawInput, int $index): array
     {
-        if ($index > self::MAX_ZONE_INPUTS) {
-            return [];
-        }
-
-        // Prioritaskan role eksplisit dari JSON kalau admin isi field "role".
-        // Fallback ke index-based cuma buat data lama yang belum punya field ini,
-        // biar gak salah mapping kalau urutan input di JSON kebalik.
-        $explicitRole = strtolower(trim((string) ($rawInput['role'] ?? '')));
-
-        if (! in_array($explicitRole, ['account', 'zone'], true)) {
-            $explicitRole = null;
-        }
-
         if ($index === 0) {
-            $key  = 'customer_id';
-            $role = $explicitRole ?? 'account';
+            $key = 'customer_id';
+            $role = 'account';
         } else {
             $zoneIndex = $index - 1;
-            $key       = $zoneIndex === 0 ? 'zone_id' : 'zone_id_' . $zoneIndex;
-            $role      = $explicitRole ?? 'zone';
+            $key = $zoneIndex === 0 ? 'zone_id' : 'zone_id_' . $zoneIndex;
+            $role = 'zone';
+        }
+
+        if ($index > self::MAX_ZONE_INPUTS) {
+            return [];
         }
 
         $type = strtolower(trim((string) ($rawInput['type'] ?? 'text')));
@@ -165,7 +128,7 @@ class TargetService extends baseService
         $placeholder = trim((string) ($rawInput['placeholder'] ?? ''));
         $options = $this->normalizeOptions($rawInput['options'] ?? []);
 
-        if (! in_array($type, ['text', 'select'], true)) {
+        if (! in_array($type, ['text', 'number', 'select'], true)) {
             $type = 'text';
         }
 

@@ -25,7 +25,10 @@ class Payment extends baseController
             'game'            => $game,
         ];
 
-        return $this->renderView('pages/payment/detail', $data);
+        $this->base_data['page_assets']['css'][] = 'resources/css/pages/payment.css';
+        $this->base_data['page_assets']['js'][]  = 'resources/js/pages/payment.js';
+
+        return $this->renderView('Pages/Payment/Detail', $data);
     }
 
     public function check()
@@ -47,7 +50,11 @@ class Payment extends baseController
         }
 
         $data = ['meta' => ['title' => 'Cek Pembayaran']];
-        return $this->renderView('pages/payment/check', $data);
+
+        $this->base_data['page_assets']['css'][] = 'resources/css/pages/payment.css';
+        $this->base_data['page_assets']['js'][]  = 'resources/js/pages/payment.js';
+
+        return $this->renderView('Pages/Payment/Check', $data);
     }
 
     protected function _service(): OrderService
