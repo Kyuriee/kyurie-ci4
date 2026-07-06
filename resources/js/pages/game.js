@@ -40,7 +40,7 @@ document.addEventListener('alpine:init', () => {
             clearTimeout(this.debounceTimer);
             this.previewError = '';
 
-            if (!this.selectedProductId || !this.hasRequiredTargetInputs) {
+            if (!this.selectedProductId || !this.selectedPaymentMethodId || !this.hasRequiredTargetInputs) {
                 this.previewResult = null;
                 return;
             }

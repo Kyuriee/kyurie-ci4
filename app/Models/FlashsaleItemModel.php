@@ -37,81 +37,21 @@ class FlashsaleItemModel extends Model
         return $data ?? [];
     }
 
-    /**
-     * Versi batch dari getActiveForProduct(), 1 query buat banyak product_id
-     * sekaligus (biar gak N+1 pas dipanggil dari daftar produk per game).
-     * Return keyed by product_id.
-     */
-    public function getActiveForProducts(array $productIds): array
+    public function consumeStock(int $id): bool
     {
-        $productIds = array_values(array_unique(array_filter(
-            array_map('intval', $productIds),
-            static fn ($id) => $id > 0
-        )));
+        $this->builder()
+            ->set('status', "CASE WHEN sold + 1 >= stock THEN 'Off' ELSE status END", false)
+            ->set('sold', 'sold + 1', false)
+            ->where('id', $id)
+            ->where('status', 'On')
+            ->where('sold < stock', null, false)
+            ->update();
 
-        if (empty($productIds)) {
-            return [];
-        }
-
-        $now = date('Y-m-d H:i:s');
-
-        $rows = $this->select('flashsale_items.*, flashsale.date_start, flashsale.date_end')
-            ->join('flashsale', 'flashsale.id = flashsale_items.flashsale_id')
-            ->whereIn('flashsale_items.product_id', $productIds)
-            ->where('flashsale_items.status', 'On')
-            ->where('flashsale.status', 'On')
-            ->where('flashsale.date_start <=', $now)
-            ->where('flashsale.date_end >=', $now)
-            ->findAll();
-
-        $keyed = [];
-
-        foreach ($rows as $row) {
-            $keyed[(int) $row['product_id']] = $row;
-        }
-
-        return $keyed;
+        return $this->db->affectedRows() > 0;
     }
 
-    /**
-     * Nambah `sold` secara atomic pake UPDATE ... WHERE sold < stock,
-     * bukan read-then-write (find() lalu update()) kayak sebelumnya.
-     *
-     * Kenapa penting: pattern lama rawan race condition — dua request
-     * konkuren yang barengan confirm order bisa sama-sama baca `sold` yang
-     * sama sebelum salah satunya sempet nulis, hasilnya oversold (sold
-     * kelewat dari stock). Dengan satu UPDATE atomic yang row-locked di
-     * level DB, cuma satu request yang bakal berhasil kalau stok tinggal 1.
-     *
-     * @return bool true kalau increment berhasil (masih ada stok), false kalau
-     *              item gak ketemu atau stok emang udah habis.
-     */
-    public function incrementSold(int $id): bool
+    public function incrementSold(int $id): void
     {
-        if ($id <= 0) {
-            return false;
-        }
-
-        $builder = $this->builder();
-
-        $builder->set('sold', 'sold + 1', false)
-            ->where('id', $id)
-            ->where('sold < stock', null, false);
-
-        $builder->update();
-
-        $affected = $this->db->affectedRows();
-
-        if ($affected <= 0) {
-            return false;
-        }
-
-        $item = $this->select('sold, stock')->find($id);
-
-        if ($item && (int) $item['sold'] >= (int) $item['stock']) {
-            $this->update($id, ['status' => 'Off']);
-        }
-
-        return true;
+        $this->consumeStock($id);
     }
 }

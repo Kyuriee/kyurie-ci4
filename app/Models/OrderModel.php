@@ -15,51 +15,63 @@ class OrderModel extends Model
     public function insert($data = null, bool $returnID = true)
     {
         $data['payment_token'] = bin2hex(random_bytes(16));
-
         return parent::insert($data, $returnID);
     }
 
     public function find($id = null): array
     {
         $data = parent::find($id);
-
         return $data ?? [];
     }
 
     public function findByInvoice(string $invoice): array
     {
         $data = $this->where('invoice', $invoice)->first();
-
         return $data ?? [];
     }
 
     public function findByToken(string $token): array
     {
         $data = $this->where('payment_token', $token)->first();
-
         return $data ?? [];
     }
 
     public function findByTokenWithGame(string $token): array
     {
-        $data = $this->select('orders.*, games.id as game_id, games.games, games.slug, games.image, games.banner, games.description, games.target')
+        $data = $this->select('orders.*, games.id as game_id, games.games, games.slug, games.image, games.banner, games.description, games.target, games.input_custom')
             ->join('product', 'product.id = orders.product_id', 'left')
             ->join('games', 'games.id = product.games_id', 'left')
             ->where('orders.payment_token', $token)
             ->first();
-
         return $data ?? [];
     }
 
     public function updateStatus(int $id, string $status, array $extra = []): bool
     {
         $data = array_merge(['status' => $status], $extra);
-
         if ($status === 'success' && ! isset($data['paid_at'])) {
             $data['paid_at'] = date('Y-m-d H:i:s');
         }
-
         return $this->update($id, $data);
+    }
+
+    public function updateStatusIfNot(int $id, string $status, string $excludedStatus, array $extra = []): bool
+    {
+        $now = date('Y-m-d H:i:s');
+
+        $data = array_merge(['status' => $status], $extra);
+        $data['updated_at'] = $now;
+
+        if ($status === 'success' && ! isset($data['paid_at'])) {
+            $data['paid_at'] = $now;
+        }
+
+        $this->builder()
+            ->set($data)
+            ->where('id', $id)
+            ->where('status !=', $excludedStatus)
+            ->update();
+        return $this->db->affectedRows() > 0;
     }
 
     public function getByUser(int $userId, int $limit = 20, int $offset = 0): array

@@ -69,12 +69,14 @@ class CheckoutService extends baseService
             return $this->fail($target_validation['message']);
         }
 
-        if ($payment_method_id > 0) {
-            $payment_method = $this->paymentService->getActiveMethod($payment_method_id);
+        if ($payment_method_id <= 0) {
+            return $this->fail('Metode pembayaran wajib dipilih');
+        }
 
-            if (empty($payment_method)) {
-                return $this->fail('Metode pembayaran tidak tersedia');
-            }
+        $payment_method = $this->paymentService->getActiveMethod($payment_method_id);
+
+        if (empty($payment_method)) {
+            return $this->fail('Metode pembayaran tidak tersedia');
         }
 
         $final_price = $this->priceService->getFinalPrice($product, $flashsale_item ?: null);

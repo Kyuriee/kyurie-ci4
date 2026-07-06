@@ -20,7 +20,7 @@ class Game extends baseController
         $payment_methods = $result['payment_methods'];
         $data = [
             'meta'            => ['title' => $game['games']],
-            'seo'             => ['og_image' => $game['banner'] ?? ''],
+            'seo'             => ['og_image' => $game['image'] ?? ''],
             'game'            => $game,
             'target_form'     => $target_form,
             'products'        => $products,

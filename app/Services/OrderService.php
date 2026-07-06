@@ -67,7 +67,16 @@ class OrderService extends baseService
             return ['success' => false, 'message' => 'Stok flash sale untuk produk ini sudah habis'];
         }
 
-        $payment_method = $this->paymentService->getMethod($payment_method_id);
+        if ($payment_method_id <= 0) {
+            return ['success' => false, 'message' => 'Metode pembayaran wajib dipilih'];
+        }
+
+        $payment_method = $this->paymentService->getActiveMethod($payment_method_id);
+
+        if (empty($payment_method)) {
+            return ['success' => false, 'message' => 'Metode pembayaran tidak tersedia'];
+        }
+
         $final_price    = $this->priceService->getFinalPrice($product, $flashsale_item ?: null);
 
         $invoice = $this->orderModel->generateInvoice();
@@ -103,13 +112,6 @@ class OrderService extends baseService
         ];
     }
 
-    /**
-     * Ganti status order. Kalau jadi 'success' dan order ini terikat ke
-     * flashsale item, otomatis nambah `sold` dan auto-off kalau stok habis.
-     *
-     * Belum ada yang manggil method ini — nunggu webhook/confirm-payment
-     * dibangun pas kita masuk ke Checkout & Payment flow.
-     */
     public function markStatus(int $orderId, string $status, array $extra = []): bool
     {
         $order = $this->orderModel->find($orderId);
@@ -118,25 +120,35 @@ class OrderService extends baseService
             return false;
         }
 
-        $updated = $this->orderModel->updateStatus($orderId, $status, $extra);
-
-        if ($updated && $status === 'success' && ! empty($order['flashsale_item_id'])) {
-            $stockOk = $this->flashsaleService->incrementSold((int) $order['flashsale_item_id']);
-
-            // incrementSold sekarang atomic (UPDATE ... WHERE sold < stock), jadi
-            // false di sini artinya stok flashsale-nya emang udah abis pas order
-            // ini confirm — bukan error fatal, tapi worth di-log biar ketauan
-            // ada order yang sukses dibayar tapi stok promo-nya udah kehabisan
-            // duluan (butuh follow up manual/CS ke customer).
-            if (! $stockOk) {
-                $this->logWarning(sprintf(
-                    'Order #%d (invoice %s) sukses tapi flashsale_item_id %d gagal increment — stok kemungkinan sudah habis.',
-                    $orderId,
-                    $order['invoice'] ?? '-',
-                    (int) $order['flashsale_item_id']
-                ));
-            }
+        if ($status === 'success' && ($order['status'] ?? '') === 'success') {
+            return true;
         }
+
+        if ($status === 'success' && ! empty($order['flashsale_item_id'])) {
+            $db = \Config\Database::connect();
+
+            $db->transBegin();
+
+            $updated = $this->orderModel->updateStatusIfNot($orderId, $status, 'success', $extra);
+
+            if (! $updated) {
+                $db->transRollback();
+                return true;
+            }
+
+            $stockConsumed = $this->flashsaleService->consumeStock((int) $order['flashsale_item_id']);
+
+            if (! $stockConsumed) {
+                $db->transRollback();
+                return false;
+            }
+
+            $db->transCommit();
+
+            return $db->transStatus();
+        }
+
+        $updated = $this->orderModel->updateStatus($orderId, $status, $extra);
 
         return $updated;
     }

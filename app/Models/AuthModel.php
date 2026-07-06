@@ -19,25 +19,21 @@ class AuthModel extends Model
                 ->orWhere('email', $identifier)
             ->groupEnd()
             ->first();
-
         if (! $user || ! password_verify($password, $user['password'])) {
             return [];
         }
-
         return $user;
     }
 
     public function getByUsername(string $username): array
     {
         $data = $this->where('username', $username)->first();
-
         return $data ?? [];
     }
 
     public function getByEmail(string $email): array
     {
         $data = $this->where('email', $email)->first();
-
         return $data ?? [];
     }
 
