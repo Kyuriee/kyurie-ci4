@@ -38,6 +38,12 @@ abstract class BaseController extends Controller
                 'match' => '',
             ],
             [
+                'title' => 'Cek Pembayaran',
+                'url'   => base_url('payment/check'),
+                'icon'  => 'bi-receipt',
+                'match' => 'payment',
+            ],
+            [
                 'title' => 'Promo',
                 'url'   => base_url('promo'),
                 'icon'  => 'bi-ticket-perforated-fill',
