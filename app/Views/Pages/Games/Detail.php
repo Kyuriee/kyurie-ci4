@@ -1,18 +1,20 @@
 <?= $this->extend('Layouts/Main'); ?>
 
 <?= $this->section('content'); ?>
+<?php
+$targetInputs = $target_form['inputs'] ?? [];
+$targetGridClass = count($targetInputs) > 1 ? 'target-input-grid' : '';
+?>
 <div
-    x-data="gameDetail('<?= esc($game['slug'], 'js') ?>', <?= esc(json_encode($products), 'attr') ?>)"
-    class="section"
->
+    x-data="gameDetail('<?= esc($game['slug'], 'js') ?>', <?= esc(json_encode($products), 'attr') ?>, <?= esc(json_encode($target_form), 'attr') ?>)"
+    class="section">
     <div class="container-app">
         <!-- Hero -->
         <div class="game-hero">
             <img
                 src="<?= !empty($game['banner']) ? base_url('assets/images/games/banners/' . $game['banner']) : 'https://placehold.co/1200x514' ?>"
                 alt="<?= esc($game['games']) ?>"
-                loading="lazy"
-            >
+                loading="lazy">
             <div class="game-hero-scrim"></div>
 
             <div class="game-hero-content">
@@ -20,8 +22,7 @@
                     <img
                         src="<?= !empty($game['image']) ? base_url('assets/images/games/icons/' . $game['image']) : 'https://placehold.co/200x200' ?>"
                         alt=""
-                        loading="lazy"
-                    >
+                        loading="lazy">
                 </div>
 
                 <div class="game-hero-title">
@@ -48,51 +49,43 @@
                         </div>
                     </div>
 
-                    <?php if (($game['target'] ?? 'default') === 'zone') : ?>
-                        <div class="target-input-grid">
+                    <div class="<?= esc($targetGridClass, 'attr') ?>">
+                        <?php foreach ($targetInputs as $input) : ?>
                             <div>
-                                <label for="customer_id" class="mb-1.5 block text-sm font-semibold text-heading">
-                                    User ID
+                                <label for="target_<?= esc($input['key'], 'attr') ?>" class="mb-1.5 block text-sm font-semibold text-heading">
+                                    <?= esc($input['label']) ?>
                                 </label>
-                                <input
-                                    x-model="customerId"
-                                    type="text"
-                                    id="customer_id"
-                                    name="customer_id"
-                                    placeholder="Contoh: 123456789"
-                                    class="input"
-                                >
+                                <?php if (($input['type'] ?? 'text') === 'select') : ?>
+                                    <select
+                                        x-model="targetValues['<?= esc($input['key'], 'js') ?>']"
+                                        @change="schedulePreview()"
+                                        id="target_<?= esc($input['key'], 'attr') ?>"
+                                        name="<?= esc($input['name'], 'attr') ?>"
+                                        class="input"
+                                        <?= ! empty($input['required']) ? 'required' : '' ?>>
+                                        <option value="" disabled>
+                                            <?= esc($input['placeholder'] ?? 'Pilih salah satu') ?>
+                                        </option>
+                                        <?php foreach (($input['options'] ?? []) as $option) : ?>
+                                            <option value="<?= esc($option['value'], 'attr') ?>">
+                                                <?= esc($option['label']) ?>
+                                            </option>
+                                        <?php endforeach ?>
+                                    </select>
+                                <?php else : ?>
+                                    <input
+                                        x-model="targetValues['<?= esc($input['key'], 'js') ?>']"
+                                        @input="schedulePreview()"
+                                        type="text"
+                                        id="target_<?= esc($input['key'], 'attr') ?>"
+                                        name="<?= esc($input['name'], 'attr') ?>"
+                                        placeholder="<?= esc($input['placeholder'], 'attr') ?>"
+                                        class="input"
+                                        <?= ! empty($input['required']) ? 'required' : '' ?>>
+                                <?php endif ?>
                             </div>
-
-                            <div>
-                                <label for="zone_id" class="mb-1.5 block text-sm font-semibold text-heading">
-                                    Zone ID
-                                </label>
-                                <input
-                                    x-model="zoneId"
-                                    type="text"
-                                    id="zone_id"
-                                    name="zone_id"
-                                    placeholder="Contoh: 2001"
-                                    class="input"
-                                >
-                            </div>
-                        </div>
-                    <?php else : ?>
-                        <div>
-                            <label for="customer_id" class="mb-1.5 block text-sm font-semibold text-heading">
-                                User ID / Player ID
-                            </label>
-                            <input
-                                x-model="customerId"
-                                type="text"
-                                id="customer_id"
-                                name="customer_id"
-                                placeholder="Masukkan ID akunmu"
-                                class="input"
-                            >
-                        </div>
-                    <?php endif ?>
+                        <?php endforeach ?>
+                    </div>
                 </div>
 
                 <!-- Step 2: Denomination -->
@@ -115,8 +108,7 @@
                                     type="button"
                                     @click="selectProduct(<?= (int) $product['id'] ?>)"
                                     class="denom-tile"
-                                    :class="{ 'is-selected': selectedProductId === <?= (int) $product['id'] ?> }"
-                                >
+                                    :class="{ 'is-selected': selectedProductId === <?= (int) $product['id'] ?> }">
                                     <template x-if="selectedProductId === <?= (int) $product['id'] ?>">
                                         <div class="denom-tile-check">
                                             <i class="bi bi-check"></i>
@@ -164,14 +156,12 @@
                                     type="button"
                                     @click="selectPaymentMethod(<?= (int) $method['id'] ?>)"
                                     class="payment-tile"
-                                    :class="{ 'is-selected': selectedPaymentMethodId === <?= (int) $method['id'] ?> }"
-                                >
+                                    :class="{ 'is-selected': selectedPaymentMethodId === <?= (int) $method['id'] ?> }">
                                     <?php if (!empty($method['image'])) : ?>
                                         <img
                                             src="<?= base_url('assets/images/payments/' . $method['image']) ?>"
                                             alt=""
-                                            loading="lazy"
-                                        >
+                                            loading="lazy">
                                     <?php endif ?>
 
                                     <span class="payment-tile-name"><?= esc($method['name']) ?></span>
@@ -188,9 +178,14 @@
                     <form action="<?= base_url('order/create') ?>" method="POST">
                         <?= csrf_field() ?>
                         <input type="hidden" name="product_id" :value="selectedProductId">
-                        <input type="hidden" name="customer_id" x-model="customerId">
-                        <input type="hidden" name="zone_id" x-model="zoneId">
                         <input type="hidden" name="payment_method_id" :value="selectedPaymentMethodId">
+
+                        <template x-for="input in targetForm.inputs" :key="input.key">
+                            <input
+                                type="hidden"
+                                :name="input.key"
+                                :value="targetValues[input.key] ?? ''">
+                        </template>
 
                         <div class="order-summary">
                             <h3 class="font-display text-base font-bold text-heading">Ringkasan Pesanan</h3>
@@ -205,8 +200,7 @@
                                     <span class="text-muted">Item</span>
                                     <span
                                         class="font-semibold text-heading"
-                                        x-text="selectedProduct ? selectedProduct.product : '—'"
-                                    ></span>
+                                        x-text="selectedProduct ? selectedProduct.product : '—'"></span>
                                 </div>
                             </div>
 
@@ -242,8 +236,7 @@
                             <button
                                 type="submit"
                                 :disabled="!canSubmit"
-                                class="btn btn-primary mt-5 w-full disabled:cursor-not-allowed disabled:opacity-40"
-                            >
+                                class="btn btn-primary mt-5 w-full disabled:cursor-not-allowed disabled:opacity-40">
                                 Bayar Sekarang
                             </button>
                         </div>

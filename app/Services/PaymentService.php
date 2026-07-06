@@ -2,85 +2,39 @@
 
 namespace App\Services;
 
-use App\Models\OrderModel;
+use App\Models\PaymentMethodModel;
 
 class PaymentService extends baseService
 {
-    protected $orderModel;
+    protected $paymentMethodModel;
 
     public function __construct()
     {
-        $this->orderModel = model(OrderModel::class);
+        $this->paymentMethodModel = model(PaymentMethodModel::class);
     }
 
-    public function getDetailPage(string $token): array
+    public function getActiveMethods(): array
     {
-        $row = $this->orderModel->findByTokenWithGame($token);
+        return $this->paymentMethodModel->getActive();
+    }
 
-        if (empty($row)) {
+    public function getMethod(int $id): array
+    {
+        if ($id <= 0) {
             return [];
         }
 
-        return [
-            'order' => $this->mapOrder($row),
-            'game'  => $this->mapGame($row),
-        ];
+        return $this->paymentMethodModel->find($id) ?: [];
     }
 
-    public function checkInvoice(string $invoice): array
+    public function getActiveMethod(int $id): array
     {
-        $invoice = trim($invoice);
+        $method = $this->getMethod($id);
 
-        if ($invoice === '') {
-            return [
-                'success' => false,
-                'message' => 'Masukkan nomor invoice',
-                'data'    => [],
-            ];
+        if (empty($method) || ($method['status'] ?? '') !== 'On') {
+            return [];
         }
 
-        $order = $this->orderModel->findByInvoice($invoice);
-
-        if (empty($order)) {
-            return [
-                'success' => false,
-                'message' => 'Invoice tidak ditemukan',
-                'data'    => [],
-            ];
-        }
-
-        return [
-            'success' => true,
-            'message' => 'Invoice ditemukan',
-            'data'    => $order,
-        ];
-    }
-
-    protected function mapOrder(array $row): array
-    {
-        $gameFields = [
-            'game_id',
-            'games',
-            'slug',
-            'image',
-            'banner',
-            'description',
-            'target',
-        ];
-
-        return array_diff_key($row, array_flip($gameFields));
-    }
-
-    protected function mapGame(array $row): array
-    {
-        return [
-            'id'          => $row['game_id'] ?? null,
-            'games'       => $row['games'] ?? null,
-            'slug'        => $row['slug'] ?? null,
-            'image'       => $row['image'] ?? null,
-            'banner'      => $row['banner'] ?? null,
-            'description' => $row['description'] ?? null,
-            'target'      => $row['target'] ?? null,
-        ];
+        return $method;
     }
 }

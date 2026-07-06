@@ -2,26 +2,23 @@
 
 namespace App\Services;
 
-use App\Models\FlashsaleItemModel;
-use App\Models\GameModel;
-use App\Models\PaymentMethodModel;
-use App\Models\ProductModel;
-
 class CheckoutService extends baseService
 {
-    protected $gameModel;
-    protected $productModel;
-    protected $paymentMethodModel;
-    protected $flashsaleItemModel;
+    protected $gameService;
+    protected $productService;
+    protected $flashsaleService;
     protected $priceService;
+    protected $paymentService;
+    protected $targetService;
 
     public function __construct()
     {
-        $this->gameModel          = model(GameModel::class);
-        $this->productModel       = model(ProductModel::class);
-        $this->paymentMethodModel = model(PaymentMethodModel::class);
-        $this->flashsaleItemModel = model(FlashsaleItemModel::class);
-        $this->priceService       = new PriceService();
+        $this->gameService      = new GameService();
+        $this->productService   = new ProductService();
+        $this->flashsaleService = new FlashsaleService();
+        $this->priceService     = new PriceService();
+        $this->paymentService   = new PaymentService();
+        $this->targetService    = new TargetService();
     }
 
     public function prepareOrder(array $payload): array
@@ -36,7 +33,7 @@ class CheckoutService extends baseService
             return $this->fail('Game tidak valid');
         }
 
-        $game = $this->gameModel->getDetailBySlug($game_slug);
+        $game = $this->gameService->getActiveBySlug($game_slug);
 
         if (empty($game) || $game['status'] !== 'On') {
             return $this->fail('Game tidak tersedia');
@@ -46,7 +43,7 @@ class CheckoutService extends baseService
             return $this->fail('Produk wajib dipilih');
         }
 
-        $product = $this->productModel->getDetailProduct($product_id);
+        $product = $this->productService->getDetail($product_id);
 
         if (empty($product) || $product['status'] !== 'On') {
             return $this->fail('Produk tidak tersedia');
@@ -57,20 +54,25 @@ class CheckoutService extends baseService
         }
 
         // Produk reguler unlimited stock. Kalau lagi flashsale, cek stok flashsale_items.
-        $flashsale_item = $this->flashsaleItemModel->getActiveForProduct($product_id);
+        $flashsale_item = $this->flashsaleService->getActiveItemForProduct($product_id);
 
-        if (! empty($flashsale_item) && (int) $flashsale_item['sold'] >= (int) $flashsale_item['stock']) {
+        if (! $this->flashsaleService->hasAvailableStock($flashsale_item)) {
             return $this->fail('Stok flash sale untuk produk ini sudah habis');
         }
 
-        if ($customer_id === '') {
-            return $this->fail('ID pemain wajib diisi');
+        $target_validation = $this->targetService->validatePayload($game['target'] ?? 'default', $game['input_custom'] ?? null, array_merge($payload, [
+            'customer_id' => $customer_id,
+            'zone_id'     => $zone_id,
+        ]));
+
+        if (! $target_validation['success']) {
+            return $this->fail($target_validation['message']);
         }
 
         if ($payment_method_id > 0) {
-            $payment_method = $this->paymentMethodModel->find($payment_method_id);
+            $payment_method = $this->paymentService->getActiveMethod($payment_method_id);
 
-            if (empty($payment_method) || $payment_method['status'] !== 'On') {
+            if (empty($payment_method)) {
                 return $this->fail('Metode pembayaran tidak tersedia');
             }
         }

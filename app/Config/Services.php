@@ -7,11 +7,15 @@ use App\Services\AuthService;
 use App\Services\UserService;
 use App\Services\OrderService;
 use App\Services\CheckoutService;
+use App\Services\FlashsaleService;
+use App\Services\GameDetailService;
 use App\Services\GameService;
 use App\Services\PaymentService;
 use App\Services\HomeService;
 use App\Services\PriceService;
+use App\Services\ProductService;
 use App\Services\SettingService;
+use App\Services\TargetService;
 
 class Services extends BaseService
 {
@@ -60,6 +64,33 @@ class Services extends BaseService
         return new GameService();
     }
 
+    public static function gameDetailService(bool $getShared = true): GameDetailService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('gameDetailService');
+        }
+
+        return new GameDetailService();
+    }
+
+    public static function productService(bool $getShared = true): ProductService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('productService');
+        }
+
+        return new ProductService();
+    }
+
+    public static function flashsaleService(bool $getShared = true): FlashsaleService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('flashsaleService');
+        }
+
+        return new FlashsaleService();
+    }
+
     public static function paymentService(bool $getShared = true): PaymentService
     {
         if ($getShared) {
@@ -94,5 +125,14 @@ class Services extends BaseService
         }
 
         return new SettingService();
+    }
+
+    public static function targetService(bool $getShared = true): TargetService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('targetService');
+        }
+
+        return new TargetService();
     }
 }

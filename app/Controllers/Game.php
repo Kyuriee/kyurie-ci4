@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Services\GameService;
+use App\Services\GameDetailService;
 
 class Game extends baseController
 {
@@ -15,12 +15,14 @@ class Game extends baseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
         $game            = $result['game'];
+        $target_form     = $result['target_form'];
         $products        = $result['products'];
         $payment_methods = $result['payment_methods'];
         $data = [
             'meta'            => ['title' => $game['games']],
             'seo'             => ['og_image' => $game['banner'] ?? ''],
             'game'            => $game,
+            'target_form'     => $target_form,
             'products'        => $products,
             'payment_methods' => $payment_methods,
         ];
@@ -29,8 +31,8 @@ class Game extends baseController
         return $this->renderView('pages/games/detail', $data);
     }
 
-    protected function _service(): GameService
+    protected function _service(): GameDetailService
     {
-        return single_service('gameService');
+        return single_service('gameDetailService');
     }
 }

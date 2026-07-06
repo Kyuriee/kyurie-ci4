@@ -2,77 +2,79 @@
 
 namespace App\Services;
 
-use App\Models\FlashsaleItemModel;
-use App\Models\GameModel;
 use App\Models\OrderModel;
-use App\Models\PaymentMethodModel;
-use App\Models\ProductModel;
 
 class OrderService extends baseService
 {
-    protected $gameModel;
-    protected $productModel;
+    protected $gameService;
+    protected $productService;
     protected $orderModel;
-    protected $paymentMethodModel;
-    protected $flashsaleItemModel;
+    protected $flashsaleService;
     protected $priceService;
+    protected $paymentService;
+    protected $targetService;
 
     public function __construct()
     {
-        $this->gameModel          = model(GameModel::class);
-        $this->productModel       = model(ProductModel::class);
-        $this->orderModel         = model(OrderModel::class);
-        $this->paymentMethodModel = model(PaymentMethodModel::class);
-        $this->flashsaleItemModel = model(FlashsaleItemModel::class);
-        $this->priceService       = new PriceService();
+        $this->gameService      = new GameService();
+        $this->productService   = new ProductService();
+        $this->orderModel       = model(OrderModel::class);
+        $this->flashsaleService = new FlashsaleService();
+        $this->priceService     = new PriceService();
+        $this->paymentService   = new PaymentService();
+        $this->targetService    = new TargetService();
     }
 
     public function create(array $payload): array
     {
-        $user_id           = (int) ($payload['user_id'] ?? 0);
+        $user_id           = (int) ($payload['auth_user_id'] ?? 0);
         $product_id        = (int) ($payload['product_id'] ?? 0);
         $customer_id       = trim($payload['customer_id'] ?? '');
         $zone_id           = trim($payload['zone_id'] ?? '');
         $payment_method_id = (int) ($payload['payment_method_id'] ?? 0);
 
-        if ($user_id <= 0) {
-            return ['success' => false, 'message' => 'User tidak valid'];
-        }
-
         if ($product_id <= 0) {
             return ['success' => false, 'message' => 'Produk wajib dipilih'];
         }
 
-        if ($customer_id === '') {
-            return ['success' => false, 'message' => 'ID pemain wajib diisi'];
-        }
-
-        $product = $this->productModel->getDetailProduct($product_id);
+        $product = $this->productService->getDetail($product_id);
 
         if (empty($product)) {
             return ['success' => false, 'message' => 'Produk tidak tersedia'];
         }
 
-        $game = $this->gameModel->find($product['games_id']);
+        $game = $this->gameService->getById((int) $product['games_id']);
 
         if (empty($game)) {
             return ['success' => false, 'message' => 'Game tidak ditemukan'];
         }
 
-        $flashsale_item = $this->flashsaleItemModel->getActiveForProduct($product_id);
+        $target_validation = $this->targetService->validatePayload($game['target'] ?? 'default', $game['input_custom'] ?? null, array_merge($payload, [
+            'customer_id' => $customer_id,
+            'zone_id'     => $zone_id,
+        ]));
 
-        if (! empty($flashsale_item) && (int) $flashsale_item['sold'] >= (int) $flashsale_item['stock']) {
+        if (! $target_validation['success']) {
+            return ['success' => false, 'message' => $target_validation['message']];
+        }
+
+        $customer_id = $target_validation['data']['customer_id'];
+        $zone_id     = $target_validation['data']['zone_id'];
+
+        $flashsale_item = $this->flashsaleService->getActiveItemForProduct($product_id);
+
+        if (! $this->flashsaleService->hasAvailableStock($flashsale_item)) {
             return ['success' => false, 'message' => 'Stok flash sale untuk produk ini sudah habis'];
         }
 
-        $payment_method = $this->paymentMethodModel->find($payment_method_id);
+        $payment_method = $this->paymentService->getMethod($payment_method_id);
         $final_price    = $this->priceService->getFinalPrice($product, $flashsale_item ?: null);
 
         $invoice = $this->orderModel->generateInvoice();
 
         $order_id = $this->orderModel->insert([
             'invoice'           => $invoice,
-            'user_id'           => $user_id,
+            'user_id'           => $user_id > 0 ? $user_id : null,
             'product_id'        => $product_id,
             'flashsale_item_id' => $flashsale_item['id'] ?? null,
             'payment_method_id' => $payment_method_id ?: null,
@@ -119,32 +121,10 @@ class OrderService extends baseService
         $updated = $this->orderModel->updateStatus($orderId, $status, $extra);
 
         if ($updated && $status === 'success' && ! empty($order['flashsale_item_id'])) {
-            $this->flashsaleItemModel->incrementSold((int) $order['flashsale_item_id']);
+            $this->flashsaleService->incrementSold((int) $order['flashsale_item_id']);
         }
 
         return $updated;
-    }
-
-    public function getByToken(string $token): array
-    {
-        $order = $this->orderModel->findByToken($token);
-
-        if (empty($order)) {
-            return [];
-        }
-
-        $product = $this->productModel->find((int) $order['product_id']);
-        $game    = empty($product) ? [] : $this->gameModel->find((int) $product['games_id']);
-
-        return [
-            'order' => $order,
-            'game'  => $game,
-        ];
-    }
-
-    public function getByInvoice(string $invoice): array
-    {
-        return $this->orderModel->findByInvoice($invoice);
     }
 
     public function getOrdersByUser(int $userId, int $limit = 20, int $offset = 0): array
@@ -152,8 +132,90 @@ class OrderService extends baseService
         return $this->orderModel->getByUser($userId, $limit, $offset);
     }
 
-    public function getOrder(int $orderId): array
+    public function getOrderForUser(int $orderId, int $userId): array
     {
-        return $this->orderModel->find($orderId);
+        if ($userId <= 0) {
+            return [];
+        }
+
+        $order = $this->orderModel->find($orderId);
+
+        if (empty($order) || (int) ($order['user_id'] ?? 0) !== $userId) {
+            return [];
+        }
+
+        return $order;
+    }
+
+    public function getDetailPage(string $token): array
+    {
+        $row = $this->orderModel->findByTokenWithGame($token);
+
+        if (empty($row)) {
+            return [];
+        }
+
+        return [
+            'order' => $this->mapOrder($row),
+            'game'  => $this->mapGame($row),
+        ];
+    }
+
+    public function checkInvoice(string $invoice): array
+    {
+        $invoice = trim($invoice);
+
+        if ($invoice === '') {
+            return [
+                'success' => false,
+                'message' => 'Masukkan nomor invoice',
+                'data'    => [],
+            ];
+        }
+
+        $order = $this->orderModel->findByInvoice($invoice);
+
+        if (empty($order)) {
+            return [
+                'success' => false,
+                'message' => 'Invoice tidak ditemukan',
+                'data'    => [],
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Invoice ditemukan',
+            'data'    => $order,
+        ];
+    }
+
+    protected function mapOrder(array $row): array
+    {
+        $gameFields = [
+            'game_id',
+            'games',
+            'slug',
+            'image',
+            'banner',
+            'description',
+            'target',
+            'input_custom',
+        ];
+
+        return array_diff_key($row, array_flip($gameFields));
+    }
+
+    protected function mapGame(array $row): array
+    {
+        return [
+            'id'          => $row['game_id'] ?? null,
+            'games'       => $row['games'] ?? null,
+            'slug'        => $row['slug'] ?? null,
+            'image'       => $row['image'] ?? null,
+            'banner'      => $row['banner'] ?? null,
+            'description' => $row['description'] ?? null,
+            'target_form' => $this->targetService->getFormConfig($row['target'] ?? 'default', $row['input_custom'] ?? null),
+        ];
     }
 }

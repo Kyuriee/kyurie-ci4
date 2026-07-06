@@ -2,12 +2,12 @@ import Alpine from 'alpinejs';
 import axios from 'axios';
 
 document.addEventListener('alpine:init', () => {
-    Alpine.data('gameDetail', (gameSlug, initialProducts) => ({
+    Alpine.data('gameDetail', (gameSlug, initialProducts, targetForm) => ({
         gameSlug,
         products: initialProducts ?? [],
+        targetForm: targetForm ?? { inputs: [] },
+        targetValues: {},
         selectedProductId: null,
-        customerId: '',
-        zoneId: '',
         selectedPaymentMethodId: null,
 
         previewLoading: false,
@@ -16,9 +16,11 @@ document.addEventListener('alpine:init', () => {
         debounceTimer: null,
 
         init() {
+            (this.targetForm.inputs ?? []).forEach((input) => {
+                this.targetValues[input.key] = '';
+            });
+
             this.$watch('selectedProductId', () => this.schedulePreview());
-            this.$watch('customerId', () => this.schedulePreview());
-            this.$watch('zoneId', () => this.schedulePreview());
             this.$watch('selectedPaymentMethodId', () => this.schedulePreview());
         },
 
@@ -38,7 +40,7 @@ document.addEventListener('alpine:init', () => {
             clearTimeout(this.debounceTimer);
             this.previewError = '';
 
-            if (!this.selectedProductId || this.customerId.trim().length === 0) {
+            if (!this.selectedProductId || !this.hasRequiredTargetInputs) {
                 this.previewResult = null;
                 return;
             }
@@ -54,8 +56,7 @@ document.addEventListener('alpine:init', () => {
                     game: this.gameSlug,
                     product_id: this.selectedProductId,
                     payment_method_id: this.selectedPaymentMethodId,
-                    customer_id: this.customerId,
-                    zone_id: this.zoneId,
+                    ...this.targetPayload,
                 });
 
                 if (data.success) {
@@ -74,11 +75,28 @@ document.addEventListener('alpine:init', () => {
 
         get canSubmit() {
             return !!this.selectedProductId
-                && this.customerId.trim().length > 0
+                && this.hasRequiredTargetInputs
                 && !!this.selectedPaymentMethodId
                 && !this.previewLoading
                 && !!this.previewResult
                 && this.previewError === '';
+        },
+
+        get hasRequiredTargetInputs() {
+            return (this.targetForm.inputs ?? []).every((input) => {
+                if (!input.required) {
+                    return true;
+                }
+
+                return String(this.targetValues[input.key] ?? '').trim().length > 0;
+            });
+        },
+
+        get targetPayload() {
+            return (this.targetForm.inputs ?? []).reduce((payload, input) => {
+                payload[input.key] = String(this.targetValues[input.key] ?? '').trim();
+                return payload;
+            }, {});
         },
     }));
 });

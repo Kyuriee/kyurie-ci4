@@ -12,37 +12,24 @@ class Order extends baseController
 
     public function prepare()
     {
-        if (! $this->session->get('user_id')) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Silakan login terlebih dahulu',
-            ]);
-        }
+        $payload = $this->requestPayload();
+        $payload['game'] = trim($payload['game'] ?? '');
+        $payload['product_id'] = (int) ($payload['product_id'] ?? 0);
+        $payload['payment_method_id'] = (int) ($payload['payment_method_id'] ?? 0);
 
-        $result = $this->_checkout_service()->prepareOrder([
-            'game'              => trim($this->request->getPost('game') ?? ''),
-            'product_id'        => (int) $this->request->getPost('product_id'),
-            'payment_method_id' => (int) $this->request->getPost('payment_method_id'),
-            'customer_id'       => trim($this->request->getPost('customer_id') ?? ''),
-            'zone_id'           => trim($this->request->getPost('zone_id') ?? ''),
-        ]);
+        $result = $this->_checkout_service()->prepareOrder($payload);
 
         return $this->response->setJSON($result);
     }
 
     public function create()
     {
-        if (! $this->session->get('user_id')) {
-            return redirect()->to('auth/login');
-        }
+        $payload = $this->request->getPost() ?? [];
+        $payload['auth_user_id'] = $this->session->get('user_id');
+        $payload['product_id'] = (int) ($payload['product_id'] ?? 0);
+        $payload['payment_method_id'] = (int) ($payload['payment_method_id'] ?? 0);
 
-        $result = $this->_order_service()->create([
-            'user_id'           => $this->session->get('user_id'),
-            'product_id'        => (int) $this->request->getPost('product_id'),
-            'customer_id'       => trim($this->request->getPost('customer_id') ?? ''),
-            'zone_id'           => trim($this->request->getPost('zone_id') ?? ''),
-            'payment_method_id' => (int) $this->request->getPost('payment_method_id'),
-        ]);
+        $result = $this->_order_service()->create($payload);
 
         if ($result['success']) {
             return redirect()->to('payment/' . $result['data']['payment_token']);
@@ -85,9 +72,9 @@ class Order extends baseController
             ]);
         }
 
-        $order = $this->_order_service()->getOrder($orderId);
+        $order = $this->_order_service()->getOrderForUser($orderId, (int) $this->session->get('user_id'));
 
-        if (empty($order) || $order['user_id'] != $this->session->get('user_id')) {
+        if (empty($order)) {
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Pesanan tidak ditemukan',
@@ -115,5 +102,16 @@ class Order extends baseController
             $this->checkout_service = new CheckoutService();
         }
         return $this->checkout_service;
+    }
+
+    protected function requestPayload(): array
+    {
+        $json = $this->request->getJSON(true);
+
+        if (is_array($json)) {
+            return $json;
+        }
+
+        return $this->request->getPost() ?? [];
     }
 }

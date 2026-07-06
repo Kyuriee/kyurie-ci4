@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Services\PaymentService;
+use App\Services\OrderService;
 
 class Payment extends baseController
 {
@@ -50,8 +50,8 @@ class Payment extends baseController
         return $this->renderView('pages/payment/check', $data);
     }
 
-    protected function _service(): PaymentService
+    protected function _service(): OrderService
     {
-        return single_service('paymentService');
+        return single_service('orderService');
     }
 }
