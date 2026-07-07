@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Services\OrderService;
 use App\Services\CheckoutService;
 
-class Order extends baseController
+class Order extends BaseController
 {
     protected $order_service;
     protected $checkout_service;

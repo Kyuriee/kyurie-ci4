@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Services\GameService;
 
-class Search extends baseController
+class Search extends BaseController
 {
     protected $game_service;
 

@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Services\UserService;
 
-class User extends baseController
+class User extends BaseController
 {
 
 
@@ -21,7 +21,7 @@ class User extends baseController
             'profile' => $profile,
         ];
 
-        return $this->renderView('pages/user/profile', $data);
+        return $this->renderView('Pages/User/Profile', $data);
     }
 
     public function update()
