@@ -1,39 +1,45 @@
 <?php if (!empty($flashsale)) : ?>
     <section class="section">
         <div class="container-app">
-            <div class="section-title">
-                <div>
-                    <h2 class="flex items-center gap-2">
-                        <i class="bi bi-lightning-charge-fill text-secondary"></i>
-                        <?= esc($flashsale['title']) ?>
-                    </h2>
+            <div class="flashsale-banner relative mb-6 overflow-hidden rounded-3xl bg-premium-panel p-5 sm:p-7">
+                <div class="premium-glow premium-glow-secondary -right-10 -top-16 h-56 w-56"></div>
+                <div class="premium-glow premium-glow-primary -bottom-16 -left-10 h-48 w-48"></div>
+                <div class="premium-dot-pattern"></div>
 
-                    <p>
-                        <?= esc($flashsale['description']) ?>
-                    </p>
-                </div>
+                <div class="section-title relative z-10 mb-0">
+                    <div>
+                        <h2 class="flex items-center gap-2 text-white">
+                            <i class="bi bi-lightning-charge-fill text-secondary"></i>
+                            <?= esc($flashsale['title']) ?>
+                        </h2>
 
-                <div
-                    class="flashsale-countdown"
-                    x-data="flashsaleCountdown(<?= $flashsale['remaining_seconds'] ?>)">
-                    <div class="countdown-box">
-                        <span x-text="days"></span>
-                        <small>Hari</small>
+                        <p>
+                            <?= esc($flashsale['description']) ?>
+                        </p>
                     </div>
 
-                    <div class="countdown-box">
-                        <span x-text="hours"></span>
-                        <small>Jam</small>
-                    </div>
+                    <div
+                        class="flashsale-countdown"
+                        x-data="flashsaleCountdown(<?= $flashsale['remaining_seconds'] ?>)">
+                        <div class="countdown-box">
+                            <span x-text="days"></span>
+                            <small>Hari</small>
+                        </div>
 
-                    <div class="countdown-box">
-                        <span x-text="minutes"></span>
-                        <small>Menit</small>
-                    </div>
+                        <div class="countdown-box">
+                            <span x-text="hours"></span>
+                            <small>Jam</small>
+                        </div>
 
-                    <div class="countdown-box">
-                        <span x-text="seconds"></span>
-                        <small>Detik</small>
+                        <div class="countdown-box">
+                            <span x-text="minutes"></span>
+                            <small>Menit</small>
+                        </div>
+
+                        <div class="countdown-box">
+                            <span x-text="seconds"></span>
+                            <small>Detik</small>
+                        </div>
                     </div>
                 </div>
             </div>

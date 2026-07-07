@@ -44,32 +44,34 @@
    Base
    ========================================================================== */
 
-[x-cloak] {
-    display: none !important;
-}
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
 
-html {
-    scroll-behavior: smooth;
-}
+    html {
+        scroll-behavior: smooth;
+    }
 
-body {
-    font-family: var(--font-body);
-    background: var(--color-background);
-    color: var(--color-body);
-    font-size: 15px;
-    line-height: 1.6;
-}
+    body {
+        font-family: var(--font-body);
+        background: var(--color-background);
+        color: var(--color-body);
+        font-size: 15px;
+        line-height: 1.6;
+    }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--font-display);
-    font-weight: 800;
-    letter-spacing: -.02em;
-    color: var(--color-heading);
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-display);
+        font-weight: 800;
+        letter-spacing: -.02em;
+        color: var(--color-heading);
+    }
 }
 
 /* ==========================================================================
@@ -232,6 +234,43 @@ h6 {
     transform: translateY(-4px);
     box-shadow:
         0 10px 30px rgb(15 23 42 / .08);
+}
+
+/* ==========================================================================
+   Premium Accents
+   Dipakai buat aksen "premium" (gradient gelap + glow orb) di section
+   hero/CTA tertentu (banner, flashsale, hero game, dsb), tanpa ubah tema
+   dasar yang tetap light. Reusable di semua halaman.
+   ========================================================================== */
+
+.bg-premium-panel {
+    background: linear-gradient(160deg, #0B1220 0%, #111C33 55%, #0B1220 100%);
+}
+
+.premium-glow {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    opacity: .35;
+    pointer-events: none;
+}
+
+.premium-glow-primary {
+    background: var(--color-primary);
+}
+
+.premium-glow-secondary {
+    background: var(--color-secondary);
+}
+
+.premium-dot-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px);
+    background-size: 22px 22px;
+    -webkit-mask-image: radial-gradient(circle at 30% 40%, black, transparent 70%);
+    mask-image: radial-gradient(circle at 30% 40%, black, transparent 70%);
+    pointer-events: none;
 }
 
 /* ==========================================================================

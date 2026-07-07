@@ -117,9 +117,12 @@ $current = service('uri')->getSegment(1);
                     <a href="<?= base_url('auth/login') ?>" class="inline-flex items-center justify-center rounded-xl border border-border bg-white px-4 py-2 text-sm font-bold text-heading hover:bg-surface-soft transition cursor-pointer">
                         Login
                     </a>
-                    <a href="<?= base_url('auth/register') ?>" class="inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white shadow-md shadow-primary/10 hover:bg-primary-600 transition cursor-pointer">
-                        Daftar
-                    </a>
+                    <div class="relative">
+                        <div class="premium-glow premium-glow-primary -z-10 -top-3 left-1/2 h-14 w-24 -translate-x-1/2 opacity-40"></div>
+                        <a href="<?= base_url('auth/register') ?>" class="relative inline-flex items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white shadow-md shadow-primary/20 hover:bg-primary-600 transition cursor-pointer">
+                            Daftar
+                        </a>
+                    </div>
                 </div>
             <?php endif; ?>
 

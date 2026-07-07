@@ -8,7 +8,7 @@ export default defineConfig({
 
     publicDir: false,
     base: '/build/',
-
+    cssMinify: true,
     build: {
         manifest: true,
         outDir: 'public/build',

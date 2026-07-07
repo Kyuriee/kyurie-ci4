@@ -52,37 +52,41 @@ $paymentName    = $order['payment_method_name'] ?? 'Metode pembayaran';
 
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <div class="space-y-6 lg:col-span-2">
-                    <div class="card p-5 sm:p-6">
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div class="relative overflow-hidden rounded-2xl bg-premium-panel p-5 shadow-card sm:p-6">
+                        <div class="premium-glow premium-glow-primary -right-12 -top-16 h-56 w-56"></div>
+                        <div class="premium-glow premium-glow-secondary -bottom-16 -left-10 h-48 w-48"></div>
+                        <div class="premium-dot-pattern"></div>
+
+                        <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">Invoice</p>
-                                <h2 class="mt-1 font-display text-xl font-extrabold text-heading">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Invoice</p>
+                                <h2 class="mt-1 font-display text-xl font-extrabold text-white">
                                     <?= esc($order['invoice'] ?? '-') ?>
                                 </h2>
                             </div>
 
-                            <div class="rounded-xl border border-border bg-background px-4 py-3 text-sm">
-                                <span class="block text-xs font-semibold uppercase tracking-wide text-muted">Total Bayar</span>
-                                <span class="mt-1 block text-lg font-extrabold text-primary"><?= esc($totalFormatted) ?></span>
+                            <div class="rounded-xl border border-white/10 bg-white/10 px-4 py-3 text-sm backdrop-blur-sm">
+                                <span class="block text-xs font-semibold uppercase tracking-wide text-slate-400">Total Bayar</span>
+                                <span class="mt-1 block text-lg font-extrabold text-primary-100"><?= esc($totalFormatted) ?></span>
                             </div>
                         </div>
 
-                        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="relative z-10 mt-6 grid grid-cols-1 gap-4 border-t border-white/10 pt-5 sm:grid-cols-2">
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">Game</p>
-                                <p class="mt-1 font-semibold text-heading"><?= esc($order['game_name'] ?? ($game['games'] ?? '-')) ?></p>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Game</p>
+                                <p class="mt-1 font-semibold text-white"><?= esc($order['game_name'] ?? ($game['games'] ?? '-')) ?></p>
                             </div>
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">Produk</p>
-                                <p class="mt-1 font-semibold text-heading"><?= esc($order['product_name'] ?? '-') ?></p>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Produk</p>
+                                <p class="mt-1 font-semibold text-white"><?= esc($order['product_name'] ?? '-') ?></p>
                             </div>
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">User ID</p>
-                                <p class="mt-1 font-semibold text-heading"><?= esc($order['customer_id'] ?? '-') ?></p>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">User ID</p>
+                                <p class="mt-1 font-semibold text-white"><?= esc($order['customer_id'] ?? '-') ?></p>
                             </div>
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-wide text-muted">Zone ID</p>
-                                <p class="mt-1 font-semibold text-heading"><?= esc($zoneDisplay) ?></p>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">Zone ID</p>
+                                <p class="mt-1 font-semibold text-white"><?= esc($zoneDisplay) ?></p>
                             </div>
                         </div>
                     </div>

@@ -10,6 +10,15 @@
     @apply mt-1 text-sm text-muted;
 }
 
+/* Override kontras teks di dalam banner flashsale yang bg-nya gelap */
+.flashsale-banner .section-title h2 {
+    @apply text-white;
+}
+
+.flashsale-banner .section-title p {
+    @apply text-slate-400;
+}
+
 /* ==========================================================================
    Countdown
    ========================================================================== */
@@ -19,7 +28,7 @@
 }
 
 .countdown-box {
-    @apply flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-slate-900 text-white lg:h-16 lg:w-16 lg:rounded-2xl;
+    @apply flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-white/10 bg-white/10 text-white backdrop-blur-sm lg:h-16 lg:w-16 lg:rounded-2xl;
 }
 
 .countdown-box span {
