@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Services\GameDetailService;
 
-class Game extends baseController
+class Game extends BaseController
 {
 
 
@@ -28,7 +28,7 @@ class Game extends baseController
         ];
         $this->base_data['page_assets']['css'][] = 'resources/css/pages/game.css';
         $this->base_data['page_assets']['js'][]  = 'resources/js/pages/game.js';
-        return $this->renderView('pages/games/detail', $data);
+        return $this->renderView('Pages/Games/Detail', $data);
     }
 
     protected function _service(): GameDetailService

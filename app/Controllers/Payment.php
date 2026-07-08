@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Services\OrderService;
 
-class Payment extends baseController
+class Payment extends BaseController
 {
 
 
