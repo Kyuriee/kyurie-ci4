@@ -5,7 +5,6 @@
             <p>Pilih salah satu metode buat menyelesaikan pesanan.</p>
         </div>
     </div>
-
     <?php if (empty($payment_methods)) : ?>
         <div class="card p-8 text-center text-sm text-muted">
             Belum ada metode pembayaran aktif.
@@ -17,16 +16,13 @@
                     type="button"
                     @click="selectPaymentMethod(<?= (int) $method['id'] ?>)"
                     class="payment-tile"
-                    :class="{ 'is-selected': selectedPaymentMethodId === <?= (int) $method['id'] ?> }"
-                >
+                    :class="{ 'is-selected': selectedPaymentMethodId === <?= (int) $method['id'] ?> }">
                     <?php if (!empty($method['image'])) : ?>
                         <img
                             src="<?= base_url('assets/images/payments/' . $method['image']) ?>"
                             alt=""
-                            loading="lazy"
-                        >
+                            loading="lazy">
                     <?php endif ?>
-
                     <span class="payment-tile-name"><?= esc($method['name']) ?></span>
                 </button>
             <?php endforeach ?>

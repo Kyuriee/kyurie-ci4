@@ -9,7 +9,6 @@ $targetGridClass = count($targetInputs) > 1 ? 'target-input-grid' : '';
             <p>Cek ulang ID kamu biar item masuk ke akun yang benar.</p>
         </div>
     </div>
-
     <div class="<?= esc($targetGridClass, 'attr') ?>">
         <?php foreach ($targetInputs as $input) : ?>
             <div>
@@ -24,8 +23,7 @@ $targetGridClass = count($targetInputs) > 1 ? 'target-input-grid' : '';
                         id="target_<?= esc($input['key'], 'attr') ?>"
                         name="<?= esc($input['name'], 'attr') ?>"
                         class="input"
-                        <?= ! empty($input['required']) ? 'required' : '' ?>
-                    >
+                        <?= ! empty($input['required']) ? 'required' : '' ?>>
                         <option value="" disabled>
                             <?= esc($input['placeholder'] ?? 'Pilih salah satu') ?>
                         </option>
@@ -44,8 +42,7 @@ $targetGridClass = count($targetInputs) > 1 ? 'target-input-grid' : '';
                         name="<?= esc($input['name'], 'attr') ?>"
                         placeholder="<?= esc($input['placeholder'], 'attr') ?>"
                         class="input"
-                        <?= ! empty($input['required']) ? 'required' : '' ?>
-                    >
+                        <?= ! empty($input['required']) ? 'required' : '' ?>>
                 <?php endif ?>
             </div>
         <?php endforeach ?>

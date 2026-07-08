@@ -2,13 +2,8 @@
 $page_assets ??= [];
 $page_assets['js'] ??= [];
 ?>
-
-<!-- Global Alert Bridge -->
 <?= view('Components/Alert', ['alert' => $alert ?? null]) ?>
-
-<!-- Global JS -->
 <?= vite_js('resources/js/app.js') ?>
-<!-- Page JS -->
 <?php foreach ($page_assets['js'] as $js): ?>
     <?= vite_js($js) ?>
 <?php endforeach; ?>

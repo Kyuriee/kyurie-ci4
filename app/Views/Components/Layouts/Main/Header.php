@@ -3,42 +3,32 @@ $current = service('uri')->getSegment(1);
 ?>
 
 <header
-    class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl"
->
+    class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl">
     <div class="container-app">
         <div class="flex h-20 items-center justify-between gap-6">
-            <!-- Logo -->
             <a
                 href="<?= base_url('/') ?>"
-                class="flex shrink-0 items-center gap-3"
-            >
+                class="flex shrink-0 items-center gap-3">
                 <img
                     src="<?= base_url('assets/images/logos/kyurie-2.png') ?>"
                     alt="Logo"
-                    class="h-11 w-11 object-contain"
-                >
+                    class="h-11 w-11 object-contain">
             </a>
-            <!-- Navigation -->
             <nav class="hidden items-center gap-1 lg:flex">
                 <?php foreach ($menus as $menu): ?>
                     <a
                         href="<?= $menu['url'] ?>"
-                        class="nav-link <?= $current === $menu['match'] ? 'nav-link-active' : '' ?>"
-                    >
+                        class="nav-link <?= $current === $menu['match'] ? 'nav-link-active' : '' ?>">
                         <i class="bi <?= $menu['icon'] ?>"></i>
                         <span><?= esc($menu['title']) ?></span>
                     </a>
                 <?php endforeach; ?>
             </nav>
-
-            <!-- Search (desktop) -->
             <div class="hidden flex-1 justify-center lg:flex">
                 <div class="w-full max-w-md">
                     <?= view('Components/Layouts/Main/SearchBar') ?>
                 </div>
             </div>
-
-            <!-- Right -->
             <?php if ($user): ?>
                 <div class="hidden items-center gap-4 lg:flex">
                     <!-- Dompet / Wallet Button -->
@@ -60,8 +50,7 @@ $current = service('uri')->getSegment(1);
                     <div class="relative" @click.away="userMenu = false">
                         <button
                             @click="userMenu = !userMenu"
-                            class="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-1.5 transition-all hover:border-primary cursor-pointer select-none"
-                        >
+                            class="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-1.5 transition-all hover:border-primary cursor-pointer select-none">
                             <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-sm font-bold text-white shadow-md shadow-primary/20">
                                 <?= strtoupper(substr($user['username'], 0, 1)) ?>
                             </div>
@@ -85,8 +74,7 @@ $current = service('uri')->getSegment(1);
                             x-transition:leave="transition ease-in duration-75"
                             x-transition:leave-start="transform opacity-100 scale-100"
                             x-transition:leave-end="transform opacity-0 scale-95"
-                            class="absolute right-0 mt-2 w-56 origin-top-right rounded-2xl border border-border bg-surface p-1.5 shadow-xl z-50"
-                        >
+                            class="absolute right-0 mt-2 w-56 origin-top-right rounded-2xl border border-border bg-surface p-1.5 shadow-xl z-50">
                             <div class="px-3 py-2 border-b border-border mb-1.5">
                                 <p class="text-[10px] uppercase tracking-wider text-muted font-bold">Email Terdaftar</p>
                                 <p class="text-xs font-bold text-heading truncate mt-0.5"><?= esc($user['email'] ?? 'player@kyurie.com') ?></p>
@@ -125,32 +113,24 @@ $current = service('uri')->getSegment(1);
                     </div>
                 </div>
             <?php endif; ?>
-
-            <!-- Mobile triggers -->
             <div class="flex items-center gap-2 lg:hidden">
                 <button
                     @click="mobileSearch = !mobileSearch"
-                    class="mobile-menu-button"
-                >
+                    class="mobile-menu-button">
                     <i class="bi" :class="mobileSearch ? 'bi-x-lg' : 'bi-search'"></i>
                 </button>
-
                 <button
                     @click="mobileMenu = true"
-                    class="mobile-menu-button"
-                >
+                    class="mobile-menu-button">
                     <i class="bi bi-list"></i>
                 </button>
             </div>
         </div>
-
-        <!-- Search (mobile) -->
         <div
             x-show="mobileSearch"
             x-cloak
             x-transition
-            class="border-t border-slate-100 py-3 lg:hidden"
-        >
+            class="border-t border-slate-100 py-3 lg:hidden">
             <?= view('Components/Layouts/Main/SearchBar') ?>
         </div>
     </div>
