@@ -53,6 +53,26 @@ class GameService extends baseService
         return $games;
     }
 
+    public function getPopularGames(int $limit = 12): array
+    {
+        return $this->safeCall(
+            fn () => $this->gameModel->getPopularGames($limit),
+            []
+        );
+    }
+
+    public function getGamesByCategory(int $categoryId): array
+    {
+        if ($categoryId <= 0) {
+            return [];
+        }
+
+        return $this->safeCall(
+            fn () => $this->gameModel->getGamesByCategory($categoryId),
+            []
+        );
+    }
+
     public function mapPublicGame(array $game): array
     {
         return [

@@ -4,6 +4,8 @@ namespace Config;
 
 use CodeIgniter\Config\BaseService;
 use App\Services\AuthService;
+use App\Services\BannerService;
+use App\Services\CategoryService;
 use App\Services\UserService;
 use App\Services\OrderService;
 use App\Services\CheckoutService;
@@ -19,6 +21,24 @@ use App\Services\TargetService;
 
 class Services extends BaseService
 {
+    public static function bannerService(bool $getShared = true): BannerService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('bannerService');
+        }
+
+        return new BannerService();
+    }
+
+    public static function categoryService(bool $getShared = true): CategoryService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('categoryService');
+        }
+
+        return new CategoryService();
+    }
+
     public static function authService(bool $getShared = true): AuthService
     {
         if ($getShared) {

@@ -2,69 +2,43 @@
 
 namespace App\Services;
 
-use App\Models\HomeModel;
-
-class HomeService extends BaseService
+class HomeService extends baseService
 {
-    protected $homeModel;
-    protected $priceService;
+    protected $bannerService;
+    protected $flashsaleService;
+    protected $gameService;
+    protected $categoryService;
 
     public function __construct()
     {
-        $this->homeModel     = model(HomeModel::class);
-        $this->priceService  = new PriceService();
+        $this->bannerService    = new BannerService();
+        $this->flashsaleService = new FlashsaleService();
+        $this->gameService      = new GameService();
+        $this->categoryService  = new CategoryService();
     }
-    
+
     public function getBanners(): array
     {
-        return $this->homeModel->getBanners();
+        return $this->bannerService->getActive();
     }
 
     public function getFlashsale(): array
     {
-        $flashsale = $this->homeModel->getFlashsale();
-        if (empty($flashsale)) {
-            return [];
-        }
-        $remaining = max(
-            0,
-            strtotime($flashsale['date_end']) - time()
-        );
-        $products = $this->homeModel->getFlashsaleProducts($flashsale['id']);
-        $flashsale['remaining_seconds'] = $remaining;
-        $flashsale['countdown'] = [
-            'days'    => floor($remaining / 86400),
-            'hours'   => floor(($remaining % 86400) / 3600),
-            'minutes' => floor(($remaining % 3600) / 60),
-            'seconds' => $remaining % 60,
-        ];
-        $flashsale['products'] = $products;
-        $flashsale['progress'] = $this->calculateFlashsaleProgress($products);
-        return $flashsale;
+        return $this->flashsaleService->getHomeDisplay();
     }
 
-    protected function calculateFlashsaleProgress(array $items): int
+    public function getPopularGames(int $limit = 12): array
     {
-        $stock = array_sum(array_column($items, 'stock'));
-        $sold  = array_sum(array_column($items, 'sold'));
-        if ($stock <= 0) {
-            return 0;
-        }
-        return (int) round(($sold / $stock) * 100);
-    }
-
-    public function getPopularGames(): array
-    {
-        return $this->homeModel->getPopularGames(12);
+        return $this->gameService->getPopularGames($limit);
     }
 
     public function getCategorySections(): array
     {
-        $categories = $this->homeModel->getActiveCategories();
+        $categories = $this->categoryService->getActive();
         $sections   = [];
 
         foreach ($categories as $category) {
-            $games = $this->homeModel->getGamesByCategory((int) $category['id']);
+            $games = $this->gameService->getGamesByCategory((int) $category['id']);
 
             if (empty($games)) {
                 continue;
@@ -77,18 +51,5 @@ class HomeService extends BaseService
         }
 
         return $sections;
-    }
-
-    protected function formatProducts(array $products): array
-    {
-        foreach ($products as &$product) {
-            $final_price = $this->priceService->getFinalPrice($product);
-
-            $product['final_price']            = $final_price;
-            $product['final_price_formatted']  = $this->priceService->formatPrice($final_price);
-            $product['normal_price_formatted'] = $this->priceService->formatPrice((float) ($product['price'] ?? 0));
-        }
-
-        return $products;
     }
 }
