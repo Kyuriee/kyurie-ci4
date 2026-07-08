@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\baseModel;
 use App\Models\UserModel;
-use App\Services\SettingService;
+use App\Services\Setting\SettingService;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -130,17 +130,59 @@ abstract class BaseController extends Controller
         return view($view, $mergedData);
     }
 
+    protected function setAlert(string $type, string $message): void
+    {
+        $this->session->setFlashdata('alert', [
+            'type'    => $type,
+            'message' => $message,
+        ]);
+    }
+
+    protected function backWithAlert(string $type, string $message, bool $withInput = false)
+    {
+        $this->setAlert($type, $message);
+
+        $redirect = redirect()->back();
+
+        return $withInput ? $redirect->withInput() : $redirect;
+    }
+
+    protected function redirectWithAlert(string $to, string $type, string $message)
+    {
+        $this->setAlert($type, $message);
+
+        return redirect()->to($to);
+    }
+
+    protected function validateOrBack(array $rules, ?string $message = null)
+    {
+        if ($this->validate($rules)) {
+            return null;
+        }
+
+        $message = $message ?: implode('<br>', $this->validator->getErrors());
+
+        return $this->backWithAlert('error', $message, true);
+    }
+
+    protected function throttleOrBack(string $key, int $limit, string $message)
+    {
+        $throttler   = service('throttler');
+        $throttleKey = $key . '_' . $this->request->getIPAddress();
+
+        if ($throttler->check($throttleKey, $limit, MINUTE) !== false) {
+            return null;
+        }
+
+        return $this->backWithAlert('error', $message);
+    }
+
     protected function responseJson(bool $success, string $message, $data = null)
     {
         return $this->response->setJSON([
             'success'   => $success,
             'message'   => $message,
             'data'      => $data,
-            // Config\Security::$regenerate = true bikin token CSRF rotate tiap
-            // kali verify() sukses. Tanpa ini, client (axios interceptor di
-            // app.js) gak pernah tau token-nya udah basi, dan request
-            // berikutnya (preview harga, submit order, dst) bakal kena
-            // "The action you requested is not allowed."
             'csrf_hash' => function_exists('csrf_hash') ? csrf_hash() : null,
         ]);
     }

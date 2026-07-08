@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Order;
 
+use App\Services\baseService;
 use App\Models\PaymentMethodModel;
 
-class PaymentService extends baseService
+class PaymentMethodService extends baseService
 {
     protected $paymentMethodModel;
 

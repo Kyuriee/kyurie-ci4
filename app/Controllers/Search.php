@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Services\GameService;
+use App\Services\Catalog\GameService;
 
 class Search extends BaseController
 {

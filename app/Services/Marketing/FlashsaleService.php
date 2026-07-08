@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Marketing;
 
+use App\Services\baseService;
 use App\Models\FlashsaleItemModel;
 use App\Models\FlashsaleModel;
 

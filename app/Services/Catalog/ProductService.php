@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Catalog;
 
 use App\Models\ProductModel;
+use App\Services\baseService;
+use App\Services\Marketing\FlashsaleService;
+use App\Services\Pricing\PriceService;
 
 class ProductService extends baseService
 {
@@ -40,7 +43,7 @@ class ProductService extends baseService
             $finalPrice     = $this->priceService->getFinalPrice($product, $flashsaleItem ?: null);
             $product        = $this->mapPublicProduct($product, $finalPrice, ! empty($flashsaleItem));
         }
-        
+
         unset($product);
 
         return $products;

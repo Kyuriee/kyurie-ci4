@@ -1,20 +1,26 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Orchestrators\Storefront;
 
-class GameDetailService extends baseService
+use App\Services\baseService;
+use App\Services\Catalog\GameService;
+use App\Services\Catalog\ProductService;
+use App\Services\Catalog\TargetService;
+use App\Services\Order\paymentMethodService;
+
+class GameDetailPageOrchestrator extends baseService
 {
     protected $gameService;
     protected $productService;
-    protected $paymentService;
+    protected $paymentMethodService;
     protected $targetService;
 
     public function __construct()
     {
-        $this->gameService    = new GameService();
-        $this->productService = new ProductService();
-        $this->paymentService = new PaymentService();
-        $this->targetService  = new TargetService();
+        $this->gameService          = new GameService();
+        $this->productService       = new ProductService();
+        $this->paymentMethodService = new PaymentMethodService();
+        $this->targetService        = new TargetService();
     }
 
     public function getDetailPage(string $slug): array
@@ -28,7 +34,7 @@ class GameDetailService extends baseService
                 'game'            => $this->gameService->mapPublicGame($game),
                 'target_form'     => $this->targetService->getFormConfig($game['target'] ?? 'default', $game['input_custom'] ?? null),
                 'products'        => $this->productService->getPublicProductsByGame((int) $game['id']),
-                'payment_methods' => $this->paymentService->getActiveMethods(),
+                'payment_methods' => $this->paymentMethodService->getActiveMethods(),
             ];
         }, []);
     }

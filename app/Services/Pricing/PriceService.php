@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Pricing;
+
+use App\Services\baseService;
 
 class PriceService extends baseService
 {

@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Services\UserService;
+use App\Services\User\UserService;
 
 class User extends BaseController
 {
@@ -11,23 +11,17 @@ class User extends BaseController
     public function profile()
     {
         $user_id = $this->session->get('user_id');
-
-
-
         $profile = $this->_service()->getProfile($user_id);
-
         $data = [
             'meta'    => ['title' => 'Profil Saya'],
             'profile' => $profile,
         ];
-
         return $this->renderView('Pages/User/Profile', $data);
     }
 
     public function update()
     {
         $user_id = $this->session->get('user_id');
-
         if ($this->request->is('post')) {
             $result = $this->_service()->updateProfile($user_id, [
                 'email' => $this->request->getPost('email'),
@@ -40,7 +34,6 @@ class User extends BaseController
             ]);
             return redirect()->back();
         }
-
         return redirect()->to('user/profile');
     }
 

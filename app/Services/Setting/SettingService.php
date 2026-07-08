@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Setting;
 
 use App\Models\UtilityModel;
 use App\Models\CredentialModel;
+use App\Services\baseService;
 
 class SettingService extends baseService
 {

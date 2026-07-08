@@ -3,42 +3,32 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
-use App\Services\AuthService;
-use App\Services\BannerService;
-use App\Services\CategoryService;
-use App\Services\UserService;
-use App\Services\OrderService;
-use App\Services\CheckoutService;
-use App\Services\FlashsaleService;
-use App\Services\GameDetailService;
-use App\Services\GameService;
-use App\Services\PaymentService;
-use App\Services\HomeService;
-use App\Services\PriceService;
-use App\Services\ProductService;
-use App\Services\SettingService;
-use App\Services\TargetService;
+
+use App\Services\Auth\AuthService;
+use App\Services\User\UserService;
+
+use App\Services\Catalog\GameService;
+use App\Services\Catalog\ProductService;
+use App\Services\Catalog\GameCategoryService;
+use App\Services\Catalog\TargetService;
+
+use App\Services\Marketing\BannerService;
+use App\Services\Marketing\FlashsaleService;
+
+use App\Services\Order\OrderService;
+use App\Services\Order\orderStatusService;
+use App\Services\Order\CheckoutService;
+use App\Services\Order\PaymentMethodService;
+
+use App\Services\Pricing\PriceService;
+use App\Services\Setting\SettingService;
+
+use App\Services\Orchestrators\Storefront\HomePageOrchestrator;
+use App\Services\Orchestrators\Storefront\GameDetailPageOrchestrator;
+use App\Services\Orchestrators\Storefront\PaymentDetailPageOrchestrator;
 
 class Services extends BaseService
 {
-    public static function bannerService(bool $getShared = true): BannerService
-    {
-        if ($getShared) {
-            return static::getSharedInstance('bannerService');
-        }
-
-        return new BannerService();
-    }
-
-    public static function categoryService(bool $getShared = true): CategoryService
-    {
-        if ($getShared) {
-            return static::getSharedInstance('categoryService');
-        }
-
-        return new CategoryService();
-    }
-
     public static function authService(bool $getShared = true): AuthService
     {
         if ($getShared) {
@@ -57,24 +47,6 @@ class Services extends BaseService
         return new UserService();
     }
 
-    public static function orderService(bool $getShared = true): OrderService
-    {
-        if ($getShared) {
-            return static::getSharedInstance('orderService');
-        }
-
-        return new OrderService();
-    }
-
-    public static function checkoutService(bool $getShared = true): CheckoutService
-    {
-        if ($getShared) {
-            return static::getSharedInstance('checkoutService');
-        }
-
-        return new CheckoutService();
-    }
-
     public static function gameService(bool $getShared = true): GameService
     {
         if ($getShared) {
@@ -82,15 +54,6 @@ class Services extends BaseService
         }
 
         return new GameService();
-    }
-
-    public static function gameDetailService(bool $getShared = true): GameDetailService
-    {
-        if ($getShared) {
-            return static::getSharedInstance('gameDetailService');
-        }
-
-        return new GameDetailService();
     }
 
     public static function productService(bool $getShared = true): ProductService
@@ -102,6 +65,33 @@ class Services extends BaseService
         return new ProductService();
     }
 
+    public static function gameCategoryService(bool $getShared = true): GameCategoryService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('gameCategoryService');
+        }
+
+        return new GameCategoryService();
+    }
+
+    public static function targetService(bool $getShared = true): TargetService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('targetService');
+        }
+
+        return new TargetService();
+    }
+
+    public static function bannerService(bool $getShared = true): BannerService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('bannerService');
+        }
+
+        return new BannerService();
+    }
+
     public static function flashsaleService(bool $getShared = true): FlashsaleService
     {
         if ($getShared) {
@@ -111,22 +101,40 @@ class Services extends BaseService
         return new FlashsaleService();
     }
 
-    public static function paymentService(bool $getShared = true): PaymentService
+    public static function orderService(bool $getShared = true): OrderService
     {
         if ($getShared) {
-            return static::getSharedInstance('paymentService');
+            return static::getSharedInstance('orderService');
         }
 
-        return new PaymentService();
+        return new OrderService();
     }
 
-    public static function homeService(bool $getShared = true): HomeService
+    public static function orderStatusService(bool $getShared = true): OrderStatusService
     {
         if ($getShared) {
-            return static::getSharedInstance('homeService');
+            return static::getSharedInstance('orderService');
         }
 
-        return new HomeService();
+        return new OrderStatusService();
+    }
+
+    public static function checkoutService(bool $getShared = true): CheckoutService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('checkoutService');
+        }
+
+        return new CheckoutService();
+    }
+
+    public static function paymentMethodService(bool $getShared = true): PaymentMethodService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('paymentMethodService');
+        }
+
+        return new PaymentMethodService();
     }
 
     public static function priceService(bool $getShared = true): PriceService
@@ -147,12 +155,30 @@ class Services extends BaseService
         return new SettingService();
     }
 
-    public static function targetService(bool $getShared = true): TargetService
+    public static function homePageOrchestrator(bool $getShared = true): HomePageOrchestrator
     {
         if ($getShared) {
-            return static::getSharedInstance('targetService');
+            return static::getSharedInstance('homePageOrchestrator');
         }
 
-        return new TargetService();
+        return new HomePageOrchestrator();
+    }
+
+    public static function gameDetailPageOrchestrator(bool $getShared = true): GameDetailPageOrchestrator
+    {
+        if ($getShared) {
+            return static::getSharedInstance('gameDetailPageOrchestrator');
+        }
+
+        return new GameDetailPageOrchestrator();
+    }
+
+    public static function PaymentDetailPageOrchestrator(bool $getShared = true): PaymentDetailPageOrchestrator
+    {
+        if ($getShared) {
+            return static::getSharedInstance('PaymentDetailPageOrchestrator');
+        }
+
+        return new PaymentDetailPageOrchestrator();
     }
 }

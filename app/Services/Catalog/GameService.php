@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Catalog;
 
+use App\Services\baseService;
 use App\Models\GameModel;
 
 class GameService extends baseService
@@ -56,7 +57,7 @@ class GameService extends baseService
     public function getPopularGames(int $limit = 12): array
     {
         return $this->safeCall(
-            fn () => $this->gameModel->getPopularGames($limit),
+            fn() => $this->gameModel->getPopularGames($limit),
             []
         );
     }
@@ -68,7 +69,7 @@ class GameService extends baseService
         }
 
         return $this->safeCall(
-            fn () => $this->gameModel->getGamesByCategory($categoryId),
+            fn() => $this->gameModel->getGamesByCategory($categoryId),
             []
         );
     }

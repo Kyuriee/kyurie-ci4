@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Marketing;
 
+use App\Services\baseService;
 use App\Models\BannerModel;
 
 class BannerService extends baseService
@@ -16,7 +17,7 @@ class BannerService extends baseService
     public function getActive(): array
     {
         return $this->safeCall(
-            fn () => $this->bannerModel->getActive(),
+            fn() => $this->bannerModel->getActive(),
             []
         );
     }

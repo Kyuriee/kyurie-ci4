@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Services\OrderService;
-use App\Services\CheckoutService;
+use App\Services\Order\OrderService;
+use App\Services\Order\CheckoutService;
 
 class Order extends BaseController
 {
@@ -42,76 +42,22 @@ class Order extends BaseController
         return redirect()->back();
     }
 
-    public function list()
+    protected function requestPayload(): array
     {
-        if (! $this->session->get('user_id')) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Silakan login terlebih dahulu',
-                'data'    => [],
-            ]);
+        $json = $this->request->getJSON(true);
+        if (is_array($json)) {
+            return $json;
         }
-
-        $orders = $this->_order_service()->getOrdersByUser(
-            $this->session->get('user_id')
-        );
-
-        return $this->response->setJSON([
-            'success' => true,
-            'message' => 'Data pesanan ditemukan',
-            'data'    => $orders,
-        ]);
+        return $this->request->getPost() ?? [];
     }
 
-    public function detail(int $orderId)
+    protected function _order_service(): orderService
     {
-        if (! $this->session->get('user_id')) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Silakan login terlebih dahulu',
-            ]);
-        }
-
-        $order = $this->_order_service()->getOrderForUser($orderId, (int) $this->session->get('user_id'));
-
-        if (empty($order)) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Pesanan tidak ditemukan',
-            ]);
-        }
-
-        return $this->response->setJSON([
-            'success' => true,
-            'message' => 'Pesanan ditemukan',
-            'data'    => $order,
-        ]);
-    }
-
-    protected function _order_service(): OrderService
-    {
-        if (! isset($this->order_service)) {
-            $this->order_service = new OrderService();
-        }
-        return $this->order_service;
+        return single_service('orderService');
     }
 
     protected function _checkout_service(): CheckoutService
     {
-        if (! isset($this->checkout_service)) {
-            $this->checkout_service = new CheckoutService();
-        }
-        return $this->checkout_service;
-    }
-
-    protected function requestPayload(): array
-    {
-        $json = $this->request->getJSON(true);
-
-        if (is_array($json)) {
-            return $json;
-        }
-
-        return $this->request->getPost() ?? [];
+        return single_service('checkoutService');
     }
 }

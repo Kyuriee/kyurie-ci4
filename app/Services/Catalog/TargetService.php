@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Catalog;
+
+use App\Services\baseService;
 
 class TargetService extends baseService
 {

@@ -2,11 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Services\GameDetailService;
+use App\Services\orchestrators\Storefront\GameDetailPageOrchestrator;
 
 class Game extends BaseController
 {
-
 
     public function detail(string $slug)
     {
@@ -31,8 +30,8 @@ class Game extends BaseController
         return $this->renderView('Pages/Games/Detail', $data);
     }
 
-    protected function _service(): GameDetailService
+    protected function _service(): GameDetailPageOrchestrator
     {
-        return single_service('gameDetailService');
+        return single_service('GameDetailPageOrchestrator');
     }
 }

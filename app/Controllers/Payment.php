@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Services\OrderService;
+use app\Services\Orchestrators\Storefront\PaymentDetailPageOrchestrator;
 
 class Payment extends BaseController
 {
@@ -57,8 +57,8 @@ class Payment extends BaseController
         return $this->renderView('Pages/Payment/Check', $data);
     }
 
-    protected function _service(): OrderService
+    protected function _service(): PaymentDetailPageOrchestrator
     {
-        return single_service('orderService');
+        return single_service('paymentDetailPageOrchestrator');
     }
 }

@@ -2,281 +2,168 @@
 
 namespace App\Controllers;
 
-use App\Services\AuthService;
+use App\Services\Auth\AuthService;
+use App\Validation\AuthRequestRules;
 
 class Auth extends BaseController
 {
-
-
     public function login()
     {
-        if ($this->session->get('user_id')) {
-            return redirect()->to('/');
+        if ($redirect = $this->redirectIfAuthenticated()) {
+            return $redirect;
         }
 
-        if ($this->request->is('post')) {
-            // 1. Rate Limiting (Anti Brute-Force) - Max 5x login gagal per menit per IP
-            $throttler = service('throttler');
-            if ($throttler->check('login_' . $this->request->getIPAddress(), 5, MINUTE) === false) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => 'Terlalu banyak percobaan login. Silakan coba lagi sebentar.',
-                ]);
-                return redirect()->back();
-            }
-
-            // 2. Validasi Input dengan Custom Error Messages
-            $rules = [
-                'username' => [
-                    'rules'  => 'required|min_length[3]|max_length[100]',
-                    'errors' => [
-                        'required'   => 'Username atau email wajib diisi.',
-                        'min_length' => 'Minimal 3 karakter.',
-                        'max_length' => 'Maksimal 100 karakter.',
-                    ],
-                ],
-                'password' => [
-                    'rules'  => 'required|min_length[6]',
-                    'errors' => [
-                        'required'   => 'Password wajib diisi.',
-                        'min_length' => 'Password minimal 6 karakter.',
-                    ],
-                ],
-            ];
-
-            if (! $this->validate($rules)) {
-                $errors = $this->validator->getErrors();
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => implode('<br>', $errors),
-                ]);
-                return redirect()->back()->withInput();
-            }
-
-            $result = $this->_service()->login(
-                $this->request->getPost('username'),
-                $this->request->getPost('password')
-            );
-
-            if ($result['success']) {
-                // Handle Remember Me
-                if ($this->request->getPost('remember')) {
-                    $this->_service()->processRememberMe($result['user_id']);
-                }
-
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'success',
-                    'message' => 'Login berhasil!',
-                ]);
-                return redirect()->to('/');
-            }
-
-            $this->session->setFlashdata('alert', [
-                'type'    => 'error',
-                'message' => $result['message'],
+        if (! $this->request->is('post')) {
+            return $this->renderView('Pages/Auth/Login', [
+                'meta' => ['title' => 'Login'],
             ]);
-            return redirect()->back();
         }
 
-        $data = ['meta' => ['title' => 'Login']];
-        
-        return $this->renderView('Pages/Auth/Login', $data);
+        if ($redirect = $this->throttleOrBack('login', 5, 'Terlalu banyak percobaan login. Silakan coba lagi sebentar.')) {
+            return $redirect;
+        }
+
+        if ($redirect = $this->validateOrBack(AuthRequestRules::login())) {
+            return $redirect;
+        }
+
+        $result = $this->_service()->login(
+            $this->request->getPost('username'),
+            $this->request->getPost('password')
+        );
+
+        if (! $result['success']) {
+            return $this->backWithAlert('error', $result['message'], true);
+        }
+
+        if ($this->request->getPost('remember')) {
+            $this->_service()->processRememberMe((int) ($result['data']['user_id'] ?? 0));
+        }
+
+        return $this->redirectWithAlert('/', 'success', 'Login berhasil!');
     }
 
     public function register()
     {
-        if ($this->session->get('user_id')) {
-            return redirect()->to('/');
+        if ($redirect = $this->redirectIfAuthenticated()) {
+            return $redirect;
         }
 
-        if ($this->request->is('post')) {
-            $throttler = service('throttler');
-            if ($throttler->check('register_' . $this->request->getIPAddress(), 5, MINUTE) === false) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => 'Terlalu banyak percobaan. Silakan coba lagi sebentar.',
-                ]);
-                return redirect()->back();
-            }
-            $rules = [
-                'username' => [
-                    'rules'  => 'required|alpha_numeric|min_length[4]|max_length[100]|is_unique[users.username]',
-                    'errors' => [
-                        'required'      => 'Username wajib diisi.',
-                        'alpha_numeric' => 'Username hanya boleh berisi huruf dan angka.',
-                        'min_length'    => 'Username minimal 4 karakter.',
-                        'is_unique'     => 'Username ini sudah terdaftar, gunakan yang lain.',
-                    ],
-                ],
-                'email' => [
-                    'rules'  => 'required|valid_email|is_unique[users.email]',
-                    'errors' => [
-                        'required'    => 'Email wajib diisi.',
-                        'valid_email' => 'Format email tidak valid.',
-                        'is_unique'   => 'Email ini sudah terdaftar.',
-                    ],
-                ],
-                'password' => [
-                    'rules'  => 'required|min_length[8]',
-                    'errors' => [
-                        'required'   => 'Password wajib diisi.',
-                        'min_length' => 'Password minimal 8 karakter.',
-                    ],
-                ],
-                'password_confirm' => [
-                    'rules'  => 'required|matches[password]',
-                    'errors' => [
-                        'required' => 'Konfirmasi password wajib diisi.',
-                        'matches'  => 'Konfirmasi password tidak sama dengan password.',
-                    ],
-                ],
-                'phone' => [
-                    'rules'  => 'permit_empty|numeric|min_length[10]|max_length[15]',
-                    'errors' => [
-                        'numeric'    => 'Nomor telepon harus berupa angka.',
-                        'min_length' => 'Nomor telepon minimal 10 angka.',
-                        'max_length' => 'Nomor telepon maksimal 15 angka.',
-                    ],
-                ],
-            ];
-
-            if (! $this->validate($rules)) {
-                $errors = $this->validator->getErrors();
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => implode('<br>', $errors),
-                ]);
-                return redirect()->back()->withInput();
-            }
-
-            $result = $this->_service()->register([
-                'username' => $this->request->getPost('username'),
-                'email'    => $this->request->getPost('email'),
-                'password' => $this->request->getPost('password'),
-                'phone'    => $this->request->getPost('phone'),
+        if (! $this->request->is('post')) {
+            return $this->renderView('Pages/Auth/Register', [
+                'meta' => ['title' => 'Daftar Akun'],
             ]);
-
-            if ($result['success']) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'success',
-                    'message' => 'Pendaftaran berhasil, silakan login!',
-                ]);
-                return redirect()->to('auth/login');
-            }
-
-            $this->session->setFlashdata('alert', [
-                'type'    => 'error',
-                'message' => $result['message'],
-            ]);
-            return redirect()->back()->withInput();
         }
 
-        $data = ['meta' => ['title' => 'Daftar Akun']];
-        return $this->renderView('Pages/Auth/Register', $data); 
+        if ($redirect = $this->throttleOrBack('register', 5, 'Terlalu banyak percobaan. Silakan coba lagi sebentar.')) {
+            return $redirect;
+        }
+
+        if ($redirect = $this->validateOrBack(AuthRequestRules::register())) {
+            return $redirect;
+        }
+
+        $result = $this->_service()->register([
+            'username' => $this->request->getPost('username'),
+            'email'    => $this->request->getPost('email'),
+            'password' => $this->request->getPost('password'),
+            'phone'    => $this->request->getPost('phone'),
+        ]);
+
+        if (! $result['success']) {
+            return $this->backWithAlert('error', $result['message'], true);
+        }
+
+        return $this->redirectWithAlert(
+            'auth/login',
+            'success',
+            'Pendaftaran berhasil, silakan login!'
+        );
     }
 
     public function logout()
     {
         $this->_service()->logout();
 
-        $this->session->setFlashdata('alert', [
-            'type'    => 'success',
-            'message' => 'Berhasil logout',
-        ]);
-        return redirect()->to('/');
+        return $this->redirectWithAlert('/', 'success', 'Berhasil logout');
     }
 
     public function forgot()
     {
-        if ($this->session->get('user_id')) {
-            return redirect()->to('/');
+        if ($redirect = $this->redirectIfAuthenticated()) {
+            return $redirect;
         }
 
-        if ($this->request->is('post')) {
-            $throttler = service('throttler');
-            if ($throttler->check('forgot_' . $this->request->getIPAddress(), 3, MINUTE) === false) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => 'Terlalu banyak percobaan. Silakan coba lagi sebentar.',
-                ]);
-                return redirect()->back();
-            }
-            $rules = [
-                'email' => 'required|valid_email'
-            ];
-
-            if (! $this->validate($rules)) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => 'Format email tidak valid.',
-                ]);
-                return redirect()->back()->withInput();
-            }
-
-            $result = $this->_service()->forgotPassword($this->request->getPost('email'));
-
-            $this->session->setFlashdata('alert', [
-                'type'    => $result['success'] ? 'success' : 'error',
-                'message' => $result['success'] ? 'Jika email terdaftar, link reset password telah dikirim.' : $result['message'],
+        if (! $this->request->is('post')) {
+            return $this->renderView('Pages/Auth/Forgot', [
+                'meta' => ['title' => 'Lupa Password'],
             ]);
-            
-            return redirect()->back();
         }
 
-        $data = ['meta' => ['title' => 'Lupa Password']];
-        return $this->renderView('Pages/Auth/Forgot', $data);
+        if ($redirect = $this->throttleOrBack('forgot', 3, 'Terlalu banyak percobaan. Silakan coba lagi sebentar.')) {
+            return $redirect;
+        }
+
+        if ($redirect = $this->validateOrBack(AuthRequestRules::forgot(), 'Format email tidak valid.')) {
+            return $redirect;
+        }
+
+        $result = $this->_service()->forgotPassword(
+            $this->request->getPost('email')
+        );
+
+        return $this->backWithAlert(
+            $result['success'] ? 'success' : 'error',
+            $result['success']
+                ? 'Jika email terdaftar, link reset password telah dikirim.'
+                : $result['message']
+        );
     }
 
     public function reset(string $token)
     {
-        if ($this->session->get('user_id')) {
-            return redirect()->to('/');
+        if ($redirect = $this->redirectIfAuthenticated()) {
+            return $redirect;
         }
 
-        if ($this->request->is('post')) {
-            $rules = [
-                'password'         => 'required|min_length[8]',
-                'password_confirm' => 'required|matches[password]',
-            ];
-
-            if (! $this->validate($rules)) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => 'Password minimal 8 karakter dan harus sama persis.',
-                ]);
-                return redirect()->back();
-            }
-
-            $result = $this->_service()->resetPassword($token, $this->request->getPost('password'));
-
-            if ($result['success']) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'success',
-                    'message' => 'Password berhasil diubah. Silakan login dengan password baru.',
-                ]);
-                return redirect()->to('auth/login');
-            }
-
-            $this->session->setFlashdata('alert', [
-                'type'    => 'error',
-                'message' => $result['message'],
+        if (! $this->request->is('post')) {
+            return $this->renderView('Pages/Auth/Reset', [
+                'meta'  => ['title' => 'Reset Password'],
+                'token' => $token,
             ]);
-            return redirect()->back();
         }
 
-        $data = [
-            'meta'  => ['title' => 'Reset Password'],
-            'token' => $token
-        ];
-        return $this->renderView('Pages/Auth/Reset', $data);
+        if ($redirect = $this->validateOrBack(AuthRequestRules::reset(), 'Password minimal 8 karakter dan harus sama persis.')) {
+            return $redirect;
+        }
+
+        $result = $this->_service()->resetPassword(
+            $token,
+            $this->request->getPost('password')
+        );
+
+        if (! $result['success']) {
+            return $this->backWithAlert('error', $result['message']);
+        }
+
+        return $this->redirectWithAlert(
+            'auth/login',
+            'success',
+            'Password berhasil diubah. Silakan login dengan password baru.'
+        );
     }
 
-   protected function _service(): \App\Services\AuthService
+    protected function redirectIfAuthenticated()
     {
-        if (! isset($this->authService)) {
-            $this->authService = new \App\Services\AuthService();
+        if (! $this->session->get('user_id')) {
+            return null;
         }
-        
-        return $this->authService;
+
+        return redirect()->to('/');
+    }
+
+    protected function _service(): AuthService
+    {
+        return service('authService');
     }
 }
