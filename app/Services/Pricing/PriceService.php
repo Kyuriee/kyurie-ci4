@@ -2,9 +2,9 @@
 
 namespace App\Services\Pricing;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 
-class PriceService extends baseService
+class PriceService extends BaseService
 {
     public function calculateSellingPrice(float $rawPrice, float $marginPercent = 0, float $marginNominal = 0): float
     {

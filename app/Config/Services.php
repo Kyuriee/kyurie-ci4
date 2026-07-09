@@ -10,14 +10,14 @@ use App\Services\User\UserService;
 use App\Services\Catalog\GameService;
 use App\Services\Catalog\ProductService;
 use App\Services\Catalog\GameCategoryService;
-use App\Services\Catalog\TargetService;
+use App\Services\Catalog\GameAccountInputService;
 
 use App\Services\Marketing\BannerService;
 use App\Services\Marketing\FlashsaleService;
 
 use App\Services\Order\OrderService;
 use App\Services\Order\orderStatusService;
-use App\Services\Order\CheckoutService;
+use App\Services\Orchestrators\Storefront\CheckoutOrchestrator;
 use App\Services\Order\PaymentMethodService;
 
 use App\Services\Pricing\PriceService;
@@ -74,13 +74,13 @@ class Services extends BaseService
         return new GameCategoryService();
     }
 
-    public static function targetService(bool $getShared = true): TargetService
+    public static function gameAccountInputService(bool $getShared = true): GameAccountInputService
     {
         if ($getShared) {
-            return static::getSharedInstance('targetService');
+            return static::getSharedInstance('gameAccountInputService');
         }
 
-        return new TargetService();
+        return new GameAccountInputService();
     }
 
     public static function bannerService(bool $getShared = true): BannerService
@@ -119,13 +119,13 @@ class Services extends BaseService
         return new OrderStatusService();
     }
 
-    public static function checkoutService(bool $getShared = true): CheckoutService
+    public static function checkoutOrchestrator(bool $getShared = true): CheckoutOrchestrator
     {
         if ($getShared) {
-            return static::getSharedInstance('checkoutService');
+            return static::getSharedInstance('checkoutOrchestrator');
         }
 
-        return new CheckoutService();
+        return new CheckoutOrchestrator();
     }
 
     public static function paymentMethodService(bool $getShared = true): PaymentMethodService
@@ -173,10 +173,10 @@ class Services extends BaseService
         return new GameDetailPageOrchestrator();
     }
 
-    public static function PaymentDetailPageOrchestrator(bool $getShared = true): PaymentDetailPageOrchestrator
+    public static function paymentDetailPageOrchestrator(bool $getShared = true): PaymentDetailPageOrchestrator
     {
         if ($getShared) {
-            return static::getSharedInstance('PaymentDetailPageOrchestrator');
+            return static::getSharedInstance('paymentDetailPageOrchestrator');
         }
 
         return new PaymentDetailPageOrchestrator();

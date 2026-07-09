@@ -2,10 +2,10 @@
 
 namespace App\Services\Marketing;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Models\BannerModel;
 
-class BannerService extends baseService
+class BannerService extends BaseService
 {
     protected $bannerModel;
 

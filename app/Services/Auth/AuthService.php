@@ -2,10 +2,10 @@
 
 namespace App\Services\Auth;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Models\AuthModel;
 
-class AuthService extends baseService
+class AuthService extends BaseService
 {
     protected $authModel;
 

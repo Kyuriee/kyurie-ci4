@@ -1,23 +1,23 @@
 <?php
 
-namespace App\Services\Order;
+namespace App\Services\Orchestrators\Storefront;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Services\Catalog\GameService;
 use App\Services\Catalog\ProductService;
 use App\Services\Marketing\FlashsaleService;
 use App\Services\Pricing\PriceService;
 use App\Services\Order\PaymentMethodService;
-use App\Services\Catalog\TargetService;
+use App\Services\Catalog\GameAccountInputService;
 
-class CheckoutService extends baseService
+class CheckoutOrchestrator extends BaseService
 {
     protected $gameService;
     protected $productService;
     protected $flashsaleService;
     protected $priceService;
     protected $paymentMethodService;
-    protected $targetService;
+    protected $gameAccountInputService;
 
     public function __construct()
     {
@@ -25,8 +25,8 @@ class CheckoutService extends baseService
         $this->productService       = new ProductService();
         $this->flashsaleService     = new FlashsaleService();
         $this->priceService         = new PriceService();
-        $this->paymentMethodService = new PaymentMethodService();
-        $this->targetService        = new TargetService();
+        $this->paymentMethodService    = new PaymentMethodService();
+        $this->gameAccountInputService = new GameAccountInputService();
     }
 
     public function prepareOrder(array $payload): array
@@ -68,7 +68,7 @@ class CheckoutService extends baseService
                 return $this->fail('Stok flash sale untuk produk ini sudah habis');
             }
 
-            $target_validation = $this->targetService->validatePayload(
+            $target_validation = $this->gameAccountInputService->validatePayload(
                 $game['target'] ?? 'default',
                 $game['input_custom'] ?? null,
                 array_merge($payload, [

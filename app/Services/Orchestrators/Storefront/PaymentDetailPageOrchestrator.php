@@ -3,18 +3,18 @@
 namespace App\Services\Orchestrators\Storefront;
 
 use App\Models\OrderModel;
-use App\Services\baseService;
-use App\Services\Catalog\TargetService;
+use App\Services\BaseService;
+use App\Services\Catalog\GameAccountInputService;
 
-class PaymentDetailPageOrchestrator extends baseService
+class PaymentDetailPageOrchestrator extends BaseService
 {
     protected $orderModel;
-    protected $targetService;
+    protected $gameAccountInputService;
 
     public function __construct()
     {
         $this->orderModel    = model(OrderModel::class);
-        $this->targetService = new TargetService();
+        $this->gameAccountInputService = new GameAccountInputService();
     }
 
     public function checkInvoice(string $invoice): array
@@ -85,7 +85,7 @@ class PaymentDetailPageOrchestrator extends baseService
             'image'       => $row['image'] ?? null,
             'banner'      => $row['banner'] ?? null,
             'description' => $row['description'] ?? null,
-            'target_form' => $this->targetService->getFormConfig(
+            'target_form' => $this->gameAccountInputService->getFormConfig(
                 $row['target'] ?? 'default',
                 $row['input_custom'] ?? null
             ),

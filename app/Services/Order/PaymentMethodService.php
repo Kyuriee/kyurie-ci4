@@ -2,10 +2,10 @@
 
 namespace App\Services\Order;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Models\PaymentMethodModel;
 
-class PaymentMethodService extends baseService
+class PaymentMethodService extends BaseService
 {
     protected $paymentMethodModel;
 

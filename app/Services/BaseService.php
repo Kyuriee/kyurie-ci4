@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-abstract class baseService
+abstract class BaseService
 {
     protected function safeCall(callable $callback, $default = [])
     {

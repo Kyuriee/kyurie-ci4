@@ -2,9 +2,9 @@
 
 namespace App\Services\Catalog;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 
-class TargetService extends baseService
+class GameAccountInputService extends BaseService
 {
     protected const MAX_ZONE_INPUTS = 6;
 

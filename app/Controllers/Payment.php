@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use app\Services\Orchestrators\Storefront\PaymentDetailPageOrchestrator;
+use App\Services\Orchestrators\Storefront\PaymentDetailPageOrchestrator;
 
 class Payment extends BaseController
 {

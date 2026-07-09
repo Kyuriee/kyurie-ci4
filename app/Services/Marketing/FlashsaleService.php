@@ -2,11 +2,11 @@
 
 namespace App\Services\Marketing;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Models\FlashsaleItemModel;
 use App\Models\FlashsaleModel;
 
-class FlashsaleService extends baseService
+class FlashsaleService extends BaseService
 {
     protected $flashsaleItemModel;
     protected $flashsaleModel;

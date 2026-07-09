@@ -2,13 +2,13 @@
 
 namespace App\Services\Orchestrators\Storefront;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Services\Marketing\BannerService;
 use App\Services\Marketing\FlashsaleService;
 use App\Services\Catalog\GameService;
 use App\Services\Catalog\GameCategoryService;
 
-class HomePageOrchestrator extends baseService
+class HomePageOrchestrator extends BaseService
 {
     protected $bannerService;
     protected $flashsaleService;

@@ -4,10 +4,10 @@ namespace App\Services\Order;
 
 
 use App\Models\OrderModel;
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Services\Marketing\FlashsaleService;
 
-class OrderStatusService extends baseService
+class OrderStatusService extends BaseService
 {
     protected $orderModel;
     protected $flashsaleService;

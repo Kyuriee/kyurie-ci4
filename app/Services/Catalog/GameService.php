@@ -2,10 +2,10 @@
 
 namespace App\Services\Catalog;
 
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Models\GameModel;
 
-class GameService extends baseService
+class GameService extends BaseService
 {
     protected $gameModel;
 

@@ -3,12 +3,12 @@
 namespace App\Controllers;
 
 use App\Services\Order\OrderService;
-use App\Services\Order\CheckoutService;
+use App\Services\Orchestrators\Storefront\CheckoutOrchestrator;
 
 class Order extends BaseController
 {
     protected $order_service;
-    protected $checkout_service;
+    protected $checkout_orchestrator;
 
     public function prepare()
     {
@@ -17,7 +17,7 @@ class Order extends BaseController
         $payload['product_id'] = (int) ($payload['product_id'] ?? 0);
         $payload['payment_method_id'] = (int) ($payload['payment_method_id'] ?? 0);
 
-        $result = $this->_checkout_service()->prepareOrder($payload);
+        $result = $this->_checkout_orchestrator()->prepareOrder($payload);
 
         return $this->responseJson($result['success'], $result['message'], $result['data'] ?? null);
     }
@@ -51,13 +51,13 @@ class Order extends BaseController
         return $this->request->getPost() ?? [];
     }
 
-    protected function _order_service(): orderService
+    protected function _order_service(): OrderService
     {
         return single_service('orderService');
     }
 
-    protected function _checkout_service(): CheckoutService
+    protected function _checkout_orchestrator(): CheckoutOrchestrator
     {
-        return single_service('checkoutService');
+        return single_service('checkoutOrchestrator');
     }
 }

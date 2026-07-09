@@ -4,9 +4,9 @@ namespace App\Services\Setting;
 
 use App\Models\UtilityModel;
 use App\Models\CredentialModel;
-use App\Services\baseService;
+use App\Services\BaseService;
 
-class SettingService extends baseService
+class SettingService extends BaseService
 {
     protected $utility_model;
     protected $credential_model;

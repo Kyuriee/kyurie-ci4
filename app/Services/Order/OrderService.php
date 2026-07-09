@@ -3,15 +3,15 @@
 namespace App\Services\Order;
 
 use App\Models\OrderModel;
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Services\Catalog\GameService;
 use App\Services\Catalog\ProductService;
 use App\Services\Marketing\FlashsaleService;
 use App\Services\Pricing\PriceService;
 use App\Services\Order\PaymentMethodService;
-use App\Services\Catalog\TargetService;
+use App\Services\Catalog\GameAccountInputService;
 
-class OrderService extends baseService
+class OrderService extends BaseService
 {
     protected $gameService;
     protected $productService;
@@ -19,7 +19,7 @@ class OrderService extends baseService
     protected $flashsaleService;
     protected $priceService;
     protected $paymentMethodService;
-    protected $targetService;
+    protected $gameAccountInputService;
 
     public function __construct()
     {
@@ -29,7 +29,7 @@ class OrderService extends baseService
         $this->flashsaleService     = new FlashsaleService();
         $this->priceService         = new PriceService();
         $this->paymentMethodService = new PaymentMethodService();
-        $this->targetService        = new TargetService();
+        $this->gameAccountInputService        = new GameAccountInputService();
     }
 
     public function create(array $payload): array
@@ -57,7 +57,7 @@ class OrderService extends baseService
                 return $this->fail('Game tidak ditemukan');
             }
 
-            $target_validation = $this->targetService->validatePayload(
+            $target_validation = $this->gameAccountInputService->validatePayload(
                 $game['target'] ?? 'default',
                 $game['input_custom'] ?? null,
                 array_merge($payload, [

@@ -3,9 +3,9 @@
 namespace App\Services\User;
 
 use App\Models\UserModel;
-use App\Services\baseService;
+use App\Services\BaseService;
 
-class UserService extends baseService
+class UserService extends BaseService
 {
     protected $userModel;
 

@@ -3,11 +3,11 @@
 namespace App\Services\Catalog;
 
 use App\Models\ProductModel;
-use App\Services\baseService;
+use App\Services\BaseService;
 use App\Services\Marketing\FlashsaleService;
 use App\Services\Pricing\PriceService;
 
-class ProductService extends baseService
+class ProductService extends BaseService
 {
     protected $productModel;
     protected $flashsaleService;
