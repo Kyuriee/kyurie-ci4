@@ -31,27 +31,33 @@ class OrderStatusService extends BaseService
         }
 
         if ($status === 'success' && ! empty($order['flashsale_item_id'])) {
-            $db = \Config\Database::connect();
+            return $this->safeCall(function () use ($orderId, $status, $extra, $order) {
+                $db = \Config\Database::connect();
+                $db->transBegin();
 
-            $db->transBegin();
+                try {
+                    $updated = $this->orderModel->updateStatusIfNot($orderId, $status, 'success', $extra);
 
-            $updated = $this->orderModel->updateStatusIfNot($orderId, $status, 'success', $extra);
+                    if (! $updated) {
+                        $db->transRollback();
+                        return true;
+                    }
 
-            if (! $updated) {
-                $db->transRollback();
-                return true;
-            }
+                    $stockConsumed = $this->flashsaleService->consumeStock((int) $order['flashsale_item_id']);
 
-            $stockConsumed = $this->flashsaleService->consumeStock((int) $order['flashsale_item_id']);
+                    if (! $stockConsumed) {
+                        $db->transRollback();
+                        return false;
+                    }
 
-            if (! $stockConsumed) {
-                $db->transRollback();
-                return false;
-            }
+                    $db->transCommit();
 
-            $db->transCommit();
-
-            return $db->transStatus();
+                    return $db->transStatus();
+                } catch (\Throwable $e) {
+                    $db->transRollback();
+                    throw $e;
+                }
+            }, false);
         }
 
         $updated = $this->orderModel->updateStatus($orderId, $status, $extra);

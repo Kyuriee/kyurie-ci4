@@ -16,7 +16,10 @@ class PaymentMethodService extends BaseService
 
     public function getActiveMethods(): array
     {
-        return $this->paymentMethodModel->getActive();
+        return $this->safeCall(
+            fn() => $this->paymentMethodModel->getActive(),
+            []
+        );
     }
 
     public function getMethod(int $id): array
@@ -25,7 +28,10 @@ class PaymentMethodService extends BaseService
             return [];
         }
 
-        return $this->paymentMethodModel->find($id) ?: [];
+        return $this->safeCall(
+            fn() => $this->paymentMethodModel->find($id) ?: [],
+            []
+        );
     }
 
     public function getActiveMethod(int $id): array

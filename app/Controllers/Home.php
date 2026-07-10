@@ -14,7 +14,7 @@ class Home extends BaseController
         return $this->renderView('Pages/Home', $this->_service()->getHomeData());
     }
 
-    protected function _service(): homePageOrchestrator
+    protected function _service(): HomePageOrchestrator
     {
         return single_service('homePageOrchestrator');
     }

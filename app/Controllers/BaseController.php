@@ -29,7 +29,7 @@ abstract class BaseController extends Controller
         $this->setting_service = new SettingService();
         $this->userModel       = model(UserModel::class);
 
-        $web = $this->setting_service->get_public_utilities();
+        $web = $this->setting_service->getPublicUtilities();
         $menus = [
             [
                 'title' => 'Home',

@@ -8,47 +8,68 @@ use App\Services\BaseService;
 
 class SettingService extends BaseService
 {
-    protected $utility_model;
-    protected $credential_model;
+    protected $utilityModel;
+    protected $credentialModel;
 
     public function __construct()
     {
-        $this->utility_model    = model(UtilityModel::class);
-        $this->credential_model = model(CredentialModel::class);
+        $this->utilityModel    = model(UtilityModel::class);
+        $this->credentialModel = model(CredentialModel::class);
     }
 
-    public function get_public_utilities(): array
+    public function getPublicUtilities(): array
     {
-        return $this->utility_model->get_all_key_value(true);
+        return $this->safeCall(
+            fn() => $this->utilityModel->get_all_key_value(true),
+            []
+        );
     }
 
-    public function get_utilities(): array
+    public function getUtilities(): array
     {
-        return $this->utility_model->get_all_key_value(false);
+        return $this->safeCall(
+            fn() => $this->utilityModel->get_all_key_value(false),
+            []
+        );
     }
 
-    public function get_utility(string $key, $default = null)
+    public function getUtility(string $key, $default = null)
     {
-        return $this->utility_model->get_value($key, $default);
+        return $this->safeCall(
+            fn() => $this->utilityModel->get_value($key, $default),
+            $default
+        );
     }
 
-    public function set_utility(string $key, $value): bool
+    public function setUtility(string $key, $value): bool
     {
-        return $this->utility_model->set_value($key, $value);
+        return $this->safeCall(
+            fn() => $this->utilityModel->set_value($key, $value),
+            false
+        );
     }
 
-    public function get_credentials(string $provider, string $mode = 'production'): array
+    public function getCredentials(string $provider, string $mode = 'production'): array
     {
-        return $this->credential_model->get_provider_credentials($provider, $mode);
+        return $this->safeCall(
+            fn() => $this->credentialModel->get_provider_credentials($provider, $mode),
+            []
+        );
     }
 
-    public function get_credential(string $provider, string $key, string $mode = 'production', $default = null)
+    public function getCredential(string $provider, string $key, string $mode = 'production', $default = null)
     {
-        return $this->credential_model->get_value($provider, $key, $mode, $default);
+        return $this->safeCall(
+            fn() => $this->credentialModel->get_value($provider, $key, $mode, $default),
+            $default
+        );
     }
 
-    public function set_credential(string $provider, string $key, $value, string $mode = 'production'): bool
+    public function setCredential(string $provider, string $key, $value, string $mode = 'production'): bool
     {
-        return $this->credential_model->set_value($provider, $key, $value, $mode);
+        return $this->safeCall(
+            fn() => $this->credentialModel->set_value($provider, $key, $value, $mode),
+            false
+        );
     }
 }

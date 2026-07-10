@@ -19,45 +19,37 @@ class PaymentDetailPageOrchestrator extends BaseService
 
     public function checkInvoice(string $invoice): array
     {
-        $invoice = trim($invoice);
+        return $this->safeCall(function () use ($invoice) {
+            $invoice = trim($invoice);
 
-        if ($invoice === '') {
-            return [
-                'success' => false,
-                'message' => 'Masukkan nomor invoice',
-                'data'    => [],
-            ];
-        }
+            if ($invoice === '') {
+                return $this->fail('Masukkan nomor invoice');
+            }
 
-        $order = $this->orderModel->findByInvoice($invoice);
+            $order = $this->orderModel->findByInvoice($invoice);
 
-        if (empty($order)) {
-            return [
-                'success' => false,
-                'message' => 'Invoice tidak ditemukan',
-                'data'    => [],
-            ];
-        }
+            if (empty($order)) {
+                return $this->fail('Invoice tidak ditemukan');
+            }
 
-        return [
-            'success' => true,
-            'message' => 'Invoice ditemukan',
-            'data'    => $order,
-        ];
+            return $this->success('Invoice ditemukan', $order);
+        }, $this->fail('Gagal memeriksa invoice'));
     }
 
     public function getDetailPage(string $token): array
     {
-        $row = $this->orderModel->findByTokenWithGame($token);
+        return $this->safeCall(function () use ($token) {
+            $row = $this->orderModel->findByTokenWithGame($token);
 
-        if (empty($row)) {
-            return [];
-        }
+            if (empty($row)) {
+                return [];
+            }
 
-        return [
-            'order' => $this->mapOrder($row),
-            'game'  => $this->mapGame($row),
-        ];
+            return [
+                'order' => $this->mapOrder($row),
+                'game'  => $this->mapGame($row),
+            ];
+        }, []);
     }
 
     protected function mapOrder(array $row): array

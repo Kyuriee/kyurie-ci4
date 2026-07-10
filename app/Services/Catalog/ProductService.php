@@ -26,7 +26,10 @@ class ProductService extends BaseService
             return [];
         }
 
-        return $this->productModel->getDetailProduct($productId);
+        return $this->safeCall(
+            fn() => $this->productModel->getDetailProduct($productId),
+            []
+        );
     }
 
     public function getPublicProductsByGame(int $gameId): array
@@ -35,18 +38,19 @@ class ProductService extends BaseService
             return [];
         }
 
-        $products       = $this->productModel->getProductsByGame($gameId);
-        $flashsaleItems = $this->flashsaleService->getActiveItemsForProducts(array_column($products, 'id'));
+        return $this->safeCall(function () use ($gameId) {
+            $products       = $this->productModel->getProductsByGame($gameId);
+            $flashsaleItems = $this->flashsaleService->getActiveItemsForProducts(array_column($products, 'id'));
 
-        foreach ($products as &$product) {
-            $flashsaleItem  = $flashsaleItems[(int) $product['id']] ?? [];
-            $finalPrice     = $this->priceService->getFinalPrice($product, $flashsaleItem ?: null);
-            $product        = $this->mapPublicProduct($product, $finalPrice, ! empty($flashsaleItem));
-        }
+            foreach ($products as &$product) {
+                $flashsaleItem = $flashsaleItems[(int) $product['id']] ?? [];
+                $finalPrice    = $this->priceService->getFinalPrice($product, $flashsaleItem ?: null);
+                $product       = $this->mapPublicProduct($product, $finalPrice, ! empty($flashsaleItem));
+            }
+            unset($product);
 
-        unset($product);
-
-        return $products;
+            return $products;
+        }, []);
     }
 
     protected function mapPublicProduct(array $product, float $finalPrice, bool $isFlashsale): array

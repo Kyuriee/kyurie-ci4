@@ -16,26 +16,25 @@ class UserService extends BaseService
 
     public function getProfile(int $userId): array
     {
-        return $this->userModel->find($userId);
+        return $this->safeCall(
+            fn() => $this->userModel->find($userId) ?? [],
+            []
+        );
     }
 
     public function updateProfile(int $userId, array $data): array
     {
-        $allowed = ['email', 'phone'];
-        $update  = array_intersect_key($data, array_flip($allowed));
+        return $this->safeCall(function () use ($userId, $data) {
+            $allowed = ['email', 'phone'];
+            $update  = array_intersect_key($data, array_flip($allowed));
 
-        if (empty($update)) {
-            return [
-                'success' => false,
-                'message' => 'Tidak ada data yang diubah',
-            ];
-        }
+            if (empty($update)) {
+                return $this->fail('Tidak ada data yang diubah');
+            }
 
-        $this->userModel->update($userId, $update);
+            $this->userModel->update($userId, $update);
 
-        return [
-            'success' => true,
-            'message' => 'Profil berhasil diperbarui',
-        ];
+            return $this->success('Profil berhasil diperbarui');
+        }, $this->fail('Gagal memperbarui profil'));
     }
 }

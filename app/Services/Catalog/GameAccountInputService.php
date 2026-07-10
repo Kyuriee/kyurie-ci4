@@ -39,27 +39,15 @@ class GameAccountInputService extends BaseService
             $value = $values[$key] ?? '';
 
             if (! empty($input['required']) && $value === '') {
-                return [
-                    'success' => false,
-                    'message' => $input['label'] . ' wajib diisi',
-                    'data'    => $this->buildTargetData($config, $values),
-                ];
+                return $this->fail($input['label'] . ' wajib diisi', $this->buildTargetData($config, $values));
             }
 
             if (($input['type'] ?? 'text') === 'select' && $value !== '' && ! $this->optionValueExists($input, $value)) {
-                return [
-                    'success' => false,
-                    'message' => $input['label'] . ' tidak valid',
-                    'data'    => $this->buildTargetData($config, $values),
-                ];
+                return $this->fail($input['label'] . ' tidak valid', $this->buildTargetData($config, $values));
             }
         }
 
-        return [
-            'success' => true,
-            'message' => 'Target valid',
-            'data'    => $this->buildTargetData($config, $values),
-        ];
+        return $this->success('Target valid', $this->buildTargetData($config, $values));
     }
 
     protected function decodeCustomInputs($inputCustom): array

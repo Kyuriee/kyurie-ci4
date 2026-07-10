@@ -164,6 +164,6 @@ class Auth extends BaseController
 
     protected function _service(): AuthService
     {
-        return service('authService');
+        return single_service('authService');
     }
 }

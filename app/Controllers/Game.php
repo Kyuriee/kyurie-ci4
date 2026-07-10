@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Services\orchestrators\Storefront\GameDetailPageOrchestrator;
+use App\Services\Orchestrators\Storefront\GameDetailPageOrchestrator;
 
 class Game extends BaseController
 {
@@ -32,6 +32,6 @@ class Game extends BaseController
 
     protected function _service(): GameDetailPageOrchestrator
     {
-        return single_service('GameDetailPageOrchestrator');
+        return single_service('gameDetailPageOrchestrator');
     }
 }
