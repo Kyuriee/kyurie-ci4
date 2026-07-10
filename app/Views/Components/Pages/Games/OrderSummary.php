@@ -1,6 +1,7 @@
 <div class="sticky top-24">
     <form action="<?= base_url('order/create') ?>" method="POST">
         <?= csrf_field() ?>
+        <input type="hidden" name="game" value="<?= esc($game['slug']) ?>">
         <input type="hidden" name="product_id" :value="selectedProductId">
         <input type="hidden" name="payment_method_id" :value="selectedPaymentMethodId">
         <template x-for="input in targetForm.inputs" :key="input.key">

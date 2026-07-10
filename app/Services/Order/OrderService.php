@@ -4,100 +4,40 @@ namespace App\Services\Order;
 
 use App\Models\OrderModel;
 use App\Services\BaseService;
-use App\Services\Catalog\GameService;
-use App\Services\Catalog\ProductService;
-use App\Services\Marketing\FlashsaleService;
-use App\Services\Pricing\PriceService;
-use App\Services\Order\PaymentMethodService;
-use App\Services\Catalog\GameAccountInputService;
 
 class OrderService extends BaseService
 {
-    protected $gameService;
-    protected $productService;
     protected $orderModel;
-    protected $flashsaleService;
-    protected $priceService;
-    protected $paymentMethodService;
-    protected $gameAccountInputService;
 
     public function __construct()
     {
-        $this->orderModel           = model(OrderModel::class);
-        $this->gameService          = new GameService();
-        $this->productService       = new ProductService();
-        $this->flashsaleService     = new FlashsaleService();
-        $this->priceService         = new PriceService();
-        $this->paymentMethodService = new PaymentMethodService();
-        $this->gameAccountInputService        = new GameAccountInputService();
+        $this->orderModel = model(OrderModel::class);
     }
 
-    public function create(array $payload): array
+    /**
+     * Persists an order from data already validated by
+     * CheckoutOrchestrator::prepareOrder(). Does not re-derive or
+     * re-check product/game/payment/price — caller is responsible for
+     * passing a trusted, validated payload.
+     */
+    public function create(array $validated, int $userId = 0): array
     {
-        return $this->safeCall(function () use ($payload) {
-            $user_id           = (int) ($payload['auth_user_id'] ?? 0);
-            $product_id        = (int) ($payload['product_id'] ?? 0);
-            $customer_id       = trim($payload['customer_id'] ?? '');
-            $zone_id           = trim($payload['zone_id'] ?? '');
-            $payment_method_id = (int) ($payload['payment_method_id'] ?? 0);
+        return $this->safeCall(function () use ($validated, $userId) {
+            $product        = $validated['product'];
+            $game           = $validated['game'];
+            $payment_method = $validated['payment_method'];
+            $flashsale_item = $validated['flashsale_item'] ?? null;
+            $customer_id    = $validated['customer_id'];
+            $zone_id        = $validated['zone_id'];
+            $final_price    = $validated['final_price'];
 
-            if ($product_id <= 0) {
-                return $this->fail('Produk wajib dipilih');
-            }
-
-            $product = $this->productService->getDetail($product_id);
-
-            if (empty($product)) {
-                return $this->fail('Produk tidak tersedia');
-            }
-
-            $game = $this->gameService->getById((int) $product['games_id']);
-
-            if (empty($game)) {
-                return $this->fail('Game tidak ditemukan');
-            }
-
-            $target_validation = $this->gameAccountInputService->validatePayload(
-                $game['target'] ?? 'default',
-                $game['input_custom'] ?? null,
-                array_merge($payload, [
-                    'customer_id' => $customer_id,
-                    'zone_id'     => $zone_id,
-                ])
-            );
-
-            if (! $target_validation['success']) {
-                return $this->fail($target_validation['message']);
-            }
-
-            $customer_id = $target_validation['data']['customer_id'];
-            $zone_id     = $target_validation['data']['zone_id'];
-
-            $flashsale_item = $this->flashsaleService->getActiveItemForProduct($product_id);
-
-            if (! empty($flashsale_item) && ! $this->flashsaleService->hasAvailableStock($flashsale_item)) {
-                return $this->fail('Stok flash sale untuk produk ini sudah habis');
-            }
-
-            if ($payment_method_id <= 0) {
-                return $this->fail('Metode pembayaran wajib dipilih');
-            }
-
-            $payment_method = $this->paymentMethodService->getActiveMethod($payment_method_id);
-
-            if (empty($payment_method)) {
-                return $this->fail('Metode pembayaran tidak tersedia');
-            }
-
-            $final_price = $this->priceService->getFinalPrice($product, $flashsale_item ?: null);
-            $invoice     = $this->orderModel->generateInvoice();
-
+            $invoice  = $this->orderModel->generateInvoice();
             $order_id = $this->orderModel->insert([
                 'invoice'           => $invoice,
-                'user_id'           => $user_id > 0 ? $user_id : null,
-                'product_id'        => $product_id,
+                'user_id'           => $userId > 0 ? $userId : null,
+                'product_id'        => (int) $product['id'],
                 'flashsale_item_id' => $flashsale_item['id'] ?? null,
-                'payment_method_id' => $payment_method_id ?: null,
+                'payment_method_id' => (int) $payment_method['id'],
                 'customer_id'       => $customer_id,
                 'zone_id'           => $zone_id ?: null,
                 'product_name'      => $product['product'],

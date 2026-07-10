@@ -25,11 +25,22 @@ class Order extends BaseController
     public function create()
     {
         $payload = $this->request->getPost() ?? [];
-        $payload['auth_user_id'] = $this->session->get('user_id');
+        $payload['game'] = trim($payload['game'] ?? '');
         $payload['product_id'] = (int) ($payload['product_id'] ?? 0);
         $payload['payment_method_id'] = (int) ($payload['payment_method_id'] ?? 0);
 
-        $result = $this->_order_service()->create($payload);
+        $validation = $this->_checkout_orchestrator()->prepareOrder($payload);
+
+        if (! $validation['success']) {
+            $this->session->setFlashdata('alert', [
+                'type'    => 'error',
+                'message' => $validation['message'],
+            ]);
+            return redirect()->back();
+        }
+
+        $userId = (int) ($this->session->get('user_id') ?? 0);
+        $result = $this->_order_service()->create($validation['data'], $userId);
 
         if ($result['success']) {
             return redirect()->to('payment/' . $result['data']['payment_token']);

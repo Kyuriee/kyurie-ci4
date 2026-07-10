@@ -49,11 +49,6 @@ class FlashsaleService extends BaseService
         return $this->flashsaleItemModel->consumeStock($flashsaleItemId);
     }
 
-    public function incrementSold(int $flashsaleItemId): void
-    {
-        $this->consumeStock($flashsaleItemId);
-    }
-
     public function getHomeDisplay(): array
     {
         return $this->safeCall(function () {

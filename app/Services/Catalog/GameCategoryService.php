@@ -3,7 +3,7 @@
 namespace App\Services\Catalog;
 
 use App\Services\BaseService;
-use App\Models\gameCategoryModel;
+use App\Models\GameCategoryModel;
 
 class GameCategoryService extends BaseService
 {

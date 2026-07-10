@@ -16,7 +16,7 @@ use App\Services\Marketing\BannerService;
 use App\Services\Marketing\FlashsaleService;
 
 use App\Services\Order\OrderService;
-use App\Services\Order\orderStatusService;
+use App\Services\Order\OrderStatusService;
 use App\Services\Orchestrators\Storefront\CheckoutOrchestrator;
 use App\Services\Order\PaymentMethodService;
 
