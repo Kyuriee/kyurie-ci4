@@ -14,7 +14,7 @@ abstract class BaseController extends Controller
     protected $helpers = ['vite', 'url', 'form'];
 
     protected $session;
-    protected $setting_service;
+    protected $settingService;
     protected $userModel;
     protected $base_data = [];
 
@@ -23,10 +23,10 @@ abstract class BaseController extends Controller
         parent::initController($request, $response, $logger);
 
         $this->session         = service('session');
-        $this->setting_service = new SettingService();
+        $this->settingService = new SettingService();
         $this->userModel       = model(UserModel::class);
 
-        $web = $this->setting_service->getPublicUtilities();
+        $web = $this->settingService->getPublicUtilities();
         $menus = [
             [
                 'title' => 'Home',
