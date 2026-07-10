@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Models\baseModel;
 use App\Models\UserModel;
 use App\Services\Setting\SettingService;
 use CodeIgniter\Controller;
@@ -15,7 +14,6 @@ abstract class BaseController extends Controller
     protected $helpers = ['vite', 'url', 'form'];
 
     protected $session;
-    protected $baseModel;
     protected $setting_service;
     protected $userModel;
     protected $base_data = [];
@@ -25,7 +23,6 @@ abstract class BaseController extends Controller
         parent::initController($request, $response, $logger);
 
         $this->session         = service('session');
-        $this->baseModel       = model(baseModel::class);
         $this->setting_service = new SettingService();
         $this->userModel       = model(UserModel::class);
 

@@ -12,11 +12,31 @@ class OrderModel extends Model
     protected $useTimestamps = true;
     protected $protectFields = false;
 
+    /**
+     * Inserts the order with a temporary unique invoice placeholder, then
+     * rewrites it to the final human-readable INV/{date}/{id} format using
+     * the row's own auto-increment id — which the DB guarantees unique,
+     * so no two concurrent inserts can ever collide (unlike the previous
+     * count-then-increment approach).
+     */
     public function insert($data = null, bool $returnID = true)
     {
         $data['payment_token'] = bin2hex(random_bytes(16));
+        $data['invoice']       = 'TMP-' . bin2hex(random_bytes(12));
 
-        return parent::insert($data, $returnID);
+        $id = parent::insert($data, true);
+
+        if (! $id) {
+            return false;
+        }
+
+        $finalInvoice = sprintf('INV/%s/%06d', date('Ymd'), $id);
+
+        $this->builder()
+            ->where('id', $id)
+            ->update(['invoice' => $finalInvoice]);
+
+        return $returnID ? $id : true;
     }
 
     public function find($id = null): array
@@ -87,14 +107,5 @@ class OrderModel extends Model
         return $this->where('user_id', $userId)
             ->orderBy('id', 'DESC')
             ->findAll($limit, $offset);
-    }
-
-    public function generateInvoice(): string
-    {
-        $date  = date('Ymd');
-        $count = $this->like('invoice', "INV/$date/", 'after')
-            ->countAllResults();
-
-        return sprintf('INV/%s/%04d', $date, $count + 1);
     }
 }

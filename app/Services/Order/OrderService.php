@@ -31,9 +31,7 @@ class OrderService extends BaseService
             $zone_id        = $validated['zone_id'];
             $final_price    = $validated['final_price'];
 
-            $invoice  = $this->orderModel->generateInvoice();
             $order_id = $this->orderModel->insert([
-                'invoice'           => $invoice,
                 'user_id'           => $userId > 0 ? $userId : null,
                 'product_id'        => (int) $product['id'],
                 'flashsale_item_id' => $flashsale_item['id'] ?? null,
@@ -60,7 +58,7 @@ class OrderService extends BaseService
 
             return $this->success('Pesanan berhasil dibuat', [
                 'order_id'      => $order_id,
-                'invoice'       => $invoice,
+                'invoice'       => $order['invoice'],
                 'payment_token' => $order['payment_token'],
                 'total'         => $final_price,
                 'payment'       => $payment_method,
