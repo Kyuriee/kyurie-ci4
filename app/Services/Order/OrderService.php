@@ -43,6 +43,8 @@ class OrderService extends BaseService
                 'payment_method_id' => (int) $payment_method['id'],
                 'customer_id'       => $customer_id,
                 'zone_id'           => $zone_id ?: null,
+                'contact_email'     => $validated['contact_email'] ?? null,
+                'contact_phone'     => $validated['contact_phone'] ?? null,
                 'product_name'      => $product['product'],
                 'game_name'         => $game['games'],
                 'price'             => $final_price,

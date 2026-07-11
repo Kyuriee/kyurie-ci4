@@ -41,6 +41,23 @@ class CheckoutOrchestrator extends BaseService
             $customer_id       = trim($payload['customer_id'] ?? '');
             $zone_id           = trim($payload['zone_id'] ?? '');
             $coupon_code       = trim($payload['coupon_code'] ?? '');
+            $contact_email     = trim($payload['contact_email'] ?? '');
+            $contact_phone     = trim($payload['contact_phone'] ?? '');
+
+            if ($contact_email !== '' && ! filter_var($contact_email, FILTER_VALIDATE_EMAIL)) {
+                return $this->fail('Format email tidak valid');
+            }
+
+            if ($contact_phone !== '') {
+                // Worldwide/E.164-ish: optional leading +, 7-15 digits total.
+                $normalizedPhone = preg_replace('/[\s\-()]/', '', $contact_phone);
+
+                if (! preg_match('/^\+?[0-9]{7,15}$/', $normalizedPhone)) {
+                    return $this->fail('Format nomor HP/WhatsApp tidak valid');
+                }
+
+                $contact_phone = $normalizedPhone;
+            }
 
             if ($game_slug === '') {
                 return $this->fail('Game tidak valid');
@@ -131,6 +148,8 @@ class CheckoutOrchestrator extends BaseService
                 'guest_ip'                 => $payload['guest_ip'] ?? null,
                 'customer_id'              => $target_validation['data']['customer_id'] ?? $customer_id,
                 'zone_id'                  => $target_validation['data']['zone_id'] ?? $zone_id,
+                'contact_email'            => $contact_email ?: null,
+                'contact_phone'            => $contact_phone ?: null,
                 'subtotal'                 => $subtotal,
                 'subtotal_formatted'       => $this->priceService->formatPrice($subtotal),
                 'final_price'              => $final_price,

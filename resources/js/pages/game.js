@@ -11,6 +11,8 @@ document.addEventListener('alpine:init', () => {
         selectedPaymentMethodId: null,
         couponCode: '',
         couponInput: '',
+        contactEmail: '',
+        contactPhone: '',
 
         previewLoading: false,
         previewResult: null,
@@ -59,6 +61,8 @@ document.addEventListener('alpine:init', () => {
                     product_id: this.selectedProductId,
                     payment_method_id: this.selectedPaymentMethodId,
                     coupon_code: this.couponCode,
+                    contact_email: this.contactEmail,
+                    contact_phone: this.contactPhone,
                     ...this.targetPayload,
                 });
 

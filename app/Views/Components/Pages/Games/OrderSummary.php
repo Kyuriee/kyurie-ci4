@@ -29,6 +29,26 @@
 
             <div class="order-summary-divider"></div>
 
+            <div class="mb-3 space-y-2">
+                <p class="text-sm font-semibold text-heading">Kontak Konfirmasi <span class="font-normal text-muted">(opsional)</span></p>
+                <input
+                    type="email"
+                    name="contact_email"
+                    x-model="contactEmail"
+                    @input.debounce.500ms="schedulePreview()"
+                    placeholder="Email (opsional)"
+                    class="input w-full">
+                <input
+                    type="tel"
+                    name="contact_phone"
+                    x-model="contactPhone"
+                    @input.debounce.500ms="schedulePreview()"
+                    placeholder="No. HP/WhatsApp, contoh: +6281234567890"
+                    class="input w-full">
+            </div>
+
+            <div class="order-summary-divider"></div>
+
             <div class="mb-3">
                 <label class="mb-1.5 block text-sm font-semibold text-heading">Kode Kupon</label>
                 <template x-if="!couponCode">
