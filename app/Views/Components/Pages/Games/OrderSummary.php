@@ -1,5 +1,5 @@
 <div class="sticky top-24">
-    <form action="<?= base_url('order/create') ?>" method="POST">
+    <form action="<?= base_url('order/create') ?>" method="POST" x-ref="orderForm">
         <?= csrf_field() ?>
         <input type="hidden" name="game" value="<?= esc($game['slug']) ?>">
         <input type="hidden" name="product_id" :value="selectedProductId">
@@ -24,6 +24,13 @@
                     <span
                         class="font-semibold text-heading"
                         x-text="selectedProduct ? selectedProduct.product : '—'"></span>
+                </div>
+
+                <div class="order-summary-row">
+                    <span class="text-muted">Metode Pembayaran</span>
+                    <span
+                        class="font-semibold text-heading"
+                        x-text="selectedPaymentMethod ? selectedPaymentMethod.name : '—'"></span>
                 </div>
             </div>
 
@@ -117,11 +124,92 @@
                 </div>
             </template>
             <button
-                type="submit"
+                type="button"
+                @click="openConfirm()"
                 :disabled="!canSubmit"
                 class="btn btn-primary mt-5 w-full disabled:cursor-not-allowed disabled:opacity-40">
                 Bayar Sekarang
             </button>
         </div>
     </form>
+
+    <div
+        x-show="showConfirmModal"
+        x-cloak
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+        @keydown.escape.window="closeConfirm()">
+        <div
+            x-show="showConfirmModal"
+            x-transition
+            @click.outside="closeConfirm()"
+            class="card w-full max-w-md p-6">
+            <h3 class="font-display text-lg font-bold text-heading">Konfirmasi Pesanan</h3>
+            <p class="mt-1 text-sm text-muted">Pastikan data di bawah ini sudah benar sebelum lanjut bayar.</p>
+
+            <div class="order-summary-divider"></div>
+
+            <div class="space-y-2 text-sm">
+                <div class="order-summary-row">
+                    <span class="text-muted">Game</span>
+                    <span class="font-semibold text-heading"><?= esc($game['games']) ?></span>
+                </div>
+                <div class="order-summary-row">
+                    <span class="text-muted">Item</span>
+                    <span class="font-semibold text-heading" x-text="selectedProduct ? selectedProduct.product : '—'"></span>
+                </div>
+                <template x-for="input in targetForm.inputs" :key="'confirm-' + input.key">
+                    <div class="order-summary-row" x-show="targetValues[input.key]">
+                        <span class="text-muted" x-text="input.label"></span>
+                        <span class="font-semibold text-heading" x-text="targetValues[input.key]"></span>
+                    </div>
+                </template>
+                <div class="order-summary-row">
+                    <span class="text-muted">Metode Pembayaran</span>
+                    <span class="font-semibold text-heading" x-text="selectedPaymentMethod ? selectedPaymentMethod.name : '—'"></span>
+                </div>
+                <div class="order-summary-row" x-show="contactEmail">
+                    <span class="text-muted">Email</span>
+                    <span class="font-semibold text-heading" x-text="contactEmail"></span>
+                </div>
+                <div class="order-summary-row" x-show="contactPhone">
+                    <span class="text-muted">No. HP/WhatsApp</span>
+                    <span class="font-semibold text-heading" x-text="contactPhone"></span>
+                </div>
+                <div class="order-summary-row" x-show="couponCode">
+                    <span class="text-muted">Kupon</span>
+                    <span class="font-semibold text-success" x-text="couponCode"></span>
+                </div>
+            </div>
+
+            <div class="order-summary-divider"></div>
+
+            <div class="space-y-1.5">
+                <template x-if="previewResult?.coupon_discount > 0">
+                    <div class="order-summary-row text-sm">
+                        <span class="text-muted">Subtotal</span>
+                        <span x-text="previewResult?.subtotal_formatted"></span>
+                    </div>
+                </template>
+                <template x-if="previewResult?.coupon_discount > 0">
+                    <div class="order-summary-row text-sm">
+                        <span class="text-muted">Diskon Kupon</span>
+                        <span class="text-success" x-text="'-' + previewResult?.coupon_discount_formatted"></span>
+                    </div>
+                </template>
+                <div class="order-summary-total">
+                    <span>Total</span>
+                    <span x-text="previewResult?.price_formatted"></span>
+                </div>
+            </div>
+
+            <div class="mt-5 flex gap-3">
+                <button type="button" @click="closeConfirm()" class="btn btn-outline flex-1">
+                    Periksa Lagi
+                </button>
+                <button type="button" @click="confirmSubmit()" class="btn btn-primary flex-1">
+                    Ya, Sudah Benar
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -2,9 +2,10 @@ import Alpine from 'alpinejs';
 import axios from 'axios';
 
 document.addEventListener('alpine:init', () => {
-    Alpine.data('gameDetail', (gameSlug, initialProducts, targetForm) => ({
+    Alpine.data('gameDetail', (gameSlug, initialProducts, targetForm, initialPaymentMethods) => ({
         gameSlug,
         products: initialProducts ?? [],
+        paymentMethods: initialPaymentMethods ?? [],
         targetForm: targetForm ?? { inputs: [] },
         targetValues: {},
         selectedProductId: null,
@@ -13,6 +14,7 @@ document.addEventListener('alpine:init', () => {
         couponInput: '',
         contactEmail: '',
         contactPhone: '',
+        showConfirmModal: false,
 
         previewLoading: false,
         previewResult: null,
@@ -38,6 +40,25 @@ document.addEventListener('alpine:init', () => {
 
         get selectedProduct() {
             return this.products.find((p) => Number(p.id) === Number(this.selectedProductId)) ?? null;
+        },
+
+        get selectedPaymentMethod() {
+            return this.paymentMethods.find((m) => Number(m.id) === Number(this.selectedPaymentMethodId)) ?? null;
+        },
+
+        openConfirm() {
+            if (!this.canSubmit) {
+                return;
+            }
+            this.showConfirmModal = true;
+        },
+
+        closeConfirm() {
+            this.showConfirmModal = false;
+        },
+
+        confirmSubmit() {
+            this.$refs.orderForm.submit();
         },
 
         schedulePreview() {

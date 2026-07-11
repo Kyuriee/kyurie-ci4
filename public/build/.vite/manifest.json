@@ -37,7 +37,7 @@
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app_css-GH3kDWdj.css",
+    "file": "assets/app_css-DjqEF3mO.css",
     "name": "app_css",
     "names": [
       "app_css.css"
@@ -50,7 +50,7 @@
     ]
   },
   "resources/css/auth.css": {
-    "file": "assets/auth_css-C1FMJyN4.css",
+    "file": "assets/auth_css-qAttLyoA.css",
     "name": "auth_css",
     "names": [
       "auth_css.css"
@@ -113,7 +113,7 @@
     ]
   },
   "resources/js/pages/game.js": {
-    "file": "assets/game_js-BHav_noT.js",
+    "file": "assets/game_js-BZzL29G1.js",
     "name": "game_js",
     "src": "resources/js/pages/game.js",
     "isEntry": true,

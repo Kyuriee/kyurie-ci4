@@ -2,7 +2,7 @@
 
 <?= $this->section('content'); ?>
 <div
-    x-data="gameDetail('<?= esc($game['slug'], 'js') ?>', <?= esc(json_encode($products), 'attr') ?>, <?= esc(json_encode($target_form), 'attr') ?>)"
+    x-data="gameDetail('<?= esc($game['slug'], 'js') ?>', <?= esc(json_encode($products), 'attr') ?>, <?= esc(json_encode($target_form), 'attr') ?>, <?= esc(json_encode($payment_methods), 'attr') ?>)"
     class="section"
 >
     <div class="container-app">
