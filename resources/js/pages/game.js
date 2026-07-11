@@ -9,6 +9,8 @@ document.addEventListener('alpine:init', () => {
         targetValues: {},
         selectedProductId: null,
         selectedPaymentMethodId: null,
+        couponCode: '',
+        couponInput: '',
 
         previewLoading: false,
         previewResult: null,
@@ -56,6 +58,7 @@ document.addEventListener('alpine:init', () => {
                     game: this.gameSlug,
                     product_id: this.selectedProductId,
                     payment_method_id: this.selectedPaymentMethodId,
+                    coupon_code: this.couponCode,
                     ...this.targetPayload,
                 });
 
@@ -71,6 +74,17 @@ document.addEventListener('alpine:init', () => {
             } finally {
                 this.previewLoading = false;
             }
+        },
+
+        applyCoupon() {
+            this.couponCode = String(this.couponInput ?? '').trim();
+            this.schedulePreview();
+        },
+
+        removeCoupon() {
+            this.couponCode = '';
+            this.couponInput = '';
+            this.schedulePreview();
         },
 
         get canSubmit() {

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class BaseModel  extends Model
+class BaseModel extends Model
 {
     public function allData(string $table, string $orderBy = 'id', string $orderType = 'DESC'): array
     {

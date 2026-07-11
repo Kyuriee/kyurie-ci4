@@ -6,7 +6,7 @@ use App\Services\BaseService;
 use App\Services\Catalog\GameService;
 use App\Services\Catalog\ProductService;
 use App\Services\Catalog\GameAccountInputService;
-use App\Services\Order\PaymentMethodService;
+use App\Services\Payment\PaymentMethodService;
 
 class GameDetailPageOrchestrator extends BaseService
 {

@@ -23,18 +23,23 @@ class OrderService extends BaseService
     public function create(array $validated, int $userId = 0): array
     {
         return $this->safeCall(function () use ($validated, $userId) {
-            $product        = $validated['product'];
-            $game           = $validated['game'];
-            $payment_method = $validated['payment_method'];
-            $flashsale_item = $validated['flashsale_item'] ?? null;
-            $customer_id    = $validated['customer_id'];
-            $zone_id        = $validated['zone_id'];
-            $final_price    = $validated['final_price'];
+            $product         = $validated['product'];
+            $game            = $validated['game'];
+            $payment_method  = $validated['payment_method'];
+            $flashsale_item  = $validated['flashsale_item'] ?? null;
+            $coupon          = $validated['coupon'] ?? null;
+            $coupon_discount = $validated['coupon_discount'] ?? 0;
+            $customer_id     = $validated['customer_id'];
+            $zone_id         = $validated['zone_id'];
+            $final_price     = $validated['final_price'];
 
             $order_id = $this->orderModel->insert([
                 'user_id'           => $userId > 0 ? $userId : null,
+                'guest_ip'          => $userId > 0 ? null : ($validated['guest_ip'] ?? null),
                 'product_id'        => (int) $product['id'],
                 'flashsale_item_id' => $flashsale_item['id'] ?? null,
+                'coupon_id'         => $coupon['id'] ?? null,
+                'coupon_discount'   => $coupon_discount,
                 'payment_method_id' => (int) $payment_method['id'],
                 'customer_id'       => $customer_id,
                 'zone_id'           => $zone_id ?: null,

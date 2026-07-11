@@ -4,6 +4,7 @@
         <input type="hidden" name="game" value="<?= esc($game['slug']) ?>">
         <input type="hidden" name="product_id" :value="selectedProductId">
         <input type="hidden" name="payment_method_id" :value="selectedPaymentMethodId">
+        <input type="hidden" name="coupon_code" :value="couponCode">
         <template x-for="input in targetForm.inputs" :key="input.key">
             <input
                 type="hidden"
@@ -25,6 +26,38 @@
                         x-text="selectedProduct ? selectedProduct.product : '—'"></span>
                 </div>
             </div>
+
+            <div class="order-summary-divider"></div>
+
+            <div class="mb-3">
+                <label class="mb-1.5 block text-sm font-semibold text-heading">Kode Kupon</label>
+                <template x-if="!couponCode">
+                    <div class="flex gap-2">
+                        <input
+                            type="text"
+                            x-model="couponInput"
+                            @keydown.enter.prevent="applyCoupon()"
+                            placeholder="Masukkan kode kupon"
+                            class="input flex-1 uppercase">
+                        <button
+                            type="button"
+                            @click="applyCoupon()"
+                            :disabled="!couponInput.trim()"
+                            class="btn btn-secondary shrink-0 disabled:cursor-not-allowed disabled:opacity-40">
+                            Terapkan
+                        </button>
+                    </div>
+                </template>
+                <template x-if="couponCode">
+                    <div class="flex items-center justify-between rounded-lg bg-success/10 px-3 py-2">
+                        <span class="text-sm font-semibold text-success" x-text="couponCode"></span>
+                        <button type="button" @click="removeCoupon()" class="text-sm text-muted hover:text-danger">
+                            Hapus
+                        </button>
+                    </div>
+                </template>
+            </div>
+
             <div class="order-summary-divider"></div>
             <template x-if="previewLoading">
                 <p class="flex items-center gap-2 text-sm text-muted">
@@ -44,9 +77,23 @@
                 </p>
             </template>
             <template x-if="!previewLoading && previewResult">
-                <div class="order-summary-total">
-                    <span>Total</span>
-                    <span x-text="previewResult?.price_formatted"></span>
+                <div class="space-y-1.5">
+                    <template x-if="previewResult?.coupon_discount > 0">
+                        <div class="order-summary-row text-sm">
+                            <span class="text-muted">Subtotal</span>
+                            <span x-text="previewResult?.subtotal_formatted"></span>
+                        </div>
+                    </template>
+                    <template x-if="previewResult?.coupon_discount > 0">
+                        <div class="order-summary-row text-sm">
+                            <span class="text-muted">Diskon Kupon</span>
+                            <span class="text-success" x-text="'-' + previewResult?.coupon_discount_formatted"></span>
+                        </div>
+                    </template>
+                    <div class="order-summary-total">
+                        <span>Total</span>
+                        <span x-text="previewResult?.price_formatted"></span>
+                    </div>
                 </div>
             </template>
             <button

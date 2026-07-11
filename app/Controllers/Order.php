@@ -16,6 +16,7 @@ class Order extends BaseController
         $payload['game'] = trim($payload['game'] ?? '');
         $payload['product_id'] = (int) ($payload['product_id'] ?? 0);
         $payload['payment_method_id'] = (int) ($payload['payment_method_id'] ?? 0);
+        $payload = array_merge($payload, $this->_coupon_context());
 
         $result = $this->_checkout_orchestrator()->prepareOrder($payload);
 
@@ -28,6 +29,7 @@ class Order extends BaseController
         $payload['game'] = trim($payload['game'] ?? '');
         $payload['product_id'] = (int) ($payload['product_id'] ?? 0);
         $payload['payment_method_id'] = (int) ($payload['payment_method_id'] ?? 0);
+        $payload = array_merge($payload, $this->_coupon_context());
 
         $validation = $this->_checkout_orchestrator()->prepareOrder($payload);
 
@@ -51,6 +53,23 @@ class Order extends BaseController
             'message' => $result['message'],
         ]);
         return redirect()->back();
+    }
+
+    /**
+     * Auth/request context needed for coupon eligibility checks
+     * (max_per_user, max_per_guest, level_csv). Derived server-side from
+     * session/request — never trust these as raw client POST fields.
+     */
+    protected function _coupon_context(): array
+    {
+        $userId = (int) ($this->session->get('user_id') ?? 0);
+        $user   = $userId > 0 ? $this->_get_current_user() : null;
+
+        return [
+            'user_id'    => $userId > 0 ? $userId : null,
+            'user_level' => strtolower($user['level'] ?? 'guest'),
+            'guest_ip'   => $this->request->getIPAddress(),
+        ];
     }
 
     protected function requestPayload(): array
