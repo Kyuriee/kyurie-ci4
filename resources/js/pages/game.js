@@ -2,7 +2,7 @@ import Alpine from 'alpinejs';
 import axios from 'axios';
 
 document.addEventListener('alpine:init', () => {
-    Alpine.data('gameDetail', (gameSlug, initialProducts, targetForm, initialPaymentMethods) => ({
+    Alpine.data('gameDetail', (gameSlug, initialProducts, targetForm, initialPaymentMethods, authContact) => ({
         gameSlug,
         products: initialProducts ?? [],
         paymentMethods: initialPaymentMethods ?? [],
@@ -12,8 +12,8 @@ document.addEventListener('alpine:init', () => {
         selectedPaymentMethodId: null,
         couponCode: '',
         couponInput: '',
-        contactEmail: '',
-        contactPhone: '',
+        contactEmail: authContact?.email ?? '',
+        contactPhone: authContact?.phone ?? '',
         showConfirmModal: false,
 
         previewLoading: false,

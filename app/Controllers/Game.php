@@ -17,6 +17,7 @@ class Game extends BaseController
         $target_form     = $result['target_form'];
         $products        = $result['products'];
         $payment_methods = $result['payment_methods'];
+        $current_user    = $this->_get_current_user();
         $data = [
             'meta'            => ['title' => $game['games']],
             'seo'             => ['og_image' => $game['image'] ?? ''],
@@ -24,6 +25,10 @@ class Game extends BaseController
             'target_form'     => $target_form,
             'products'        => $products,
             'payment_methods' => $payment_methods,
+            'auth_contact'    => $current_user ? [
+                'email' => $current_user['email'] ?? '',
+                'phone' => $current_user['phone'] ?? '',
+            ] : null,
         ];
         $this->base_data['page_assets']['css'][] = 'resources/css/pages/game.css';
         $this->base_data['page_assets']['js'][]  = 'resources/js/pages/game.js';
