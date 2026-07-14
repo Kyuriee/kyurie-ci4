@@ -40,7 +40,10 @@ class Auth extends BaseController
             $this->_service()->processRememberMe((int) ($result['data']['user_id'] ?? 0));
         }
 
-        return $this->redirectWithAlert('/', 'success', 'Login berhasil!');
+        $redirectUrl = $this->session->get('redirect_url');
+        $this->session->remove('redirect_url');
+
+        return $this->redirectWithAlert($redirectUrl ?: '/', 'success', 'Login berhasil!');
     }
 
     public function register()

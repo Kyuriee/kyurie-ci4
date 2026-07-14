@@ -92,6 +92,10 @@ $current = service('uri')->getSegment(1);
                                 <i class="bi bi-gem text-base text-muted"></i>
                                 <span>Top Up Koin</span>
                             </a>
+                            <a href="<?= base_url('user/settings') ?>" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-body hover:bg-surface-soft hover:text-heading transition-all">
+                                <i class="bi bi-gear text-base text-muted"></i>
+                                <span>Pengaturan</span>
+                            </a>
                             <hr class="border-border my-1.5">
                             <a href="<?= base_url('auth/logout') ?>" class="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-bold text-danger hover:bg-danger/10 transition-all">
                                 <i class="bi bi-box-arrow-right text-base"></i>

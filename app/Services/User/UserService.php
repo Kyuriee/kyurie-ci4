@@ -37,4 +37,29 @@ class UserService extends BaseService
             return $this->success('Profil berhasil diperbarui');
         }, $this->fail('Gagal memperbarui profil'));
     }
+
+    public function changePassword(int $userId, string $currentPassword, string $newPassword): array
+    {
+        return $this->safeCall(function () use ($userId, $currentPassword, $newPassword) {
+            $user = $this->userModel->find($userId);
+
+            if (empty($user)) {
+                return $this->fail('User tidak ditemukan');
+            }
+
+            if (! password_verify($currentPassword, $user['password'])) {
+                return $this->fail('Password saat ini salah');
+            }
+
+            if (strlen($newPassword) < 8) {
+                return $this->fail('Password baru minimal 8 karakter');
+            }
+
+            $this->userModel->update($userId, [
+                'password' => password_hash($newPassword, PASSWORD_DEFAULT),
+            ]);
+
+            return $this->success('Password berhasil diperbarui');
+        }, $this->fail('Gagal memperbarui password'));
+    }
 }

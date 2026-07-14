@@ -37,7 +37,7 @@
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app_css-DHt8yqTU.css",
+    "file": "assets/app_css-Dw3IVSi4.css",
     "name": "app_css",
     "names": [
       "app_css.css"
@@ -50,7 +50,7 @@
     ]
   },
   "resources/css/auth.css": {
-    "file": "assets/auth_css-DcxzhjDX.css",
+    "file": "assets/auth_css-kniL49Pk.css",
     "name": "auth_css",
     "names": [
       "auth_css.css"

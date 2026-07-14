@@ -16,6 +16,9 @@ $routes->get('auth/logout', 'Auth::logout');
 
 $routes->get('user/profile', 'User::profile');
 $routes->post('user/update', 'User::update');
+$routes->get('user/transactions', 'User::orders');
+$routes->get('user/settings', 'User::settings');
+$routes->post('user/change-password', 'User::changePassword');
 
 $routes->get('games/(:any)', 'Game::detail/$1');
 
