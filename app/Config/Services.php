@@ -6,6 +6,7 @@ use CodeIgniter\Config\BaseService;
 
 use App\Services\Auth\AuthService;
 use App\Services\User\UserService;
+use App\Services\Admin\AdminAuthService;
 
 use App\Services\Catalog\GameService;
 use App\Services\Catalog\ProductService;
@@ -37,6 +38,15 @@ class Services extends BaseService
         }
 
         return new AuthService();
+    }
+
+    public static function adminAuthService(bool $getShared = true): AdminAuthService
+    {
+        if ($getShared) {
+            return static::getSharedInstance('adminAuthService');
+        }
+
+        return new AdminAuthService();
     }
 
     public static function userService(bool $getShared = true): UserService

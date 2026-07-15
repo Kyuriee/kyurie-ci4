@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "alpinejs": "^3.15.12",
+    "@alpinejs/persist": "^3.15.12",
     "axios": "^1.16.1",
     "bootstrap-icons": "^1.13.1",
     "lucide": "^1.17.0",

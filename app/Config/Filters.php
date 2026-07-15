@@ -35,6 +35,8 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'auth'          => \App\Filters\AuthFilter::class,
+        'adminauth'     => \App\Filters\AdminAuthFilter::class,
+        'adminnoindex'  => \App\Filters\AdminNoIndexFilter::class,
     ];
 
     /**
@@ -110,4 +112,16 @@ class Filters extends BaseFilters
     public array $filters = [
         'auth' => ['before' => ['user', 'user/*']],
     ];
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        helper('admin');
+
+        // admin_path() is not a constant expression, so it can't live in
+        // the $filters property default above (PHP would fatal-error at
+        // compile time) — assign it here instead, after the object exists.
+        $this->filters['adminnoindex'] = ['after' => [admin_path(), admin_path('*')]];
+    }
 }

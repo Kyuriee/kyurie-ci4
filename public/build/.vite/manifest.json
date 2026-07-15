@@ -1,13 +1,13 @@
 {
-  "_axios-Ud-dKlLg.js": {
-    "file": "assets/axios-Ud-dKlLg.js",
+  "_axios-BGmZl9Qd.js": {
+    "file": "assets/axios-BGmZl9Qd.js",
     "name": "axios",
     "imports": [
       "_rolldown-runtime-QTnfLwEv.js"
     ]
   },
-  "_module.esm-CWk4R-Yb.js": {
-    "file": "assets/module.esm-CWk4R-Yb.js",
+  "_module.esm-Ppa4vhWP.js": {
+    "file": "assets/module.esm-Ppa4vhWP.js",
     "name": "module.esm"
   },
   "_rolldown-runtime-QTnfLwEv.js": {
@@ -18,8 +18,8 @@
     "file": "assets/sweetalert2-DmHed3W8.css",
     "src": "_sweetalert2-DmHed3W8.css"
   },
-  "_sweetalert2.min--2A83f0C.js": {
-    "file": "assets/sweetalert2.min--2A83f0C.js",
+  "_sweetalert2.min-DvHDeCUw.js": {
+    "file": "assets/sweetalert2.min-DvHDeCUw.js",
     "name": "sweetalert2.min",
     "imports": [
       "_rolldown-runtime-QTnfLwEv.js"
@@ -36,8 +36,17 @@
     "file": "assets/bootstrap-icons-mSm7cUeB.woff2",
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
+  "resources/css/admin.css": {
+    "file": "assets/admin_css-CFauHgxV.css",
+    "name": "admin_css",
+    "names": [
+      "admin_css.css"
+    ],
+    "src": "resources/css/admin.css",
+    "isEntry": true
+  },
   "resources/css/app.css": {
-    "file": "assets/app_css-Dw3IVSi4.css",
+    "file": "assets/app_css-DjXp6ugO.css",
     "name": "app_css",
     "names": [
       "app_css.css"
@@ -50,7 +59,7 @@
     ]
   },
   "resources/css/auth.css": {
-    "file": "assets/auth_css-kniL49Pk.css",
+    "file": "assets/auth_css-Df9WP-LW.css",
     "name": "auth_css",
     "names": [
       "auth_css.css"
@@ -63,7 +72,7 @@
     ]
   },
   "resources/css/pages/game.css": {
-    "file": "assets/game_css-CckFepRm.css",
+    "file": "assets/game_css-C-y3jttm.css",
     "name": "game_css",
     "names": [
       "game_css.css"
@@ -72,7 +81,7 @@
     "isEntry": true
   },
   "resources/css/pages/home.css": {
-    "file": "assets/home_css-0D14Os9z.css",
+    "file": "assets/home_css-BxSTY7dz.css",
     "name": "home_css",
     "names": [
       "home_css.css"
@@ -81,7 +90,7 @@
     "isEntry": true
   },
   "resources/css/pages/payment.css": {
-    "file": "assets/payment_css-BQPHRY-A.css",
+    "file": "assets/payment_css-C-9EFO6-.css",
     "name": "payment_css",
     "names": [
       "payment_css.css"
@@ -89,46 +98,55 @@
     "src": "resources/css/pages/payment.css",
     "isEntry": true
   },
+  "resources/js/admin.js": {
+    "file": "assets/admin_js-zE6L1THW.js",
+    "name": "admin_js",
+    "src": "resources/js/admin.js",
+    "isEntry": true,
+    "imports": [
+      "_module.esm-Ppa4vhWP.js"
+    ]
+  },
   "resources/js/app.js": {
-    "file": "assets/app_js-D9TPzOx5.js",
+    "file": "assets/app_js-usti6udJ.js",
     "name": "app_js",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-QTnfLwEv.js",
-      "_module.esm-CWk4R-Yb.js",
-      "_axios-Ud-dKlLg.js",
-      "_sweetalert2.min--2A83f0C.js"
+      "_module.esm-Ppa4vhWP.js",
+      "_axios-BGmZl9Qd.js",
+      "_sweetalert2.min-DvHDeCUw.js"
     ]
   },
   "resources/js/auth.js": {
-    "file": "assets/auth_js-Cq185mZO.js",
+    "file": "assets/auth_js-DU0VhZaK.js",
     "name": "auth_js",
     "src": "resources/js/auth.js",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-QTnfLwEv.js",
-      "_module.esm-CWk4R-Yb.js",
-      "_sweetalert2.min--2A83f0C.js"
+      "_module.esm-Ppa4vhWP.js",
+      "_sweetalert2.min-DvHDeCUw.js"
     ]
   },
   "resources/js/pages/game.js": {
-    "file": "assets/game_js-BkjeY8ca.js",
+    "file": "assets/game_js-BuRxMT9s.js",
     "name": "game_js",
     "src": "resources/js/pages/game.js",
     "isEntry": true,
     "imports": [
-      "_module.esm-CWk4R-Yb.js",
-      "_axios-Ud-dKlLg.js"
+      "_module.esm-Ppa4vhWP.js",
+      "_axios-BGmZl9Qd.js"
     ]
   },
   "resources/js/pages/home.js": {
-    "file": "assets/home_js-PG652VRg.js",
+    "file": "assets/home_js-Cf1bng1R.js",
     "name": "home_js",
     "src": "resources/js/pages/home.js",
     "isEntry": true,
     "imports": [
-      "_module.esm-CWk4R-Yb.js"
+      "_module.esm-Ppa4vhWP.js"
     ]
   },
   "resources/js/pages/payment.js": {

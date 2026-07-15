@@ -22,6 +22,9 @@ export default defineConfig({
                 /* ========= Layout Auth (Independent) ========= */
                 auth_css: 'resources/css/auth.css',
                 auth_js: 'resources/js/auth.js',
+                /* ========= Admin Panel (Independent, own design tokens) ========= */
+                admin_css: 'resources/css/admin.css',
+                admin_js: 'resources/js/admin.js',
                 /* ========= Pages ========= */
                 home_css: 'resources/css/pages/home.css',
                 home_js: 'resources/js/pages/home.js',
