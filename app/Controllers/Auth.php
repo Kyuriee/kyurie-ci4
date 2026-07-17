@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Services\Auth\AuthService;
 use App\Validation\AuthRequestRules;
+use App\Requests\AuthRequest;
 
 class Auth extends BaseController
 {
@@ -19,31 +20,52 @@ class Auth extends BaseController
             ]);
         }
 
-        if ($redirect = $this->throttleOrBack('login', 5, 'Terlalu banyak percobaan login. Silakan coba lagi sebentar.')) {
+        $post = AuthRequest::login($this->request);
+
+        if (($redirect = $this->validateOrBack(
+            $post,
+            AuthRequestRules::login()
+        )) !== null) {
             return $redirect;
         }
 
-        if ($redirect = $this->validateOrBack(AuthRequestRules::login())) {
+        $data = $this->validator->getValidated();
+
+        if (($redirect = $this->throttleOrBack(
+            'login',
+            5,
+            'Terlalu banyak percobaan login. Silakan coba lagi sebentar.',
+            $this->throttleIdentifier(
+                $data['username'],
+                $this->request->getIPAddress()
+            )
+        )) !== null) {
             return $redirect;
         }
 
-        $result = $this->_service()->login(
-            $this->request->getPost('username'),
-            $this->request->getPost('password')
+        $result = $this->authService()->login(
+            $data['username'],
+            $data['password']
         );
 
         if (! $result['success']) {
             return $this->backWithAlert('error', $result['message'], true);
         }
 
-        if ($this->request->getPost('remember')) {
-            $this->_service()->processRememberMe((int) ($result['data']['user_id'] ?? 0));
+        if ($post['remember']) {
+            $this->authService()->processRememberMe(
+                (int) ($result['data']['user_id'] ?? 0)
+            );
         }
 
         $redirectUrl = $this->session->get('redirect_url');
         $this->session->remove('redirect_url');
 
-        return $this->redirectWithAlert($redirectUrl ?: '/', 'success', 'Login berhasil!');
+        return $this->redirectWithAlert(
+            $redirectUrl ?: '/',
+            'success',
+            'Login berhasil!'
+        );
     }
 
     public function register()
@@ -58,19 +80,34 @@ class Auth extends BaseController
             ]);
         }
 
-        if ($redirect = $this->throttleOrBack('register', 5, 'Terlalu banyak percobaan. Silakan coba lagi sebentar.')) {
+        $post = AuthRequest::register($this->request);
+
+        if (($redirect = $this->validateOrBack(
+            $post,
+            AuthRequestRules::register()
+        )) !== null) {
             return $redirect;
         }
 
-        if ($redirect = $this->validateOrBack(AuthRequestRules::register())) {
+        $data = $this->validator->getValidated();
+
+        if (($redirect = $this->throttleOrBack(
+            'register',
+            5,
+            'Terlalu banyak percobaan. Silakan coba lagi sebentar.',
+            $this->throttleIdentifier(
+                $data['email'],
+                $this->request->getIPAddress()
+            )
+        )) !== null) {
             return $redirect;
         }
 
-        $result = $this->_service()->register([
-            'username' => $this->request->getPost('username'),
-            'email'    => $this->request->getPost('email'),
-            'password' => $this->request->getPost('password'),
-            'phone'    => $this->request->getPost('phone'),
+        $result = $this->authService()->register([
+            'username' => $data['username'],
+            'email'    => $data['email'],
+            'password' => $data['password'],
+            'phone'    => $data['phone'] ?? '',
         ]);
 
         if (! $result['success']) {
@@ -86,7 +123,7 @@ class Auth extends BaseController
 
     public function logout()
     {
-        $this->_service()->logout();
+        $this->authService()->logout();
 
         return $this->redirectWithAlert('/', 'success', 'Berhasil logout');
     }
@@ -103,16 +140,31 @@ class Auth extends BaseController
             ]);
         }
 
-        if ($redirect = $this->throttleOrBack('forgot', 3, 'Terlalu banyak percobaan. Silakan coba lagi sebentar.')) {
+        $post = AuthRequest::forgot($this->request);
+
+        if (($redirect = $this->validateOrBack(
+            $post,
+            AuthRequestRules::forgot()
+        )) !== null) {
             return $redirect;
         }
 
-        if ($redirect = $this->validateOrBack(AuthRequestRules::forgot(), 'Format email tidak valid.')) {
+        $data = $this->validator->getValidated();
+
+        if (($redirect = $this->throttleOrBack(
+            'forgot',
+            3,
+            'Terlalu banyak percobaan. Silakan coba lagi sebentar.',
+            $this->throttleIdentifier(
+                $data['email'],
+                $this->request->getIPAddress()
+            )
+        )) !== null) {
             return $redirect;
         }
 
-        $result = $this->_service()->forgotPassword(
-            $this->request->getPost('email')
+        $result = $this->authService()->forgotPassword(
+            $data['email']
         );
 
         return $this->backWithAlert(
@@ -136,13 +188,32 @@ class Auth extends BaseController
             ]);
         }
 
-        if ($redirect = $this->validateOrBack(AuthRequestRules::reset(), 'Password minimal 8 karakter dan harus sama persis.')) {
+        $post = AuthRequest::reset($this->request);
+
+        if (($redirect = $this->validateOrBack(
+            $post,
+            AuthRequestRules::reset()
+        )) !== null) {
             return $redirect;
         }
 
-        $result = $this->_service()->resetPassword(
+        $data = $this->validator->getValidated();
+
+        if (($redirect = $this->throttleOrBack(
+            'resetPassword',
+            5,
+            'Terlalu banyak percobaan.',
+            $this->throttleIdentifier(
+                $token,
+                $this->request->getIPAddress()
+            )
+        )) !== null) {
+            return $redirect;
+        }
+
+        $result = $this->authService()->resetPassword(
             $token,
-            $this->request->getPost('password')
+            $data['password']
         );
 
         if (! $result['success']) {
@@ -156,16 +227,7 @@ class Auth extends BaseController
         );
     }
 
-    protected function redirectIfAuthenticated()
-    {
-        if (! $this->session->get('user_id')) {
-            return null;
-        }
-
-        return redirect()->to('/');
-    }
-
-    protected function _service(): AuthService
+    protected function authService(): AuthService
     {
         return single_service('authService');
     }

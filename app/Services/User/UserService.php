@@ -14,6 +14,34 @@ class UserService extends BaseService
         $this->userModel = model(UserModel::class);
     }
 
+    public function getCurrentUser(?int $userId = null, ?string $rememberToken = null): ?array
+    {
+        return $this->safeCall(function () use ($userId, $rememberToken) {
+            if ($userId !== null) {
+                $user = $this->userModel->find($userId);
+            } elseif ($rememberToken !== null && $rememberToken !== '') {
+                $user = $this->userModel
+                    ->where('remember_token', $rememberToken)
+                    ->first();
+            } else {
+                return null;
+            }
+
+            if (! $user || $user['status'] !== 'On') {
+                return null;
+            }
+
+            return [
+                'id'       => (int) $user['id'],
+                'username' => $user['username'],
+                'email'    => $user['email'],
+                'phone'    => $user['phone'],
+                'balance'  => (float) $user['balance'],
+                'level'    => $user['level'],
+            ];
+        }, null);
+    }
+
     public function getProfile(int $userId): array
     {
         return $this->safeCall(

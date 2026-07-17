@@ -2,15 +2,13 @@
 
 namespace App\Controllers;
 
-use App\Services\Catalog\GameService;
-
 class Search extends BaseController
 {
-    protected $game_service;
+    protected $gameService;
 
     public function __construct()
     {
-        $this->game_service = new GameService();
+        $this->gameService = single_service('gameService');
     }
 
     public function games()
@@ -29,7 +27,7 @@ class Search extends BaseController
             ]);
         }
 
-        $games = $this->game_service->searchGames($keyword);
+        $games = $this->gameService->searchGames($keyword);
 
         return $this->response->setJSON([
             'success' => true,

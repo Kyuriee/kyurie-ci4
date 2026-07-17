@@ -9,7 +9,7 @@ class Game extends BaseController
 
     public function detail(string $slug)
     {
-        $result = $this->_service()->getDetailPage($slug);
+        $result = $this->gameDetailPageOrchestrator()->getDetailPage($slug);
         if (empty($result)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
@@ -17,7 +17,7 @@ class Game extends BaseController
         $target_form     = $result['target_form'];
         $products        = $result['products'];
         $payment_methods = $result['payment_methods'];
-        $current_user    = $this->_get_current_user();
+        $current_user    = $this->resolveCurrentUser();
         $data = [
             'meta'            => ['title' => $game['games']],
             'seo'             => ['og_image' => $game['image'] ?? ''],
@@ -30,12 +30,12 @@ class Game extends BaseController
                 'phone' => $current_user['phone'] ?? '',
             ] : null,
         ];
-        $this->base_data['page_assets']['css'][] = 'resources/css/pages/game.css';
-        $this->base_data['page_assets']['js'][]  = 'resources/js/pages/game.js';
+        $this->baseData['page_assets']['css'][] = 'resources/css/pages/game.css';
+        $this->baseData['page_assets']['js'][]  = 'resources/js/pages/game.js';
         return $this->renderView('Pages/Games/Detail', $data);
     }
 
-    protected function _service(): GameDetailPageOrchestrator
+    protected function gameDetailPageOrchestrator(): GameDetailPageOrchestrator
     {
         return single_service('gameDetailPageOrchestrator');
     }

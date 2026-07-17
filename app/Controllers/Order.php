@@ -7,31 +7,29 @@ use App\Services\Orchestrators\Storefront\CheckoutOrchestrator;
 
 class Order extends BaseController
 {
-    protected $order_service;
-    protected $checkout_orchestrator;
 
     public function prepare()
     {
-        $payload = $this->requestPayload();
-        $payload['game'] = trim($payload['game'] ?? '');
-        $payload['product_id'] = (int) ($payload['product_id'] ?? 0);
-        $payload['payment_method_id'] = (int) ($payload['payment_method_id'] ?? 0);
-        $payload = array_merge($payload, $this->_coupon_context());
+        $payload                        = $this->requestPayload();
+        $payload['game']                = trim($payload['game'] ?? '');
+        $payload['product_id']          = (int) ($payload['product_id'] ?? 0);
+        $payload['payment_method_id']   = (int) ($payload['payment_method_id'] ?? 0);
+        $payload                        = array_merge($payload, $this->couponContext());
 
-        $result = $this->_checkout_orchestrator()->prepareOrder($payload);
+        $result = $this->checkoutOrchestrator()->prepareOrder($payload);
 
         return $this->responseJson($result['success'], $result['message'], $result['data'] ?? null);
     }
 
     public function create()
     {
-        $payload = $this->request->getPost() ?? [];
-        $payload['game'] = trim($payload['game'] ?? '');
-        $payload['product_id'] = (int) ($payload['product_id'] ?? 0);
-        $payload['payment_method_id'] = (int) ($payload['payment_method_id'] ?? 0);
-        $payload = array_merge($payload, $this->_coupon_context());
+        $payload                        = $this->request->getPost() ?? [];
+        $payload['game']                = trim($payload['game'] ?? '');
+        $payload['product_id']          = (int) ($payload['product_id'] ?? 0);
+        $payload['payment_method_id']   = (int) ($payload['payment_method_id'] ?? 0);
+        $payload                        = array_merge($payload, $this->couponContext());
 
-        $validation = $this->_checkout_orchestrator()->prepareOrder($payload);
+        $validation = $this->checkoutOrchestrator()->prepareOrder($payload);
 
         if (! $validation['success']) {
             $this->session->setFlashdata('alert', [
@@ -42,7 +40,7 @@ class Order extends BaseController
         }
 
         $userId = (int) ($this->session->get('user_id') ?? 0);
-        $result = $this->_order_service()->create($validation['data'], $userId);
+        $result = $this->orderService()->create($validation['data'], $userId);
 
         if ($result['success']) {
             return redirect()->to('payment/' . $result['data']['payment_token']);
@@ -55,15 +53,10 @@ class Order extends BaseController
         return redirect()->back();
     }
 
-    /**
-     * Auth/request context needed for coupon eligibility checks
-     * (max_per_user, max_per_guest, level_csv). Derived server-side from
-     * session/request — never trust these as raw client POST fields.
-     */
-    protected function _coupon_context(): array
+    protected function couponContext(): array
     {
         $userId = (int) ($this->session->get('user_id') ?? 0);
-        $user   = $userId > 0 ? $this->_get_current_user() : null;
+        $user   = $userId > 0 ? $this->resolveCurrentUser() : null;
 
         return [
             'user_id'    => $userId > 0 ? $userId : null,
@@ -81,12 +74,12 @@ class Order extends BaseController
         return $this->request->getPost() ?? [];
     }
 
-    protected function _order_service(): OrderService
+    protected function orderService(): OrderService
     {
         return single_service('orderService');
     }
 
-    protected function _checkout_orchestrator(): CheckoutOrchestrator
+    protected function checkoutOrchestrator(): CheckoutOrchestrator
     {
         return single_service('checkoutOrchestrator');
     }

@@ -24,6 +24,7 @@ use App\Services\Payment\PaymentMethodService;
 
 use App\Services\Pricing\PriceService;
 use App\Services\Setting\SettingService;
+use App\Services\Presentation\StorefrontContextBuilder;
 
 use App\Services\Orchestrators\Storefront\HomePageOrchestrator;
 use App\Services\Orchestrators\Storefront\GameDetailPageOrchestrator;
@@ -173,6 +174,15 @@ class Services extends BaseService
         }
 
         return new SettingService();
+    }
+
+    public static function storefrontContextBuilder(bool $getShared = true): StorefrontContextBuilder
+    {
+        if ($getShared) {
+            return static::getSharedInstance('storefrontContextBuilder');
+        }
+
+        return new StorefrontContextBuilder(static::settingService());
     }
 
     public static function homePageOrchestrator(bool $getShared = true): HomePageOrchestrator

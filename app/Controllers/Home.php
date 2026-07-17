@@ -8,13 +8,13 @@ class Home extends BaseController
 {
     public function index()
     {
-        $this->base_data['page_assets']['css'][] = 'resources/css/pages/home.css';
-        $this->base_data['page_assets']['js'][]  = 'resources/js/pages/home.js';
+        $this->baseData['page_assets']['css'][] = 'resources/css/pages/home.css';
+        $this->baseData['page_assets']['js'][]  = 'resources/js/pages/home.js';
 
-        return $this->renderView('Pages/Home', $this->_service()->getHomeData());
+        return $this->renderView('Pages/Home', $this->homePageOrchestrator()->getHomeData());
     }
 
-    protected function _service(): HomePageOrchestrator
+    protected function homePageOrchestrator(): HomePageOrchestrator
     {
         return single_service('homePageOrchestrator');
     }

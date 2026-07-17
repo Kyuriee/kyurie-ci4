@@ -6,11 +6,9 @@ use App\Services\Orchestrators\Storefront\PaymentDetailPageOrchestrator;
 
 class Payment extends BaseController
 {
-
-
     public function detail(string $token)
     {
-        $result = $this->_service()->getDetailPage($token);
+        $result = $this->paymentDetailPageOrchestrator()->getDetailPage($token);
 
         if (empty($result)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
@@ -20,13 +18,13 @@ class Payment extends BaseController
         $game  = $result['game'];
 
         $data = [
-            'meta'            => ['title' => 'Pembayaran #' . $order['invoice']],
-            'order'           => $order,
-            'game'            => $game,
+            'meta'  => ['title' => 'Pembayaran #' . $order['invoice']],
+            'order' => $order,
+            'game'  => $game,
         ];
 
-        $this->base_data['page_assets']['css'][] = 'resources/css/pages/payment.css';
-        $this->base_data['page_assets']['js'][]  = 'resources/js/pages/payment.js';
+        $this->baseData['page_assets']['css'][] = 'resources/css/pages/payment.css';
+        $this->baseData['page_assets']['js'][]  = 'resources/js/pages/payment.js';
 
         return $this->renderView('Pages/Payment/Detail', $data);
     }
@@ -34,30 +32,40 @@ class Payment extends BaseController
     public function check()
     {
         if ($this->request->is('post')) {
-            $invoice = trim($this->request->getPost('invoice') ?? '');
-            $result  = $this->_service()->checkInvoice($invoice);
+            if (($throttle = $this->throttleOrBack('paymentCheck', 10, 'Terlalu banyak percobaan. Silakan tunggu sebentar lalu coba kembali.')) !== null) {
+                return $throttle;
+            }
+
+            $invoice = strtoupper(trim((string) $this->request->getPost('invoice')));
+
+            if ($invoice === '' || ! preg_match('/^[A-Z0-9_-]{6,64}$/', $invoice)) {
+                return $this->backWithAlert('error', 'Nomor invoice tidak valid', true);
+            }
+
+            $result = $this->paymentDetailPageOrchestrator()->checkInvoice($invoice);
 
             if (! $result['success']) {
-                $this->session->setFlashdata('alert', [
-                    'type'    => 'error',
-                    'message' => $result['message'],
-                ]);
-                return redirect()->back();
+                return $this->backWithAlert('error', $result['message'], true);
             }
 
             $order = $result['data'];
+
             return redirect()->to('payment/' . $order['payment_token']);
         }
 
-        $data = ['meta' => ['title' => 'Cek Pembayaran']];
+        $data = [
+            'meta' => [
+                'title' => 'Cek Pembayaran',
+            ],
+        ];
 
-        $this->base_data['page_assets']['css'][] = 'resources/css/pages/payment.css';
-        $this->base_data['page_assets']['js'][]  = 'resources/js/pages/payment.js';
+        $this->baseData['page_assets']['css'][] = 'resources/css/pages/payment.css';
+        $this->baseData['page_assets']['js'][]  = 'resources/js/pages/payment.js';
 
         return $this->renderView('Pages/Payment/Check', $data);
     }
 
-    protected function _service(): PaymentDetailPageOrchestrator
+    protected function paymentDetailPageOrchestrator(): PaymentDetailPageOrchestrator
     {
         return single_service('paymentDetailPageOrchestrator');
     }
