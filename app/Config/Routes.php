@@ -21,8 +21,12 @@ $routes->group(admin_path(), ['namespace' => 'App\Controllers\Admin'], static fu
     $routes->get('logout', 'Auth::logout');
     $routes->get('dashboard', 'Dashboard::index', ['filter' => 'adminauth']);
 
+    // ponytail: page shell lives at the bare path, JSON list moved to
+    // /list so it doesn't collide with the GET / of the group below.
+    $routes->get('game-categories', 'GameCategory::page', ['filter' => 'adminauth']);
+
     $routes->group('game-categories', ['filter' => 'adminauth'], static function ($routes) {
-        $routes->get('/', 'GameCategory::index');
+        $routes->get('list', 'GameCategory::index');
         $routes->get('(:num)', 'GameCategory::show/$1');
         $routes->post('/', 'GameCategory::store');
         $routes->match(['PUT', 'POST'], '(:num)', 'GameCategory::update/$1');

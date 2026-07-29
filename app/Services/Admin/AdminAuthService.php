@@ -46,12 +46,6 @@ class AdminAuthService extends BaseService
         );
     }
 
-    /**
-     * Re-resolves the admin from the DB on every request (mirrors
-     * UserService::getCurrentUser) so a revoked/disabled admin account
-     * stops working immediately instead of only at next login — the
-     * session only ever holds the id, this is the source of truth.
-     */
     public function getCurrentAdmin(int $adminId): ?array
     {
         return $this->safeCall(function () use ($adminId) {

@@ -25,6 +25,8 @@ class Game extends BaseController
             return $redirect;
         }
 
+        $this->baseData['page_assets']['js'][] = 'resources/js/pages/admin/games.js';
+
         return $this->renderView('Pages/Admin/Games', [
             'meta'       => ['title' => 'Game'],
             'admin'      => $this->currentAdmin,

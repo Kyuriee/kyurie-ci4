@@ -13,6 +13,22 @@ class GameCategory extends BaseController
         return service('gameCategoryService');
     }
 
+    public function page()
+    {
+        if ($redirect = $this->redirectIfGuest()) {
+            return $redirect;
+        }
+
+        $this->baseData['page_assets']['css'][] = 'resources/css/pages/admin/gameCategories.css';
+        $this->baseData['page_assets']['js'][]  = 'resources/js/pages/admin/gameCategories.js';
+
+        return $this->renderView('Pages/Admin/GameCategories', [
+            'meta'       => ['title' => 'Kategori Game'],
+            'admin'      => $this->currentAdmin,
+            'activeMenu' => 'game-categories',
+        ]);
+    }
+
     public function index()
     {
         $result = $this->service()->list(

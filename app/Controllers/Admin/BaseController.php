@@ -62,10 +62,26 @@ abstract class BaseController extends AppBaseController
         return single_service('adminAuthService');
     }
 
+    /**
+     * Sama seperti AdminAuthFilter::before() — dijaga dobel di sini karena
+     * beberapa method (page(), index()) manggil ini manual selain lewat
+     * filter. Kondisinya harus sinkron: AJAX/JSON dapat JSON, page load
+     * biasa dapat redirect+alert (reuse helper parent, bukan bikin baru).
+     */
+    protected function wantsJson(): bool
+    {
+        return $this->request->isAJAX()
+            || str_contains($this->request->getHeaderLine('Accept'), 'application/json');
+    }
+
     protected function redirectIfAuthenticated()
     {
         if (! $this->currentAdmin) {
             return null;
+        }
+
+        if ($this->wantsJson()) {
+            return $this->responseJson(false, 'Sudah login.')->setStatusCode(409);
         }
 
         return redirect()->to(admin_url('dashboard'));
@@ -77,7 +93,11 @@ abstract class BaseController extends AppBaseController
             return null;
         }
 
-        return redirect()->to(admin_url('login'));
+        if ($this->wantsJson()) {
+            return $this->responseJson(false, 'Sesi admin habis, silakan login ulang.')->setStatusCode(401);
+        }
+
+        return $this->redirectWithAlert(admin_url('login'), 'error', 'Silakan login terlebih dahulu.');
     }
 
     protected function requestPayload(): array

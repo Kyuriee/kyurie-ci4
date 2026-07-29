@@ -34,7 +34,7 @@
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
   "resources/css/admin.css": {
-    "file": "assets/admin_css-Df87-_aI.css",
+    "file": "assets/admin_css-DfoJgQPt.css",
     "name": "admin_css",
     "names": [
       "admin_css.css"
@@ -43,7 +43,7 @@
     "isEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app_css-DSwFkDJU.css",
+    "file": "assets/app_css-D6miwHWp.css",
     "name": "app_css",
     "names": [
       "app_css.css"
@@ -56,7 +56,7 @@
     ]
   },
   "resources/css/auth.css": {
-    "file": "assets/auth_css-BLAupQHA.css",
+    "file": "assets/auth_css-CG7ApVgT.css",
     "name": "auth_css",
     "names": [
       "auth_css.css"
@@ -96,13 +96,14 @@
     "isEntry": true
   },
   "resources/js/admin.js": {
-    "file": "assets/admin_js-ByMY8FS5.js",
+    "file": "assets/admin_js-DPqwKiWT.js",
     "name": "admin_js",
     "src": "resources/js/admin.js",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-QTnfLwEv.js",
       "_module.esm-Ppa4vhWP.js",
+      "_axios-BGmZl9Qd.js",
       "_sweetalert2.all-C4n5Y0SJ.js"
     ]
   },
@@ -134,6 +135,12 @@
     "css": [
       "assets/sweetalert2-DmHed3W8.css"
     ]
+  },
+  "resources/js/pages/admin/games.js": {
+    "file": "assets/admin_games_js-ZaJ3mlDy.js",
+    "name": "admin_games_js",
+    "src": "resources/js/pages/admin/games.js",
+    "isEntry": true
   },
   "resources/js/pages/game.js": {
     "file": "assets/game_js-BuRxMT9s.js",

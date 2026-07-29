@@ -7,9 +7,13 @@ class AdminContextBuilder
     public function build(?array $currentAdmin = null, ?array $alert = null): array
     {
         return [
-            'meta'  => $this->buildMeta(),
-            'admin' => $currentAdmin,
-            'alert' => $alert,
+            'meta'        => $this->buildMeta(),
+            'admin'       => $currentAdmin,
+            'alert'       => $alert,
+            'page_assets' => [
+                'css' => [],
+                'js'  => [],
+            ],
         ];
     }
 
