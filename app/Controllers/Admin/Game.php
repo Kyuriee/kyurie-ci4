@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Requests\GameRequest;
+use App\Services\Catalog\GameCategoryService;
 use App\Services\Catalog\GameService;
 use App\Validation\GameRequestRules;
 
@@ -11,6 +12,25 @@ class Game extends BaseController
     protected function service(): GameService
     {
         return service('gameService');
+    }
+
+    protected function categoryService(): GameCategoryService
+    {
+        return service('gameCategoryService');
+    }
+
+    public function page()
+    {
+        if ($redirect = $this->redirectIfGuest()) {
+            return $redirect;
+        }
+
+        return $this->renderView('Pages/Admin/Games', [
+            'meta'       => ['title' => 'Game'],
+            'admin'      => $this->currentAdmin,
+            'activeMenu' => 'games',
+            'categories' => $this->categoryService()->getActive(),
+        ]);
     }
 
     public function index()

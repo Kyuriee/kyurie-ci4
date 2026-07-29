@@ -30,8 +30,12 @@ $routes->group(admin_path(), ['namespace' => 'App\Controllers\Admin'], static fu
         $routes->post('(:num)/toggle-status', 'GameCategory::toggleStatus/$1');
     });
 
+    // ponytail: page shell lives at the bare path, JSON list moved to
+    // /list so it doesn't collide with the GET / of the group below.
+    $routes->get('games', 'Game::page', ['filter' => 'adminauth']);
+
     $routes->group('games', ['filter' => 'adminauth'], static function ($routes) {
-        $routes->get('/', 'Game::index');
+        $routes->get('list', 'Game::index');
         $routes->get('(:num)', 'Game::show/$1');
         $routes->post('/', 'Game::store');
         $routes->match(['PUT', 'POST'], '(:num)', 'Game::update/$1');

@@ -49,12 +49,14 @@ $activeMenu = $activeMenu ?? '';
 
                     <!-- Games -->
                     <li>
-                        <span class="menu-item menu-item-inactive cursor-not-allowed opacity-50" title="Segera">
-                            <svg class="menu-item-icon-inactive" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <a
+                            href="<?= admin_url('games') ?>"
+                            class="menu-item group <?= $activeMenu === 'games' ? 'menu-item-active' : 'menu-item-inactive' ?>">
+                            <svg class="<?= $activeMenu === 'games' ? 'menu-item-icon-active' : 'menu-item-icon-inactive' ?>" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M6 3h12l1 6-7 11L5 9l1-6z" />
                             </svg>
                             <span class="menu-item-text" x-show="sidebarExpanded || sidebarHovered" x-cloak>Games</span>
-                        </span>
+                        </a>
                     </li>
 
                     <!-- Coupons -->

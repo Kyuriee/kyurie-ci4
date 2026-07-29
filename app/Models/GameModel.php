@@ -104,7 +104,15 @@ class GameModel extends Model
 
         return [
             'items' => $items,
-            'pager' => $this->pager,
+            // ponytail: $this->pager is a Pager object with no public props,
+            // so json_encode() on it silently gave "{}" — pull the flat
+            // details array instead so the admin UI can actually paginate.
+            'pager' => [
+                'currentPage' => $this->pager->getCurrentPage(),
+                'perPage'     => $this->pager->getPerPage(),
+                'pageCount'   => $this->pager->getPageCount(),
+                'total'       => $this->pager->getTotal(),
+            ],
         ];
     }
 
