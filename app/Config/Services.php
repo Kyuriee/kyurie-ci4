@@ -25,7 +25,7 @@ use App\Services\Payment\PaymentMethodService;
 use App\Services\Pricing\PriceService;
 use App\Services\Setting\SettingService;
 use App\Services\Presentation\StorefrontContextBuilder;
-use App\Services\Presentation\BackofficeContextBuilder;
+use App\Services\Presentation\AdminContextBuilder;
 
 use App\Services\Orchestrators\Storefront\HomePageOrchestrator;
 use App\Services\Orchestrators\Storefront\GameDetailPageOrchestrator;
@@ -186,13 +186,13 @@ class Services extends BaseService
         return new StorefrontContextBuilder(static::settingService());
     }
 
-    public static function backofficeContextBuilder(bool $getShared = true): BackofficeContextBuilder
+    public static function adminContextBuilder(bool $getShared = true): AdminContextBuilder
     {
         if ($getShared) {
-            return static::getSharedInstance('backofficeContextBuilder');
+            return static::getSharedInstance('adminContextBuilder');
         }
 
-        return new BackofficeContextBuilder(static::settingService());
+        return new AdminContextBuilder();
     }
 
     public static function homePageOrchestrator(bool $getShared = true): HomePageOrchestrator

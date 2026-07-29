@@ -4,6 +4,10 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController as AppBaseController;
 use App\Services\Admin\AdminAuthService;
+use CodeIgniter\Controller;
+use CodeIgniter\HTTP\RequestInterface;
+use CodeIgniter\HTTP\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 abstract class BaseController extends AppBaseController
 {
@@ -15,6 +19,44 @@ abstract class BaseController extends AppBaseController
         'admin',
     ];
 
+    protected $currentAdmin;
+
+    /**
+     * Deliberately skips App\Controllers\BaseController::initController()
+     * — that one resolves the storefront *user* and builds storefront
+     * context (menus, SEO, etc.), none of which apply here. Admin gets
+     * its own currentAdmin + AdminContextBuilder: same shape/pattern
+     * (resolve current actor -> build $baseData), different domain.
+     */
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+    {
+        Controller::initController($request, $response, $logger);
+
+        $this->session      = service('session');
+        $this->currentAdmin = $this->resolveCurrentAdmin();
+        $this->baseData     = service('adminContextBuilder')->build(
+            $this->currentAdmin,
+            $this->getAlert()
+        );
+    }
+
+    /**
+     * Re-resolves the admin from the DB every request (see
+     * AdminAuthService::getCurrentAdmin) — the session only holds the id,
+     * so this is what actually confirms "is this still a valid admin"
+     * rather than just trusting a stale session key.
+     */
+    protected function resolveCurrentAdmin(): ?array
+    {
+        $adminId = (int) ($this->session->get('admin_id') ?? 0);
+
+        if ($adminId <= 0) {
+            return null;
+        }
+
+        return $this->adminService()->getCurrentAdmin($adminId);
+    }
+
     protected function adminService(): AdminAuthService
     {
         return single_service('adminAuthService');
@@ -22,7 +64,7 @@ abstract class BaseController extends AppBaseController
 
     protected function redirectIfAuthenticated()
     {
-        if (! $this->session->get('admin_id')) {
+        if (! $this->currentAdmin) {
             return null;
         }
 
@@ -31,7 +73,7 @@ abstract class BaseController extends AppBaseController
 
     protected function redirectIfGuest()
     {
-        if ($this->session->get('admin_id')) {
+        if ($this->currentAdmin) {
             return null;
         }
 
