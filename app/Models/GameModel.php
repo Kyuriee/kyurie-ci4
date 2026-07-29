@@ -21,6 +21,7 @@ class GameModel extends Model
         'banner',
         'description',
         'target',
+        'input_custom',
         'is_popular',
         'sort',
         'status',
@@ -70,5 +71,51 @@ class GameModel extends Model
             ->orderBy('games.sort', 'ASC')
             ->limit($limit)
             ->findAll();
-    }   
+    }
+
+    /**
+     * Admin listing — unlike the storefront methods above, this is NOT
+     * restricted to status = 'On' so admins can see/manage Off games too.
+     */
+    public function paginatedList(string $keyword = '', ?int $categoryId = null, string $status = '', int $perPage = 20): array
+    {
+        $builder = $this->select('games.*, game_categories.category')
+            ->join('game_categories', 'game_categories.id = games.game_category_id', 'left')
+            ->orderBy('games.sort', 'ASC')
+            ->orderBy('games.id', 'DESC');
+
+        if ($keyword !== '') {
+            $builder->groupStart()
+                ->like('games.games', $keyword)
+                ->orLike('games.code', $keyword)
+                ->orLike('games.slug', $keyword)
+                ->groupEnd();
+        }
+
+        if ($categoryId !== null && $categoryId > 0) {
+            $builder->where('games.game_category_id', $categoryId);
+        }
+
+        if ($status !== '') {
+            $builder->where('games.status', $status);
+        }
+
+        $items = $builder->paginate($perPage);
+
+        return [
+            'items' => $items,
+            'pager' => $this->pager,
+        ];
+    }
+
+    public function slugExists(string $slug, ?int $excludeId = null): bool
+    {
+        $builder = $this->where('slug', $slug);
+
+        if ($excludeId !== null) {
+            $builder->where('id !=', $excludeId);
+        }
+
+        return $builder->countAllResults() > 0;
+    }
 }

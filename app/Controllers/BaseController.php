@@ -21,7 +21,7 @@ abstract class BaseController extends Controller
 
         $this->session     = service('session');
         $this->currentUser = $this->resolveCurrentUser();
-        $this->baseData    = service('storefrontContextBuilder')->build(
+        $this->baseData    = single_service('storefrontContextBuilder')->build(
             $this->currentUser,
             $this->getAlert()
         );

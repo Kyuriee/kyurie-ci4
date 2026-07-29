@@ -87,4 +87,36 @@ class OrderStatusService extends BaseService
 
         return $updated;
     }
+
+    /**
+     * Admin-facing wrapper around markStatus() — validates the target
+     * status and returns a structured success/fail response instead of
+     * a bare bool, for use by the backoffice controller.
+     */
+    public function updateStatusByAdmin(int $orderId, string $status, ?string $note = null): array
+    {
+        $order = $this->orderModel->find($orderId);
+
+        if (empty($order)) {
+            return $this->fail('Pesanan tidak ditemukan');
+        }
+
+        if (! in_array($status, ['pending', 'processing', 'success', 'failed'], true)) {
+            return $this->fail('Status tidak valid');
+        }
+
+        $extra = [];
+
+        if ($note !== null && trim($note) !== '') {
+            $extra['note'] = trim($note);
+        }
+
+        $updated = $this->markStatus($orderId, $status, $extra);
+
+        if (! $updated) {
+            return $this->fail('Gagal mengubah status pesanan');
+        }
+
+        return $this->success('Status pesanan diperbarui', ['status' => $status]);
+    }
 }

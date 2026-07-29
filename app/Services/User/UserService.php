@@ -90,4 +90,77 @@ class UserService extends BaseService
             return $this->success('Password berhasil diperbarui');
         }, $this->fail('Gagal memperbarui password'));
     }
+
+    /*
+     |--------------------------------------------------------------------
+     | Admin (backoffice) — read + moderate. No create (registration stays
+     | on the storefront) and no delete (users are referenced by orders).
+     |--------------------------------------------------------------------
+     */
+
+    public function list(string $keyword = '', string $status = '', string $level = '', int $perPage = 20): array
+    {
+        return $this->safeCall(
+            fn() => $this->userModel->paginatedList(trim($keyword), trim($status), trim($level), $perPage),
+            ['items' => [], 'pager' => null]
+        );
+    }
+
+    public function findAny(int $id): array
+    {
+        if ($id <= 0) {
+            return [];
+        }
+
+        return $this->userModel->find($id) ?: [];
+    }
+
+    public function toggleStatus(int $id): array
+    {
+        $existing = $this->findAny($id);
+
+        if (empty($existing)) {
+            return $this->fail('User tidak ditemukan');
+        }
+
+        $newStatus = $existing['status'] === 'On' ? 'Off' : 'On';
+
+        $updated = $this->safeCall(fn() => $this->userModel->update($id, ['status' => $newStatus]), false);
+
+        if (! $updated) {
+            return $this->fail('Gagal mengubah status user');
+        }
+
+        return $this->success('Status user diperbarui', ['status' => $newStatus]);
+    }
+
+    /**
+     * Admin balance adjustment. Positive amount tops up, negative deducts —
+     * caller (controller) is responsible for translating "top up" vs
+     * "deduct" UI intent into the signed amount.
+     */
+    public function adjustBalance(int $id, float $amount): array
+    {
+        $existing = $this->findAny($id);
+
+        if (empty($existing)) {
+            return $this->fail('User tidak ditemukan');
+        }
+
+        if ($amount == 0.0) {
+            return $this->fail('Nominal penyesuaian saldo tidak boleh 0');
+        }
+
+        if ($amount < 0 && (float) $existing['balance'] + $amount < 0) {
+            return $this->fail('Saldo user tidak cukup untuk pengurangan ini');
+        }
+
+        $updated = $this->safeCall(fn() => $this->userModel->topUpBalance($id, $amount), false);
+
+        if (! $updated) {
+            return $this->fail('Gagal menyesuaikan saldo user');
+        }
+
+        return $this->success('Saldo user berhasil disesuaikan');
+    }
 }

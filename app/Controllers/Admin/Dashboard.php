@@ -2,23 +2,21 @@
 
 namespace App\Controllers\Admin;
 
-use CodeIgniter\Controller;
+use App\Controllers\Admin\BaseController;
 
-class Dashboard extends Controller
+class Dashboard extends BaseController
 {
-    protected $helpers = ['url'];
 
-    /**
-     * Placeholder only — confirms the auth flow works end-to-end.
-     * The real Mazer-based dashboard layout/sidebar is the next phase.
-     */
     public function index()
     {
-        $session = service('session');
+        if ($redirect = $this->redirectIfGuest()) {
+            return $redirect;
+        }
 
-        return view('Pages/Admin/DashboardPlaceholder', [
-            'admin_name'  => $session->get('admin_name'),
-            'admin_level' => $session->get('admin_level'),
+        return $this->renderView('Pages/Admin/Dashboard', [
+            'meta'          => ['title' => 'Dashboard',],
+            'admin'         => $this->currentAdmin,
+            'activeMenu'    => 'dashboard',
         ]);
     }
 }

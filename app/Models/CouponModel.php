@@ -50,6 +50,43 @@ class CouponModel extends Model
     }
 
     /**
+     * Admin listing — not restricted to status = 'On'.
+     */
+    public function paginatedList(string $keyword = '', string $status = '', int $perPage = 20): array
+    {
+        $builder = $this->orderBy('id', 'DESC');
+
+        if ($keyword !== '') {
+            $builder->groupStart()
+                ->like('code', $keyword)
+                ->orLike('name', $keyword)
+                ->groupEnd();
+        }
+
+        if ($status !== '') {
+            $builder->where('status', $status);
+        }
+
+        $items = $builder->paginate($perPage);
+
+        return [
+            'items' => $items,
+            'pager' => $this->pager,
+        ];
+    }
+
+    public function codeExists(string $code, ?int $excludeId = null): bool
+    {
+        $builder = $this->where('code', $code);
+
+        if ($excludeId !== null) {
+            $builder->where('id !=', $excludeId);
+        }
+
+        return $builder->countAllResults() > 0;
+    }
+
+    /**
      * Atomically increments usage_count, guarded by max_global (NULL = unlimited).
      * Mirrors FlashsaleItemModel::consumeStock — the SQL WHERE clause is the
      * source of truth, not a prior SELECT, so concurrent requests can't both

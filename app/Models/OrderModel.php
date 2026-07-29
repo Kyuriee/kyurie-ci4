@@ -108,4 +108,42 @@ class OrderModel extends Model
             ->orderBy('id', 'DESC')
             ->findAll($limit, $offset);
     }
+
+    /**
+     * Admin listing — across all users/guests, with search + status/date filters.
+     */
+    public function paginatedList(string $keyword = '', string $status = '', string $dateFrom = '', string $dateTo = '', int $perPage = 20): array
+    {
+        $builder = $this->orderBy('id', 'DESC');
+
+        if ($keyword !== '') {
+            $builder->groupStart()
+                ->like('invoice', $keyword)
+                ->orLike('customer_id', $keyword)
+                ->orLike('game_name', $keyword)
+                ->orLike('product_name', $keyword)
+                ->orLike('contact_email', $keyword)
+                ->orLike('contact_phone', $keyword)
+                ->groupEnd();
+        }
+
+        if ($status !== '') {
+            $builder->where('status', $status);
+        }
+
+        if ($dateFrom !== '') {
+            $builder->where('created_at >=', $dateFrom . ' 00:00:00');
+        }
+
+        if ($dateTo !== '') {
+            $builder->where('created_at <=', $dateTo . ' 23:59:59');
+        }
+
+        $items = $builder->paginate($perPage);
+
+        return [
+            'items' => $items,
+            'pager' => $this->pager,
+        ];
+    }
 }

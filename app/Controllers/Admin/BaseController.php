@@ -38,6 +38,17 @@ abstract class BaseController extends AppBaseController
         return redirect()->to(admin_url('login'));
     }
 
+    protected function requestPayload(): array
+    {
+        $json = $this->request->getJSON(true);
+
+        if (is_array($json)) {
+            return $json;
+        }
+
+        return $this->request->getPost() ?? [];
+    }
+
     protected function setAdminSession(array $admin): void
     {
         $this->session->regenerate();

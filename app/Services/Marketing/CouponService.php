@@ -165,4 +165,145 @@ class CouponService extends BaseService
     {
         return array_filter(array_map(fn($v) => strtolower(trim($v)), explode(',', $csv)), fn($v) => $v !== '');
     }
+
+    /*
+     |--------------------------------------------------------------------
+     | Admin (backoffice) — CRUD, not restricted to status = 'On'
+     |--------------------------------------------------------------------
+     */
+
+    public function list(string $keyword = '', string $status = '', int $perPage = 20): array
+    {
+        return $this->safeCall(
+            fn() => $this->couponModel->paginatedList(trim($keyword), trim($status), $perPage),
+            ['items' => [], 'pager' => null]
+        );
+    }
+
+    public function find(int $id): array
+    {
+        if ($id <= 0) {
+            return [];
+        }
+
+        return $this->couponModel->find($id) ?: [];
+    }
+
+    public function create(array $data): array
+    {
+        $code = strtoupper(trim((string) ($data['code'] ?? '')));
+
+        if ($code === '') {
+            return $this->fail('Kode kupon wajib diisi');
+        }
+
+        if ($this->couponModel->codeExists($code)) {
+            return $this->fail('Kode kupon sudah dipakai, gunakan kode lain');
+        }
+
+        $payload = $this->buildPayload($data, $code);
+
+        $id = $this->safeCall(fn() => $this->couponModel->insert($payload, true), false);
+
+        if ($id === false) {
+            return $this->fail('Gagal menyimpan kupon', ['errors' => $this->couponModel->errors()]);
+        }
+
+        return $this->success('Kupon berhasil dibuat', ['id' => $id]);
+    }
+
+    public function update(int $id, array $data): array
+    {
+        $existing = $this->find($id);
+
+        if (empty($existing)) {
+            return $this->fail('Kupon tidak ditemukan');
+        }
+
+        $code = strtoupper(trim((string) ($data['code'] ?? $existing['code'])));
+
+        if ($code === '') {
+            return $this->fail('Kode kupon wajib diisi');
+        }
+
+        if ($this->couponModel->codeExists($code, $id)) {
+            return $this->fail('Kode kupon sudah dipakai, gunakan kode lain');
+        }
+
+        $payload = $this->buildPayload($data, $code, $existing);
+
+        $updated = $this->safeCall(fn() => $this->couponModel->update($id, $payload), false);
+
+        if (! $updated) {
+            return $this->fail('Gagal memperbarui kupon', ['errors' => $this->couponModel->errors()]);
+        }
+
+        return $this->success('Kupon berhasil diperbarui');
+    }
+
+    public function delete(int $id): array
+    {
+        $existing = $this->find($id);
+
+        if (empty($existing)) {
+            return $this->fail('Kupon tidak ditemukan');
+        }
+
+        $deleted = $this->safeCall(fn() => $this->couponModel->delete($id), false);
+
+        if (! $deleted) {
+            return $this->fail('Gagal menghapus kupon');
+        }
+
+        return $this->success('Kupon berhasil dihapus');
+    }
+
+    public function toggleStatus(int $id): array
+    {
+        $existing = $this->find($id);
+
+        if (empty($existing)) {
+            return $this->fail('Kupon tidak ditemukan');
+        }
+
+        $newStatus = $existing['status'] === 'On' ? 'Off' : 'On';
+
+        $updated = $this->safeCall(fn() => $this->couponModel->update($id, ['status' => $newStatus]), false);
+
+        if (! $updated) {
+            return $this->fail('Gagal mengubah status kupon');
+        }
+
+        return $this->success('Status kupon diperbarui', ['status' => $newStatus]);
+    }
+
+    protected function buildPayload(array $data, string $code, array $existing = []): array
+    {
+        return [
+            'code'              => $code,
+            'name'              => trim((string) ($data['name'] ?? $existing['name'] ?? '')),
+            'discount_percent'  => array_key_exists('discount_percent', $data) ? (float) $data['discount_percent'] : ($existing['discount_percent'] ?? 0),
+            'discount_nominal'  => array_key_exists('discount_nominal', $data) ? (float) $data['discount_nominal'] : ($existing['discount_nominal'] ?? 0),
+            'max_discount'      => array_key_exists('max_discount', $data) ? ($data['max_discount'] !== '' ? (float) $data['max_discount'] : null) : ($existing['max_discount'] ?? null),
+            'min_transaction'   => (float) ($data['min_transaction'] ?? $existing['min_transaction'] ?? 0),
+            'type'              => $this->normalizeEnum($data['type'] ?? ($existing['type'] ?? 'general'), ['general', 'custom'], 'general'),
+            'level_csv'         => array_key_exists('level_csv', $data) ? ($data['level_csv'] ?: null) : ($existing['level_csv'] ?? null),
+            'game_csv'          => array_key_exists('game_csv', $data) ? ($data['game_csv'] ?: null) : ($existing['game_csv'] ?? null),
+            'product_csv'       => array_key_exists('product_csv', $data) ? ($data['product_csv'] ?: null) : ($existing['product_csv'] ?? null),
+            'max_per_guest'     => array_key_exists('max_per_guest', $data) ? ($data['max_per_guest'] !== '' ? (int) $data['max_per_guest'] : null) : ($existing['max_per_guest'] ?? null),
+            'max_per_user'      => array_key_exists('max_per_user', $data) ? ($data['max_per_user'] !== '' ? (int) $data['max_per_user'] : null) : ($existing['max_per_user'] ?? null),
+            'max_global'        => array_key_exists('max_global', $data) ? ($data['max_global'] !== '' ? (int) $data['max_global'] : null) : ($existing['max_global'] ?? null),
+            'max_per_daily'     => array_key_exists('max_per_daily', $data) ? ($data['max_per_daily'] !== '' ? (int) $data['max_per_daily'] : null) : ($existing['max_per_daily'] ?? null),
+            'valid_from'        => array_key_exists('valid_from', $data) ? ($data['valid_from'] ?: null) : ($existing['valid_from'] ?? null),
+            'valid_until'       => array_key_exists('valid_until', $data) ? ($data['valid_until'] ?: null) : ($existing['valid_until'] ?? null),
+            'status'            => $this->normalizeEnum($data['status'] ?? ($existing['status'] ?? 'On'), ['On', 'Off'], 'On'),
+        ];
+    }
+
+    protected function normalizeEnum($value, array $allowed, string $fallback): string
+    {
+        $value = (string) $value;
+
+        return in_array($value, $allowed, true) ? $value : $fallback;
+    }
 }

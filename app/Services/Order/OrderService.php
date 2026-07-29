@@ -92,4 +92,29 @@ class OrderService extends BaseService
 
         return $order;
     }
+
+    /*
+     |--------------------------------------------------------------------
+     | Admin (backoffice) — read across all orders. Status changes go
+     | through OrderStatusService::markStatus, which owns the flashsale
+     | stock / coupon usage side-effects — not duplicated here.
+     |--------------------------------------------------------------------
+     */
+
+    public function list(string $keyword = '', string $status = '', string $dateFrom = '', string $dateTo = '', int $perPage = 20): array
+    {
+        return $this->safeCall(
+            fn() => $this->orderModel->paginatedList(trim($keyword), trim($status), trim($dateFrom), trim($dateTo), $perPage),
+            ['items' => [], 'pager' => null]
+        );
+    }
+
+    public function findAny(int $id): array
+    {
+        if ($id <= 0) {
+            return [];
+        }
+
+        return $this->orderModel->find($id) ?: [];
+    }
 }

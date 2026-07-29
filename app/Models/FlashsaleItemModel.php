@@ -121,4 +121,24 @@ class FlashsaleItemModel extends Model
     {
         $this->consumeStock($id);
     }
+
+    /**
+     * Admin listing of items within one flashsale, joined with product/game
+     * for display context.
+     */
+    public function paginatedListByFlashsale(int $flashsaleId, int $perPage = 20): array
+    {
+        $items = $this->select('flashsale_items.*, product.product, product.price, games.games')
+            ->join('product', 'product.id = flashsale_items.product_id', 'left')
+            ->join('games', 'games.id = product.games_id', 'left')
+            ->where('flashsale_items.flashsale_id', $flashsaleId)
+            ->orderBy('flashsale_items.sort_order', 'ASC')
+            ->orderBy('flashsale_items.id', 'DESC')
+            ->paginate($perPage);
+
+        return [
+            'items' => $items,
+            'pager' => $this->pager,
+        ];
+    }
 }
