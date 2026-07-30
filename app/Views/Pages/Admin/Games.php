@@ -7,6 +7,7 @@
         listUrl: '<?= admin_url('games/list') ?>',
         resourceUrl: '<?= admin_url('games') ?>',
         imageBaseUrl: '<?= base_url('assets/images/games/icons/') ?>',
+        bannerBaseUrl: '<?= base_url('assets/images/games/banners/') ?>',
     })"
     x-init="init()">
 

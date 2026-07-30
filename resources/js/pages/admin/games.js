@@ -18,7 +18,10 @@ document.addEventListener('alpine:init', () => {
         editingId: null,
         searchTimer: null,
         form: {},
-        imageBlobUrl: null,
+        media: {
+            image: { blobUrl: null, broken: false },
+            banner: { blobUrl: null, broken: false },
+        },
         customInputRows: [],
 
         init() {
@@ -54,14 +57,14 @@ document.addEventListener('alpine:init', () => {
         },
 
         emptyCustomInputRow() {
-            return { label: '', type: 'text', placeholder: '' };
+            return { label: '', type: 'text', placeholder: '', options: [] };
         },
 
         // Baris pertama = customer_id, dipaksa backend (GameAccountInputService::inputFromArray),
         // wajib ada & gak bisa dihapus dari UI.
         ensureCustomInputRows() {
             if (this.customInputRows.length === 0) {
-                this.customInputRows.push({ label: 'User ID / Player ID', type: 'text', placeholder: 'Masukkan ID akunmu' });
+                this.customInputRows.push({ label: 'User ID / Player ID', type: 'text', placeholder: 'Masukkan ID akunmu', options: [] });
             }
         },
 
@@ -75,6 +78,23 @@ document.addEventListener('alpine:init', () => {
             this.customInputRows.splice(index, 1);
         },
 
+        // Dipanggil dari @change select tipe — auto-seed 1 pilihan kosong
+        // pas pertama kali pindah ke Dropdown, biar gak langsung fallback
+        // ke Text gara-gara options masih kosong.
+        onRowTypeChange(row) {
+            if (row.type === 'select' && (!row.options || row.options.length === 0)) {
+                row.options = [{ value: '', label: '' }];
+            }
+        },
+
+        addRowOption(row) {
+            row.options.push({ value: '', label: '' });
+        },
+
+        removeRowOption(row, optIndex) {
+            row.options.splice(optIndex, 1);
+        },
+
         parseCustomInputRows(inputCustom) {
             const validTypes = ['text', 'number', 'hidden', 'select'];
 
@@ -86,42 +106,62 @@ document.addEventListener('alpine:init', () => {
                     label: row?.label ?? '',
                     type: validTypes.includes(row?.type) ? row.type : 'text',
                     placeholder: row?.placeholder ?? '',
+                    options: Array.isArray(row?.options)
+                        ? row.options.map((opt) => ({ value: opt?.value ?? '', label: opt?.label ?? '' }))
+                        : [],
                 }));
             } catch (e) {
                 return [];
             }
         },
 
-        get imagePreviewUrl() {
-            if (this.imageBlobUrl) return this.imageBlobUrl;
-            if (this.form.image) return `${config.imageBaseUrl}${this.form.image}`;
-            return '';
+        get imageBaseUrls() {
+            return { image: config.imageBaseUrl, banner: config.bannerBaseUrl };
         },
 
-        onImageFileChange(event) {
+        mediaPreviewUrl(field) {
+            const state = this.media[field];
+            if (state.blobUrl) return state.blobUrl;
+
+            const filename = this.form[field];
+            return filename ? `${this.imageBaseUrls[field]}${filename}` : '';
+        },
+
+        onMediaFileChange(field, event) {
             const file = event.target.files?.[0];
             if (!file) return;
 
-            if (this.imageBlobUrl) {
-                URL.revokeObjectURL(this.imageBlobUrl);
+            const state = this.media[field];
+            if (state.blobUrl) {
+                URL.revokeObjectURL(state.blobUrl);
             }
-            this.imageBlobUrl = URL.createObjectURL(file);
-            this.form.image = file.name;
+            state.blobUrl = URL.createObjectURL(file);
+            state.broken = false; // src baru, kasih kesempatan render dari awal
+            this.form[field] = file.name;
         },
 
-        resetImagePreview() {
-            if (this.imageBlobUrl) {
-                URL.revokeObjectURL(this.imageBlobUrl);
+        resetMediaPreview(field) {
+            const state = this.media[field];
+            if (state.blobUrl) {
+                URL.revokeObjectURL(state.blobUrl);
             }
-            this.imageBlobUrl = null;
-            if (this.$refs.imageFile) {
-                this.$refs.imageFile.value = '';
+            state.blobUrl = null;
+            state.broken = false;
+
+            const ref = field === 'banner' ? 'bannerFile' : 'imageFile';
+            if (this.$refs[ref]) {
+                this.$refs[ref].value = '';
             }
         },
 
-        clearImage() {
-            this.resetImagePreview();
-            this.form.image = '';
+        resetAllMediaPreviews() {
+            this.resetMediaPreview('image');
+            this.resetMediaPreview('banner');
+        },
+
+        clearMedia(field) {
+            this.resetMediaPreview(field);
+            this.form[field] = '';
         },
 
         notifyError(message) {
@@ -172,7 +212,7 @@ document.addEventListener('alpine:init', () => {
             this.editingId = null;
             this.form = this.emptyForm();
             this.customInputRows = [];
-            this.clearImage();
+            this.resetAllMediaPreviews();
             this.modalOpen = true;
         },
 
@@ -201,7 +241,7 @@ document.addEventListener('alpine:init', () => {
                 if (this.form.target === 'custom') {
                     this.ensureCustomInputRows();
                 }
-                this.resetImagePreview();
+                this.resetAllMediaPreviews();
                 this.modalOpen = true;
             } catch (e) {
                 this.notifyError('Gagal memuat game');
@@ -222,6 +262,9 @@ document.addEventListener('alpine:init', () => {
                         label: row.label,
                         type: row.type,
                         placeholder: row.placeholder,
+                        options: row.type === 'select'
+                            ? (row.options ?? []).filter((opt) => opt.value.trim() !== '' && opt.label.trim() !== '')
+                            : [],
                     })),
                 });
             } else {

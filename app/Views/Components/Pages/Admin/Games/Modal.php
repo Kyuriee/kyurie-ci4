@@ -7,10 +7,18 @@
         @click.outside="closeModal()"
         x-show="modalOpen"
         x-transition
-        class="max-h-[90vh] w-full max-w-2xl overflow-y-auto custom-scrollbar rounded-2xl bg-white p-6 dark:bg-gray-900">
-        <h2 class="mb-5 text-lg font-semibold text-gray-800 dark:text-white/90" x-text="editingId ? 'Ubah Game' : 'Tambah Game'"></h2>
+        class="max-h-[90vh] w-full max-w-3xl overflow-y-auto custom-scrollbar rounded-2xl bg-white p-6 dark:bg-gray-900">
+        <h2 class="mb-1 text-lg font-semibold text-gray-800 dark:text-white/90" x-text="editingId ? 'Ubah Game' : 'Tambah Game'"></h2>
+        <p class="mb-5 text-theme-xs text-gray-400">Isi urut dari atas ke bawah — makin ke bawah makin opsional.</p>
 
-        <form @submit.prevent="save()" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <form @submit.prevent="save()" class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+
+            <!-- 1. Informasi Dasar -->
+            <div class="sm:col-span-2">
+                <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">1. Informasi Dasar</h3>
+                <p class="text-theme-xs text-gray-400">Nama, kategori, dan identitas game.</p>
+            </div>
+
             <div class="sm:col-span-2">
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Nama Game<span class="text-error-500">*</span></label>
                 <input type="text" x-model="form.games" required class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
@@ -27,13 +35,13 @@
             </div>
 
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Slug</label>
-                <input type="text" x-model="form.slug" placeholder="otomatis dari nama bila kosong" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kode</label>
+                <input type="text" x-model="form.code" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
             </div>
 
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Kode</label>
-                <input type="text" x-model="form.code" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Slug</label>
+                <input type="text" x-model="form.slug" placeholder="otomatis dari nama bila kosong" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
             </div>
 
             <div>
@@ -46,17 +54,57 @@
                 <input type="text" x-model="form.publisher" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
             </div>
 
-            <div>
+            <!-- 2. Media -->
+            <div class="sm:col-span-2 mt-2 border-t border-gray-100 pt-4 dark:border-gray-800">
+                <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">2. Media</h3>
+                <p class="text-theme-xs text-gray-400">Icon buat kartu game, banner buat halaman detail.</p>
+            </div>
+
+            <?= view('Components/Pages/Admin/Shared/MediaPicker', [
+                'field'       => 'image',
+                'label'       => 'Icon Game',
+                'refName'     => 'imageFile',
+                'aspectClass' => 'h-16 w-16',
+                'folderHint'  => 'public/assets/images/games/icons/',
+                'placeholder' => 'contoh: mobile-legends.png',
+            ]) ?>
+
+            <?= view('Components/Pages/Admin/Shared/MediaPicker', [
+                'field'       => 'banner',
+                'label'       => 'Banner (halaman detail)',
+                'refName'     => 'bannerFile',
+                'aspectClass' => 'h-16 w-28',
+                'folderHint'  => 'public/assets/images/games/banners/',
+                'placeholder' => 'contoh: mobile-legends-banner.jpg',
+            ]) ?>
+
+            <!-- 3. Deskripsi -->
+            <div class="sm:col-span-2 mt-2 border-t border-gray-100 pt-4 dark:border-gray-800">
+                <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">3. Deskripsi</h3>
+                <p class="text-theme-xs text-gray-400">Opsional, tampil di halaman detail game.</p>
+            </div>
+
+            <div class="sm:col-span-2">
+                <textarea x-model="form.description" rows="3" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"></textarea>
+            </div>
+
+            <!-- 4. Cara Isi Akun -->
+            <div class="sm:col-span-2 mt-2 border-t border-gray-100 pt-4 dark:border-gray-800">
+                <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">4. Cara Isi Akun</h3>
+                <p class="text-theme-xs text-gray-400">Field yang diisi customer pas checkout.</p>
+            </div>
+
+            <div class="sm:col-span-2">
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Target Input</label>
                 <select x-model="form.target" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    <option value="default">Default (User ID saja)</option>
-                    <option value="custom">Custom (User ID + Zone/Server)</option>
+                    <option value="default">Default — cuma User ID</option>
+                    <option value="custom">Custom — User ID + Zone/Server</option>
                 </select>
             </div>
 
             <div class="sm:col-span-2" x-show="form.target === 'custom'" x-cloak>
                 <div class="mb-1.5 flex items-center justify-between">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Input Custom <span class="text-gray-400">(maks. 6 kolom termasuk User ID)</span></label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-400">Kolom Input <span class="text-gray-400">(maks. 6 termasuk User ID)</span></label>
                     <button
                         type="button"
                         @click="addCustomInputRow()"
@@ -68,28 +116,49 @@
 
                 <div class="space-y-2">
                     <template x-for="(row, index) in customInputRows" :key="index">
-                        <div class="grid grid-cols-1 gap-2 rounded-lg border border-gray-200 p-3 dark:border-gray-800 sm:grid-cols-[1fr_140px_1fr_auto] sm:items-end">
-                            <div>
-                                <label class="mb-1 block text-theme-xs text-gray-400" x-text="index === 0 ? 'Label (User ID) *' : 'Label'"></label>
-                                <input type="text" x-model="row.label" placeholder="Label" class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                        <div class="rounded-lg border border-gray-200 p-3 dark:border-gray-800">
+                            <div class="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_140px_1fr_auto] sm:items-end">
+                                <div>
+                                    <label class="mb-1 block text-theme-xs text-gray-400" x-text="index === 0 ? 'Label (User ID) *' : 'Label'"></label>
+                                    <input type="text" x-model="row.label" placeholder="Label" class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                </div>
+                                <div>
+                                    <label class="mb-1 block text-theme-xs text-gray-400">Tipe</label>
+                                    <select x-model="row.type" @change="onRowTypeChange(row)" class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                        <option value="text">Text</option>
+                                        <option value="number">Number</option>
+                                        <option value="hidden">Hidden</option>
+                                        <option value="select">Dropdown (Select)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="mb-1 block text-theme-xs text-gray-400">Placeholder</label>
+                                    <input type="text" x-model="row.placeholder" placeholder="Placeholder" class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                </div>
+                                <div>
+                                    <button type="button" x-show="index !== 0" @click="removeCustomInputRow(index)"
+                                        class="h-9 w-full rounded-lg border border-error-300 px-3 text-theme-xs font-medium text-error-600 hover:bg-error-50 dark:border-error-500/30 dark:text-error-400 dark:hover:bg-error-500/10">Hapus</button>
+                                    <span x-show="index === 0" class="flex h-9 items-center text-theme-xs text-gray-400">Wajib, gak bisa dihapus</span>
+                                </div>
                             </div>
-                            <div>
-                                <label class="mb-1 block text-theme-xs text-gray-400">Tipe</label>
-                                <select x-model="row.type" class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                                    <option value="text">Text</option>
-                                    <option value="number">Number</option>
-                                    <option value="hidden">Hidden</option>
-                                    <option value="select">Dropdown (Select)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="mb-1 block text-theme-xs text-gray-400">Placeholder</label>
-                                <input type="text" x-model="row.placeholder" placeholder="Placeholder" class="h-9 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                            </div>
-                            <div>
-                                <button type="button" x-show="index !== 0" @click="removeCustomInputRow(index)"
-                                    class="h-9 w-full rounded-lg border border-error-300 px-3 text-theme-xs font-medium text-error-600 hover:bg-error-50 dark:border-error-500/30 dark:text-error-400 dark:hover:bg-error-500/10">Hapus</button>
-                                <span x-show="index === 0" class="flex h-9 items-center text-theme-xs text-gray-400">Wajib, gak bisa dihapus</span>
+
+                            <div x-show="row.type === 'select'" x-cloak class="mt-3 border-t border-gray-100 pt-3 dark:border-gray-800">
+                                <div class="mb-2 flex items-center justify-between">
+                                    <span class="text-theme-xs font-medium text-gray-500 dark:text-gray-400">Pilihan Dropdown</span>
+                                    <button type="button" @click="addRowOption(row)"
+                                        class="rounded-lg border border-gray-300 px-2.5 py-1 text-theme-xs font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5">+ Tambah Pilihan</button>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <template x-for="(opt, optIndex) in row.options" :key="optIndex">
+                                        <div class="flex gap-2">
+                                            <input type="text" x-model="opt.value" placeholder="Value (disimpan)" class="h-8 w-2/5 rounded-lg border border-gray-300 bg-transparent px-2.5 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                            <input type="text" x-model="opt.label" placeholder="Label (keliatan customer)" class="h-8 flex-1 rounded-lg border border-gray-300 bg-transparent px-2.5 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                            <button type="button" @click="removeRowOption(row, optIndex)"
+                                                class="h-8 w-8 shrink-0 rounded-lg border border-error-300 text-theme-xs text-error-600 hover:bg-error-50 dark:border-error-500/30 dark:text-error-400 dark:hover:bg-error-500/10">&times;</button>
+                                        </div>
+                                    </template>
+                                </div>
+                                <p x-show="row.options.length === 0" class="text-theme-xs text-gray-400">Belum ada pilihan — tambah minimal 1, kalau kosong otomatis balik jadi Text pas disimpan.</p>
                             </div>
                         </div>
                     </template>
@@ -97,48 +166,17 @@
                 <p class="mt-1.5 text-theme-xs text-gray-400">Kolom pertama otomatis dipetakan jadi <code>customer_id</code> di backend (lihat GameAccountInputService), sisanya jadi zone/server sesuai urutan.</p>
             </div>
 
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Gambar (ikon)</label>
-                <input type="file" x-ref="imageFile" accept="image/*" @change="onImageFileChange($event)" class="hidden">
-                <div class="flex items-center gap-3">
-                    <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
-                        <img
-                            x-show="imagePreviewUrl"
-                            :src="imagePreviewUrl"
-                            @error="$event.target.style.visibility='hidden'"
-                            class="h-full w-full object-cover"
-                            alt="">
-                        <svg x-show="!imagePreviewUrl" width="20" height="20" viewBox="0 0 20 20" fill="none" class="text-gray-300 dark:text-gray-600">
-                            <path d="M3 6a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V6z" stroke="currentColor" stroke-width="1.5" />
-                            <path d="M3 13l4-4 3 3 4-4 3 3" stroke="currentColor" stroke-width="1.5" />
-                        </svg>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <input type="text" x-model="form.image" placeholder="contoh: mobile-legends.png" class="h-9 w-48 rounded-lg border border-gray-300 bg-transparent px-3 text-theme-xs text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                        <div class="flex gap-2">
-                            <button type="button" @click="$refs.imageFile.click()" class="rounded-lg border border-gray-300 px-3 py-1.5 text-theme-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5">Pilih File</button>
-                            <button type="button" x-show="imagePreviewUrl" @click="clearImage()" class="rounded-lg border border-error-300 px-3 py-1.5 text-theme-xs font-medium text-error-600 hover:bg-error-50 dark:border-error-500/30 dark:text-error-400 dark:hover:bg-error-500/10">Hapus</button>
-                        </div>
-                    </div>
-                </div>
-                <p class="mt-1 text-theme-xs text-gray-400">File dipilih cuma buat preview + isi nama file otomatis. Upload fisik file ke <code>public/assets/images/games/icons/</code> tetap manual.</p>
-            </div>
-
-            <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Banner (nama file)</label>
-                <input type="text" x-model="form.banner" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-            </div>
-
-            <div class="sm:col-span-2">
-                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Deskripsi</label>
-                <textarea x-model="form.description" rows="3" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"></textarea>
+            <!-- 5. Tampilan & Status -->
+            <div class="sm:col-span-2 mt-2 border-t border-gray-100 pt-4 dark:border-gray-800">
+                <h3 class="text-sm font-semibold text-gray-800 dark:text-white/90">5. Tampilan &amp; Status</h3>
+                <p class="text-theme-xs text-gray-400">Ngatur muncul di mana aja &amp; urutannya.</p>
             </div>
 
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Populer</label>
                 <select x-model="form.is_popular" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
                     <option value="N">Tidak</option>
-                    <option value="Y">Ya</option>
+                    <option value="Y">Ya, tampil di section Populer</option>
                 </select>
             </div>
 
@@ -150,12 +188,12 @@
             <div>
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">Status</label>
                 <select x-model="form.status" class="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 text-sm text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
-                    <option value="On">Aktif</option>
-                    <option value="Off">Nonaktif</option>
+                    <option value="On">Aktif — tampil di storefront</option>
+                    <option value="Off">Nonaktif — disembunyiin</option>
                 </select>
             </div>
 
-            <div class="sm:col-span-2 mt-2 flex items-center justify-end gap-3">
+            <div class="sm:col-span-2 mt-2 flex items-center justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-800">
                 <button type="button" @click="closeModal()" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 dark:border-gray-700 dark:text-gray-300">Batal</button>
                 <button type="submit" :disabled="saving" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-60">
                     <span x-show="!saving">Simpan</span>

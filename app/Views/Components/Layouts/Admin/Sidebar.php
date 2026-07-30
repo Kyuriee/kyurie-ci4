@@ -65,11 +65,12 @@ $activeMenu = $activeMenu ?? '';
                             href="<?= admin_url('game-categories') ?>"
                             class="menu-item group <?= $activeMenu === 'game-categories' ? 'menu-item-active' : 'menu-item-inactive' ?>">
                             <svg class="<?= $activeMenu === 'game-categories' ? 'menu-item-icon-active' : 'menu-item-icon-inactive' ?>" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 5h7v7H4V5zm9 0h7v7h-7V5zM4 16h7v3H4v-3zm9 0h7v3h-7v-3z" />
+                                <path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z" />
                             </svg>
                             <span class="menu-item-text" x-show="sidebarExpanded || sidebarHovered" x-cloak>Kategori Game</span>
                         </a>
                     </li>
+
 
                     <!-- Coupons -->
                     <li>

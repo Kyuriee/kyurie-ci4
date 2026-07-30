@@ -1,6 +1,7 @@
 <?php
 $targetInputs = $target_form['inputs'] ?? [];
-$targetGridClass = count($targetInputs) > 1 ? 'target-input-grid' : '';
+$visibleTargetInputCount = count(array_filter($targetInputs, static fn ($input) => ($input['type'] ?? 'text') !== 'hidden'));
+$targetGridClass = $visibleTargetInputCount > 1 ? 'target-input-grid' : '';
 ?>
 <div>
     <div class="section-title mb-4">
@@ -11,11 +12,17 @@ $targetGridClass = count($targetInputs) > 1 ? 'target-input-grid' : '';
     </div>
     <div class="<?= esc($targetGridClass, 'attr') ?>">
         <?php foreach ($targetInputs as $input) : ?>
+            <?php $inputType = $input['type'] ?? 'text'; ?>
+            <?php if ($inputType === 'hidden') : ?>
+                <input
+                    type="hidden"
+                    x-model="targetValues['<?= esc($input['key'], 'js') ?>']"
+                    name="<?= esc($input['name'], 'attr') ?>">
+            <?php else : ?>
             <div>
                 <label for="target_<?= esc($input['key'], 'attr') ?>" class="mb-1.5 block text-sm font-semibold text-heading">
                     <?= esc($input['label']) ?>
                 </label>
-                <?php $inputType = $input['type'] ?? 'text'; ?>
                 <?php if ($inputType === 'select') : ?>
                     <select
                         x-model="targetValues['<?= esc($input['key'], 'js') ?>']"
@@ -45,6 +52,7 @@ $targetGridClass = count($targetInputs) > 1 ? 'target-input-grid' : '';
                         <?= ! empty($input['required']) ? 'required' : '' ?>>
                 <?php endif ?>
             </div>
+            <?php endif ?>
         <?php endforeach ?>
     </div>
 </div>

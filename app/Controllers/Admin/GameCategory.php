@@ -19,8 +19,7 @@ class GameCategory extends BaseController
             return $redirect;
         }
 
-        $this->baseData['page_assets']['css'][] = 'resources/css/pages/admin/gameCategories.css';
-        $this->baseData['page_assets']['js'][]  = 'resources/js/pages/admin/gameCategories.js';
+        $this->baseData['page_assets']['js'][] = 'resources/js/pages/admin/game-categories.js';
 
         return $this->renderView('Pages/Admin/GameCategories', [
             'meta'       => ['title' => 'Kategori Game'],

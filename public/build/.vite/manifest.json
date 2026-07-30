@@ -34,7 +34,7 @@
     "src": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2"
   },
   "resources/css/admin.css": {
-    "file": "assets/admin_css-DfoJgQPt.css",
+    "file": "assets/admin_css-DDNlRlZD.css",
     "name": "admin_css",
     "names": [
       "admin_css.css"
@@ -43,7 +43,7 @@
     "isEntry": true
   },
   "resources/css/app.css": {
-    "file": "assets/app_css-D6miwHWp.css",
+    "file": "assets/app_css-yXOVH2Mf.css",
     "name": "app_css",
     "names": [
       "app_css.css"
@@ -56,7 +56,7 @@
     ]
   },
   "resources/css/auth.css": {
-    "file": "assets/auth_css-CG7ApVgT.css",
+    "file": "assets/auth_css-C07lyWQ_.css",
     "name": "auth_css",
     "names": [
       "auth_css.css"
@@ -136,8 +136,14 @@
       "assets/sweetalert2-DmHed3W8.css"
     ]
   },
+  "resources/js/pages/admin/game-categories.js": {
+    "file": "assets/admin_game_categories_js-BFnpd1pz.js",
+    "name": "admin_game_categories_js",
+    "src": "resources/js/pages/admin/game-categories.js",
+    "isEntry": true
+  },
   "resources/js/pages/admin/games.js": {
-    "file": "assets/admin_games_js-ZaJ3mlDy.js",
+    "file": "assets/admin_games_js-DpLwr1X3.js",
     "name": "admin_games_js",
     "src": "resources/js/pages/admin/games.js",
     "isEntry": true

@@ -113,14 +113,17 @@ class GameAccountInputService extends BaseService
         }
 
         $type = strtolower(trim((string) ($rawInput['type'] ?? 'text')));
-        $required = array_key_exists('required', $rawInput) ? (bool) $rawInput['required'] : true;
+
+        if (! in_array($type, ['text', 'number', 'select', 'hidden'], true)) {
+            $type = 'text';
+        }
+
+        // Field hidden gak mungkin diisi manual user, jadi default-nya gak wajib
+        // kecuali admin eksplisit nyetel required (misal diisi otomatis via JS).
+        $required = array_key_exists('required', $rawInput) ? (bool) $rawInput['required'] : ($type !== 'hidden');
         $label = trim((string) ($rawInput['label'] ?? $this->labelFromKey($key)));
         $placeholder = trim((string) ($rawInput['placeholder'] ?? ''));
         $options = $this->normalizeOptions($rawInput['options'] ?? []);
-
-        if (! in_array($type, ['text', 'number', 'select'], true)) {
-            $type = 'text';
-        }
 
         if ($type === 'select' && empty($options)) {
             $type = 'text';

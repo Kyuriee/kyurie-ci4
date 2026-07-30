@@ -27,9 +27,9 @@ export default defineConfig({
                 admin_js: 'resources/js/admin.js',
                 /* ---- Admin pages (resources/js/pages/admin/*.js), 1 entry per view page ---- */
                 admin_games_js: 'resources/js/pages/admin/games.js',
+                admin_game_categories_js: 'resources/js/pages/admin/game-categories.js',
 
                 // Belum ada view-nya (baru API/CRUD backend), aktifin pas viewnya dibikin:
-                // admin_game_categories_js: 'resources/js/pages/admin/game-categories.js',
                 // admin_products_js: 'resources/js/pages/admin/products.js',
                 // admin_banners_js: 'resources/js/pages/admin/banners.js',
                 // admin_flashsales_js: 'resources/js/pages/admin/flashsales.js',

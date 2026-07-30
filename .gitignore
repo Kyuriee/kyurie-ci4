@@ -139,3 +139,8 @@ _modules/*
 # Server-generated Files
 #-------------------------
 public/.well-known/acme-challenge/*
+
+#-------------------------
+# CodeGraph
+#-------------------------
+.codegraph/
